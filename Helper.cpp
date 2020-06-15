@@ -86,17 +86,15 @@ void readPPM(string filename){
     int width = 0, height = 0, max = 0;
 
     //TOD0: if line starts with # ignore it
-
     // get P type, height, width and max
     getline(file, ptype);
     getline(file, line);
     getline(file, line);
 
-    string str (" ");
-    size_t found = line.find(str);
+    size_t found = line.find(' ');
     width = stoi(line.substr(0, found));
 
-    size_t found2 = line.find(str, found + 1);
+    size_t found2 = line.find(' ', found + 1);
     height = stoi(line.substr(found + 1, found2 - 1));
 
     getline(file, line);

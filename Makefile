@@ -1,4 +1,4 @@
-PROJECT_NAME = RedNoise
+PROJECT_NAME = Main
 
 # Define the names of key files
 SOURCE_FILE = $(PROJECT_NAME).cpp

@@ -76,6 +76,17 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     return vect;
 }
 
+// ----- Drawing -----
+void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2){
+  float steps = std::max(abs(p1.x - p2.x), abs(p1.y - p2.y));
+  vector<CanvasPoint> line = interpolation(p1, p2, steps);
+    
+  for (int i=0; i<(int)steps; i++){
+    uint32_t colour = 255;
+    window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
+  }
+}
+
 // ----- Parsing -----
  vector<uint32_t> readPPM(string filename){
     ifstream file;

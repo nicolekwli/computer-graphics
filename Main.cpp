@@ -1,5 +1,4 @@
 #include "Main.h"
-#include "Helper.h"
 
 
 #define WIDTH 640
@@ -15,6 +14,7 @@ int main(int argc, char* argv[]){
         // test read ppm
         //readPPM("assets/texture.ppm");     
         vector<float> res = interpolation( 2.2, 8.5, 7 );   
+        drawLine(window, CanvasPoint(100,20), CanvasPoint(20,200));
 
         window.renderFrame();
     }

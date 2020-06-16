@@ -1,4 +1,6 @@
 #include "Main.h"
+#include "Helper.h"
+
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -10,6 +12,10 @@ int main(int argc, char* argv[]){
     while(true){
         if(window.pollForInputEvents(&event)) handleEvent(event);
         update();
+        // test read ppm
+        //readPPM("assets/texture.ppm");     
+        //vector<float> res = interpolation( 2.2, 8.5, 7 );   
+
         window.renderFrame();
     }
 }

@@ -7,14 +7,14 @@ vector<float> interpolation(float from, float to, int noOfVals){
     float intervals;
 
     if (from < to){
-        intervals = (to - from) / (noOfVal-1);
+        intervals = (to - from) / (noOfVals-1);
     } else {
-        intervals = (from - to) / (noOfVal-1);
+        intervals = (from - to) / (noOfVals-1);
     }
 
     vect.push_back(from);
 
-    for (int i = 1; i < noOfVal; i++) {
+    for (int i = 1; i < noOfVals; i++) {
         vect.push_back(from + intervals*i);
     }
 
@@ -25,59 +25,59 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals){
     vector<vec3> vect;
     vec3 intervals;
 
-    intervals = (to - from) / (noOfVal - 1.0f);
+    intervals = (to - from) / (noOfVals - 1.0f);
     vect.push_back(from);
     
-    for (int i = 1; i < noOfVal; i++) {
+    for (int i = 1; i < noOfVals; i++) {
         vect.push_back(from + intervals*(float)i);
     }
 
     return vect;
 }
 
-vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVal ){
-    vector<CanvasPoint> vect;
-    float intervalsX;
-    float intervalsY;
-    CanvasPoint p;
-    bool swap = false;
+// vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
+//     vector<CanvasPoint> vect;
+//     float intervalsX;
+//     float intervalsY;
+//     CanvasPoint p;
+//     bool swap = false;
      
-    if (a.y > b.y){
-        if (a.x < b.x){
-            intervalsX = abs(a.x - b.x) / (noOfVal - 1);
-            intervalsY = abs(a.y - b.y) / (noOfVal - 1);
-        } else {
-            swap = true; 
-            intervalsX = (a.x - b.x) / (noOfVal - 1);
-            intervalsY = (a.y - b.y) / (noOfVal - 1);
-        }
-    } else {
-        if (a.x > b.x){
-            swap = true;
-            intervalsY = (a.y - b.y) / (noOfVal - 1);
-            intervalsX = abs(a.x - b.x) / (noOfVal - 1);
+//     if (a.y > b.y){
+//         if (a.x < b.x){
+//             intervalsX = abs(a.x - b.x) / (noOfVals - 1);
+//             intervalsY = abs(a.y - b.y) / (noOfVals - 1);
+//         } else {
+//             swap = true; 
+//             intervalsX = (a.x - b.x) / (noOfVals - 1);
+//             intervalsY = (a.y - b.y) / (noOfVals - 1);
+//         }
+//     } else {
+//         if (a.x > b.x){
+//             swap = true;
+//             intervalsY = (a.y - b.y) / (noOfVals - 1);
+//             intervalsX = abs(a.x - b.x) / (noOfVals - 1);
         
-        } else {
-            intervalsY = abs(a.y - b.y) /(noOfVal - 1);
-            intervalsX = abs(a.x - b.x) / (noOfVal - 1);
-        }
-    }
+//         } else {
+//             intervalsY = abs(a.y - b.y) /(noOfVals - 1);
+//             intervalsX = abs(a.x - b.x) / (noOfVals - 1);
+//         }
+//     }
 
-    vect.push_back(a);
+//     vect.push_back(a);
 
-    for (int i = 1; i < noOfVal; i++) {
-      if(swap){
-        p = CanvasPoint(b.x + intervalsX * i, b.y + intervalsY * i);
-      } else{
-        p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
-      }
-      vect.push_back(p);
-    }
-    return vect;
-}
+//     for (int i = 1; i < noOfVals; i++) {
+//       if(swap){
+//         p = CanvasPoint(b.x + intervalsX * i, b.y + intervalsY * i);
+//       } else{
+//         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
+//       }
+//       vect.push_back(p);
+//     }
+//     return vect;
+// }
 
 // ----- Parsing -----
-void readPPM(string filename){
+ vector<uint32_t> readPPM(string filename){
     ifstream file;
     file.open(filename);
 
@@ -120,11 +120,12 @@ void readPPM(string filename){
         i = 0;
       }
     }
+
     // display to a window
     // for(int y=height; y>0 ;y--) {
     //     for(int x=width; x>0 ;x--) {
-    //       window.setPixelColour(x, y, pixels.back());
-    //      // pixels.pop_back();
+    //       //window.setPixelColour(x, y, pixels.back());
+    //       pixels.pop_back();
     //     }
     // }
 

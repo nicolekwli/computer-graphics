@@ -35,46 +35,46 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals){
     return vect;
 }
 
-// vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
-//     vector<CanvasPoint> vect;
-//     float intervalsX;
-//     float intervalsY;
-//     CanvasPoint p;
-//     bool swap = false;
+vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
+    vector<CanvasPoint> vect;
+    float intervalsX;
+    float intervalsY;
+    CanvasPoint p;
+    bool swap = false;
      
-//     if (a.y > b.y){
-//         if (a.x < b.x){
-//             intervalsX = abs(a.x - b.x) / (noOfVals - 1);
-//             intervalsY = abs(a.y - b.y) / (noOfVals - 1);
-//         } else {
-//             swap = true; 
-//             intervalsX = (a.x - b.x) / (noOfVals - 1);
-//             intervalsY = (a.y - b.y) / (noOfVals - 1);
-//         }
-//     } else {
-//         if (a.x > b.x){
-//             swap = true;
-//             intervalsY = (a.y - b.y) / (noOfVals - 1);
-//             intervalsX = abs(a.x - b.x) / (noOfVals - 1);
+    if (a.y > b.y){
+        if (a.x < b.x){
+            intervalsX = abs(a.x - b.x) / (noOfVals - 1);
+            intervalsY = abs(a.y - b.y) / (noOfVals - 1);
+        } else {
+            swap = true; 
+            intervalsX = (a.x - b.x) / (noOfVals - 1);
+            intervalsY = (a.y - b.y) / (noOfVals - 1);
+        }
+    } else {
+        if (a.x > b.x){
+            swap = true;
+            intervalsY = (a.y - b.y) / (noOfVals - 1);
+            intervalsX = abs(a.x - b.x) / (noOfVals - 1);
         
-//         } else {
-//             intervalsY = abs(a.y - b.y) /(noOfVals - 1);
-//             intervalsX = abs(a.x - b.x) / (noOfVals - 1);
-//         }
-//     }
+        } else {
+            intervalsY = abs(a.y - b.y) /(noOfVals - 1);
+            intervalsX = abs(a.x - b.x) / (noOfVals - 1);
+        }
+    }
 
-//     vect.push_back(a);
+    vect.push_back(a);
 
-//     for (int i = 1; i < noOfVals; i++) {
-//       if(swap){
-//         p = CanvasPoint(b.x + intervalsX * i, b.y + intervalsY * i);
-//       } else{
-//         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
-//       }
-//       vect.push_back(p);
-//     }
-//     return vect;
-// }
+    for (int i = 1; i < noOfVals; i++) {
+      if(swap){
+        p = CanvasPoint(b.x + intervalsX * i, b.y + intervalsY * i);
+      } else{
+        p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
+      }
+      vect.push_back(p);
+    }
+    return vect;
+}
 
 // ----- Parsing -----
  vector<uint32_t> readPPM(string filename){

@@ -1,4 +1,4 @@
-// #include "CanvasPoint.h"
+#include "CanvasPoint.h"
 #include <glm/glm.hpp>
 #include <fstream>
 #include <vector>
@@ -18,7 +18,7 @@ using glm::vec3;
 // Maybe this should return an int for convenience
 vector<float> interpolation(float from, float to, int noOfVals);
 vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals);
-// vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals);
+vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals);
 
 
 // ----- Parsing -----

@@ -6,23 +6,11 @@ class TexturePoint
     float x;
     float y;
 
-    TexturePoint()
-    {
-    }
+    TexturePoint();
 
-    TexturePoint(float xPos, float yPos)
-    {
-      x = xPos;
-      y = yPos;
-    }
+    TexturePoint(float xPos, float yPos);
 
-    void print()
-    {
-    }
+    //void print();
 };
 
-std::ostream& operator<<(std::ostream& os, const TexturePoint& point)
-{
-    os << "(" << point.x << ", " << point.y << ")" << std::endl;
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const TexturePoint& point);

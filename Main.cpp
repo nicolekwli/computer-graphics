@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
         update();
         // test read ppm
         //readPPM("assets/texture.ppm");     
-        //vector<float> res = interpolation( 2.2, 8.5, 7 );   
+        vector<float> res = interpolation( 2.2, 8.5, 7 );   
 
         window.renderFrame();
     }

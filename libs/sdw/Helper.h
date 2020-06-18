@@ -1,5 +1,6 @@
 #include "CanvasPoint.h"
 #include "DrawingWindow.h"
+#include "Colour.h"
 #include <glm/glm.hpp>
 #include <fstream>
 #include <vector>
@@ -22,7 +23,7 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals);
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals);
 
 // ----- Drawing -----
-void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2);
+void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 
 // ----- Parsing -----
 vector<uint32_t> readPPM(string filename);

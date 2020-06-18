@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 class Colour
@@ -8,29 +10,11 @@ class Colour
     int green;
     int blue;
 
-    Colour()
-    {
-    }
+    Colour();
 
-    Colour(int r, int g, int b)
-    {
-      name = "";
-      red = r;
-      green = g;
-      blue = b;
-    }
+    Colour(int r, int g, int b);
 
-    Colour(std::string n, int r, int g, int b)
-    {
-      name = n;
-      red = r;
-      green = g;
-      blue = b;
-    }
+    Colour(std::string n, int r, int g, int b);
 };
 
-std::ostream& operator<<(std::ostream& os, const Colour& colour)
-{
-    os << colour.name << " [" << colour.red << ", " << colour.green << ", " << colour.blue << "]" << std::endl;
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const Colour& colour);

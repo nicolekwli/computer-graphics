@@ -77,12 +77,14 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 }
 
 // ----- Drawing -----
-void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2){
+void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   float steps = std::max(abs(p1.x - p2.x), abs(p1.y - p2.y));
   vector<CanvasPoint> line = interpolation(p1, p2, steps);
-    
+
+  // This can be its own fucntion in class 
+  uint32_t colour = (255<<24) + (c.red<<16) + (c.green<<8) + c.blue;
   for (int i=0; i<(int)steps; i++){
-    uint32_t colour = 255;
+    // uint32_t colour = 255;
     window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
 }

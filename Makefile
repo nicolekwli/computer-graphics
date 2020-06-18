@@ -3,7 +3,7 @@ PROJECT_NAME = Main
 # Define the names of key files
 SOURCE_FILE = $(PROJECT_NAME).cpp
 OBJECT_FILE = $(PROJECT_NAME).o
-EXECUTABLE = $(PROJECT_NAME)
+EXECUTABLE = $(PROJECT_NAME).exe
 WINDOW_SOURCE = libs/sdw/DrawingWindow.cpp
 WINDOW_OBJECT = libs/sdw/DrawingWindow.o
 
@@ -29,7 +29,7 @@ DEBUG_OPTIONS = -ggdb -g3
 FUSSY_OPTIONS = -Werror -pedantic
 SANITIZER_OPTIONS = -O1 -fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer
 SPEEDY_OPTIONS = -Ofast -funsafe-math-optimizations -march=native
-LINKER_OPTIONS =
+LINKER_OPTIONS = -mconsole
 
 # Set up flags
 SDW_COMPILER_FLAGS := -I./libs/sdw

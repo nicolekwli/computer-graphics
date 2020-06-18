@@ -175,7 +175,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
                                              CanvasPoint(rand()%200, rand()%150),
                                              c );
     // sort vertices
-    // might not need as is already in drawStrokedTriangle
     for (int i = 0; i < 3; i++){
         if (triangle.vertices[2].y < triangle.vertices[0].y){
             swap(triangle.vertices[2], triangle.vertices[0]);
@@ -187,8 +186,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
             swap(triangle.vertices[1], triangle.vertices[2]);
         }
     }
-    
-    drawStrokedTriangle(window, triangle);
 
     // get extra point to split triangle into half
     float steps = std::max(abs(triangle.vertices[0].x - triangle.vertices[2].x), abs(triangle.vertices[0].y - triangle.vertices[2].y));
@@ -205,27 +202,32 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
         swap(newP, triangle.vertices[1]);
     }
 
+    drawStrokedTriangle(window, triangle);
     drawLine(window, newP, triangle.vertices[1],c);
 
     // Fill top triangle
     float stepsTopLeft = std::max(abs(triangle.vertices[0].x - newP.x), abs(triangle.vertices[0].y - newP.y));
     //vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, stepsTopLeft);
-    vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y));
+    vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
 
     float stepsTopRight = std::max(abs(triangle.vertices[0].x - triangle.vertices[1].x), abs(triangle.vertices[0].y - triangle.vertices[1].y));
     //vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], stepsTopRight);
-    vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y));
+    vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
 
-    cout << lineTopLeft.size() << endl;
-    cout << lineTopRight.size() << endl;
-    fillTriangle(window, lineTopLeft, lineTopRight, stepsTopLeft, stepsTopRight, c);
+    //fillTriangle(window, lineTopLeft, lineTopRight, stepsTopLeft, stepsTopRight, c);
+    fillTriangle(window, lineTopLeft, lineTopRight, lineTopLeft.size(), lineTopLeft.size(), c);
 
     // Bottom triangle
     float stepsBottomLeft = std::max(abs(triangle.vertices[2].x - newP.x), abs(triangle.vertices[2].y - newP.y));
-    vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], stepsBottomLeft);
+    //vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], stepsBottomLeft);
+    vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
+
     float stepsBottomRight = std::max(abs(triangle.vertices[2].x - triangle.vertices[1].x), abs(triangle.vertices[2].y - triangle.vertices[1].y));
-    vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], stepsBottomRight);
-    fillTriangle(window,lineBottomLeft, lineBottomRight, stepsBottomLeft, stepsBottomRight, c);   
+    //vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], stepsBottomRight);
+    vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
+    
+    //fillTriangle(window,lineBottomLeft, lineBottomRight, stepsBottomLeft, stepsBottomRight, c);   
+    fillTriangle(window,lineBottomLeft, lineBottomRight, lineBottomLeft.size(), lineBottomLeft.size(), c); 
 
 }
 

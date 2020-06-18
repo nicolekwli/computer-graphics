@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
         if(window.pollForInputEvents(&event)) handleEvent(event);
         update();
 
-        vector<uint32_t> pixels = readPPM("assets/texture.ppm");     
+        //vector<uint32_t> pixels = readPPM("assets/texture.ppm");     
         //vector<float> res = interpolation( 2.2, 8.5, 7 );   
         // drawLine(window, CanvasPoint(100,20), CanvasPoint(20,200));
 
@@ -33,10 +33,12 @@ void handleEvent(SDL_Event event)
     else if(event.key.keysym.sym == SDLK_DOWN) cout << "DOWN" << endl;
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();
+        CanvasTriangle t = CanvasTriangle(CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150));
+        drawStrokedTriangle(window, t), Colour(rand()%255, rand()%255, rand()%255);
         cout << "U" << endl;
     }
     else if (event.key.keysym.sym == SDLK_f){
-        // drawFilledTriangle();
+        drawFilledTriangle((window), Colour(rand()%255, rand()%255, rand()%255));
     }    
     else if(event.key.keysym.sym == SDLK_f){
      // drawRandomFilledTriangle();

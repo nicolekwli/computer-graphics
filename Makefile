@@ -10,6 +10,9 @@ WINDOW_OBJECT = libs/sdw/DrawingWindow.o
 CANVASPOINT_SOURCE = libs/sdw/CanvasPoint.cpp
 CANVASPOINT_OBJECT = libs/sdw/CanvasPoint.o
 
+CANVASTRIANGLE_SOURCE = libs/sdw/CanvasTriangle.cpp
+CANVASTRIANGLE_OBJECT = libs/sdw/CanvasTriangle.o
+
 TEXTUREPOINT_SOURCE = libs/sdw/TexturePoint.cpp
 TEXTUREPOINT_OBJECT = libs/sdw/TexturePoint.o
 
@@ -35,32 +38,32 @@ GLM_COMPILER_FLAGS := -I./libs/glm
 SDL_COMPILER_FLAGS := $(shell sdl2-config --cflags)
 # If you have a manual install of SDL, you might not have sdl2-config. Linker flags should be something like: -L/usr/local/lib -lSDL2
 SDL_LINKER_FLAGS := $(shell sdl2-config --libs)
-SDW_LINKER_FLAGS := $(WINDOW_OBJECT) $(HELPER_OBJECT) $(CANVASPOINT_OBJECT) ${TEXTUREPOINT_OBJECT} ${COLOUR_OBJECT}
+SDW_LINKER_FLAGS := $(WINDOW_OBJECT) $(HELPER_OBJECT) $(CANVASPOINT_OBJECT) ${TEXTUREPOINT_OBJECT} ${COLOUR_OBJECT} ${CANVASTRIANGLE_OBJECT}
 
 
 default: diagnostic
 
 # Rule to help find errors (when you get a segmentation fault)
 # NOTE: Needs the "Address Sanitizer" library to be installed in order to work (might not work on lab machines !)
-diagnostic: window helper canvaspoint texturepoint colour
+diagnostic: window helper canvaspoint texturepoint colour canvastriangle
 	$(COMPILER) $(COMPILER_OPTIONS) $(FUSSY_OPTIONS) $(SANITIZER_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(FUSSY_OPTIONS) $(SANITIZER_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to compile and link for production release
-production: window helper canvaspoint texturepoint colour
+production: window helper canvaspoint texturepoint colour canvastriangle
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to compile and link for use with a debugger
-debug: window helper canvaspoint texturepoint colour
+debug: window helper canvaspoint texturepoint colour canvastriangle
 	$(COMPILER) $(COMPILER_OPTIONS) $(DEBUG_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(DEBUG_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to build for high performance executable
-speedy: window helper canvaspoint texturepoint colour
+speedy: window helper canvaspoint texturepoint colour canvastriangle
 	$(COMPILER) $(COMPILER_OPTIONS) $(SPEEDY_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(SPEEDY_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS)
 	./$(EXECUTABLE)
@@ -74,6 +77,9 @@ helper:
 
 canvaspoint:
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(CANVASPOINT_OBJECT) $(CANVASPOINT_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
+
+canvastriangle:
+	$(COMPILER) $(COMPILER_OPTIONS) -o $(CANVASTRIANGLE_OBJECT) $(CANVASTRIANGLE_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 
 texturepoint:
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(TEXTUREPOINT_OBJECT) $(TEXTUREPOINT_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)

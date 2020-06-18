@@ -91,8 +91,6 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   vector<CanvasPoint> line = interpolation(p1, p2, steps);
 
   for (int i=0; i<(int)steps; i++){
-    // uint32_t colour = 255;
-    cout << line[i].x << endl;
     window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
 }
@@ -207,11 +205,19 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
         swap(newP, triangle.vertices[1]);
     }
 
+    drawLine(window, newP, triangle.vertices[1],c);
+
     // Fill top triangle
     float stepsTopLeft = std::max(abs(triangle.vertices[0].x - newP.x), abs(triangle.vertices[0].y - newP.y));
-    vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, stepsTopLeft);
+    //vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, stepsTopLeft);
+    vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y));
+
     float stepsTopRight = std::max(abs(triangle.vertices[0].x - triangle.vertices[1].x), abs(triangle.vertices[0].y - triangle.vertices[1].y));
-    vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], stepsTopRight);
+    //vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], stepsTopRight);
+    vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y));
+
+    cout << lineTopLeft.size() << endl;
+    cout << lineTopRight.size() << endl;
     fillTriangle(window, lineTopLeft, lineTopRight, stepsTopLeft, stepsTopRight, c);
 
     // Bottom triangle
@@ -221,7 +227,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], stepsBottomRight);
     fillTriangle(window,lineBottomLeft, lineBottomRight, stepsBottomLeft, stepsBottomRight, c);   
 
-    //drawLine(window, newP, triangle.vertices[1], Colour(255, 255, 255));
 }
 
 // ----- Parsing -----

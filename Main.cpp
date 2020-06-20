@@ -12,7 +12,7 @@ int main(int argc, char* argv[]){
         if(window.pollForInputEvents(&event)) handleEvent(event);
         update();
 
-        //vector<uint32_t> pixels = readPPM("assets/texture.ppm");     
+        vector<uint32_t> pixels = readPPM(window,"assets/texture.ppm");     
         //vector<float> res = interpolation( 2.2, 8.5, 7 );   
         // drawLine(window, CanvasPoint(100,20), CanvasPoint(20,200));
 

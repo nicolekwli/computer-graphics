@@ -232,7 +232,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
 }
 
 // ----- Parsing -----
- vector<uint32_t> readPPM(string filename){
+ vector<uint32_t> readPPM(DrawingWindow window, string filename){
     ifstream file;
     file.open(filename);
 
@@ -279,7 +279,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
     // display to a window
     // for(int y=height; y>0 ;y--) {
     //     for(int x=width; x>0 ;x--) {
-    //       //window.setPixelColour(x, y, pixels.back());
+    //       window.setPixelColour(x, y, pixels.back());
     //       pixels.pop_back();
     //     }
     // }

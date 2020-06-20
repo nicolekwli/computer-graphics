@@ -33,4 +33,4 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 void drawFilledTriangle(DrawingWindow window, Colour c);
 
 // ----- Parsing -----
-vector<uint32_t> readPPM(string filename);
+vector<uint32_t> readPPM(DrawingWindow window, string filename);

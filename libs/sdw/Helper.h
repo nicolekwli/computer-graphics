@@ -41,3 +41,4 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
 
 // ----- Parsing -----
 vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename);
+vector<ModelTriangle> readOBJ(string filename);

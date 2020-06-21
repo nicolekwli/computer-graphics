@@ -118,7 +118,7 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
     }
 }
 
-// should use the prev functions
+// the swapping bit can be removed - see fill texture
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, float stepsTopLeft, float stepsTopRight, Colour c) {
     uint32_t colour = bitpackingColour(c);
     // Start fill top triangle
@@ -222,19 +222,14 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
     int steps;
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
-
         for (float b = 0.0; b<(lineTopRight.size()); b++){
-
             // for each horizontal line
             if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
                 steps = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
-                
                 //int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
                 // int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
  
                 for (int c = 0; c < steps; c++){
-                    
-
                     //int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
                     // int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
                       
@@ -290,13 +285,10 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(t.vertices[0], newP, abs(t.vertices[0].y - t.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(t.vertices[0], t.vertices[1], abs(t.vertices[0].y - t.vertices[1].y)+1);
-
     fillTexture(window, lineTopLeft, lineTopRight, pixels);
-
 
     vector<CanvasPoint> lineBottomLeft = interpolation(t.vertices[2], newP, abs(t.vertices[2].y - t.vertices[1].y)+1);
     vector<CanvasPoint> lineBottomRight = interpolation(t.vertices[2], t.vertices[1], abs(t.vertices[2].y - t.vertices[1].y)+1);
-    
     fillTexture(window,lineBottomLeft, lineBottomRight, pixels); 
 }
 

@@ -42,7 +42,33 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals){
     return vect;
 }
 
+// a = from, b = to
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
+    vector<CanvasPoint> vect;
+    float intervalsX;
+    float intervalsY;
+    CanvasPoint p;
+
+    intervalsX = (b.x - a.x) / (noOfVals);
+    intervalsY = (b.y - a.y) / (noOfVals);
+
+    float intervalsTX = (b.texturePoint.x - a.texturePoint.x) / (noOfVals);
+    float intervalsTY = (b.texturePoint.y - a.texturePoint.y) / (noOfVals);
+    vect.push_back(a);
+
+    for (int i = 1; i < noOfVals; i++) {
+        p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
+        p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
+        p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
+
+        vect.push_back(p);
+    }
+    return vect;
+}
+
+// NEEDS DO
+// This gives all point on the line with the corresponding texture points
+vector<CanvasPoint> interpolateTexture(CanvasPoint a, CanvasPoint b, float noOfVals ){
     vector<CanvasPoint> vect;
     float intervalsX;
     float intervalsY;
@@ -78,9 +104,32 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
       } else{
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
       }
+
       vect.push_back(p);
     }
-    return vect;
+
+    // TexturePoint tStep = a.texturePoint - b.texturePoint;
+    // for (int i = 0; i <= noOfVals; i++)
+    // {
+    //     TexturePoint t = a.texturePoint + (i * tStep/noOfVals);
+    //     //vect[i].texturePoint = getTexturePoint(a, b, vect[i]);
+    //     vect[i].texturePoint = 
+    // }
+    // return vect;
+}
+
+TexturePoint getTexturePoint(CanvasPoint from, CanvasPoint to, CanvasPoint p){
+    TexturePoint tp;
+    if((from.x == to.x && from.y == to.y) || (from.x == p.x && from.y == p.y)){
+        tp = from.texturePoint;
+        return tp;
+    }
+    else if(p.x == to.x && p.y == to.y ){
+        tp = to.texturePoint;
+        return tp;
+    }
+
+    // if it snot the start or end
 }
 
 // ----- Drawing -----
@@ -95,21 +144,22 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   }
 }
 
+
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
   uint32_t colour = bitpackingColour(t.colour);
 
     // sort vertices
-    for (int i = 0; i < 3; i++){
-        if (t.vertices[2].y < t.vertices[0].y){
-            swap(t.vertices[2], t.vertices[0]);
-        }
-        if (t.vertices[1].y < t.vertices[0].y){
-            swap(t.vertices[0], t.vertices[1]);
-        }
-        if (t.vertices[2].y < t.vertices[1].y){
-            swap(t.vertices[1], t.vertices[2]);
-        }
-    }
+    // for (int i = 0; i < 3; i++){
+    //     if (t.vertices[2].y < t.vertices[0].y){
+    //         swap(t.vertices[2], t.vertices[0]);
+    //     }
+    //     if (t.vertices[1].y < t.vertices[0].y){
+    //         swap(t.vertices[0], t.vertices[1]);
+    //     }
+    //     if (t.vertices[2].y < t.vertices[1].y){
+    //         swap(t.vertices[1], t.vertices[2]);
+    //     }
+    // }
 
     // use interpolation to draw line
     float stepsAB = std::max(abs(t.vertices[0].x - t.vertices[1].x), abs(t.vertices[0].y - t.vertices[1].y));
@@ -231,8 +281,93 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
 
 }
 
+
+// to/ from
+void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels) {
+    int steps;
+    // make sure we fill according to the longer line so it fills
+    for (float a = 0.0; a<lineTopLeft.size(); a++){
+
+        for (float b = 0.0; b<(lineTopRight.size()); b++){
+
+            // for each horizontal line
+            if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
+                steps = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
+                
+                //vector<CanvasPoint> interpolatedTextures = interpolateTexture(heightLine[a].x,widthLine[b].x,width);
+                int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
+                int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
+ 
+                for (int c = 0; c < steps; c++){
+                    
+
+                    int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
+                    int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
+                      
+                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[lineTopLeft[a].texturePoint.y][lineTopLeft[a].texturePoint.x + c]);
+                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[ty][tx]);
+                    
+                }
+           }
+        }
+    }
+}
+
+
+void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t){
+    // sort vertices
+    for (int i = 0; i < 3; i++){
+        if (t.vertices[2].y < t.vertices[0].y){
+            swap(t.vertices[2], t.vertices[0]);
+        }
+        if (t.vertices[1].y < t.vertices[0].y){
+            swap(t.vertices[0], t.vertices[1]);
+        }
+        if (t.vertices[2].y < t.vertices[1].y){
+            swap(t.vertices[1], t.vertices[2]);
+        }
+    }
+    drawStrokedTriangle(window, t);
+
+    // get extra point to split triangle into half
+    float steps = std::max(abs(t.vertices[0].x - t.vertices[2].x), abs(t.vertices[0].y - t.vertices[2].y));
+    vector<CanvasPoint> line = interpolation(t.vertices[0], t.vertices[2], steps);
+    CanvasPoint newP;
+    for (int j=0; j<steps; j++){
+        if ((int)line[j].y == (int)t.vertices[1].y){
+            newP = CanvasPoint(line[j].x, line[j].y);
+
+            // float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
+            // CanvasPoint extra = CanvasPoint(first - scale*(first-third));
+
+            newP.texturePoint.x = line[j].texturePoint.x;
+            newP.texturePoint.y = t.vertices[1].texturePoint.y;
+
+            // newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
+            // newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
+        }
+    }
+
+    // make sure newP has a smaller value x than vertice 1
+    if (newP.x > t.vertices[1].x){
+        swap(newP, t.vertices[1]);
+    }
+
+    // Fill top triangle
+    vector<CanvasPoint> lineTopLeft = interpolation(t.vertices[0], newP, abs(t.vertices[0].y - t.vertices[1].y)+1);
+    vector<CanvasPoint> lineTopRight = interpolation(t.vertices[0], t.vertices[1], abs(t.vertices[0].y - t.vertices[1].y)+1);
+    // fillTexture(window, lineTopLeft, lineTopRight, pixels);
+
+    
+
+    vector<CanvasPoint> lineBottomLeft = interpolation(t.vertices[2], newP, abs(t.vertices[2].y - t.vertices[1].y)+1);
+    vector<CanvasPoint> lineBottomRight = interpolation(t.vertices[2], t.vertices[1], abs(t.vertices[2].y - t.vertices[1].y)+1);
+    
+    fillTexture(window,lineBottomLeft, lineBottomRight, pixels); 
+}
+
 // ----- Parsing -----
- vector<uint32_t> readPPM(DrawingWindow window, string filename){
+vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
     ifstream file;
     file.open(filename);
 
@@ -257,30 +392,46 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
     
     char tempPixel;
     char r,g,b;
-    vector<uint32_t> pixels;
+    vector<uint32_t> pixel;
+    vector<vector<uint32_t>> pixels;
 
-    int i = 0;
-    while (file.get(tempPixel))
-    {
-      if (i == 0){
-        r = tempPixel;
-        i++;
-      } else if (i == 1){
-        g = tempPixel;
-        i++;
-      } else {
-        b = tempPixel;
+    // int i = 0;
+    // while (file.get(tempPixel))
+    // {
+    //   vector<uint32_t> pixel;
+    //   if (i == 0){
+    //     r = tempPixel;
+    //     i++;
+    //   } else if (i == 1){
+    //     g = tempPixel;
+    //     i++;
+    //   } else {
+    //     b = tempPixel;
+    //     uint32_t colour = (255<<24) + (int(r)<<16) + (int(g)<<8) + int(b);
+    //     pixel.push_back(colour);
+    //     pixels.push_back(pixel);
+    //     i = 0;
+    //   }
+    // }
+    for(int y = 0; y < height; y++){
+        vector<uint32_t> pixel;
+        for (int x = 0; x < width; x++){
+
+        r   = file.get();
+        g = file.get();
+        b  = file.get();
         uint32_t colour = (255<<24) + (int(r)<<16) + (int(g)<<8) + int(b);
-        pixels.push_back(colour);
-        i = 0;
-      }
+        pixel.push_back(colour);
+        }
+        pixels.push_back(pixel);
     }
 
-    // display to a window
+    //display to a window
     // for(int y=height; y>0 ;y--) {
     //     for(int x=width; x>0 ;x--) {
-    //       window.setPixelColour(x, y, pixels.back());
-    //       pixels.pop_back();
+    //         cout << pixels[y][x] << endl;
+    //       //window.setPixelColour(x, y, pixels[x][y]);
+    //       //pixels.pop_back();
     //     }
     // }
 

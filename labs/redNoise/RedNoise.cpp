@@ -637,14 +637,14 @@ void textureMap(){
     }
   }
 
-//   drawStrokedTriangle(t);
+  //   drawStrokedTriangle(t);
 
-    //-- display the texture triangle points
-    CanvasPoint at = CanvasPoint(195,5);
-    CanvasPoint bt = CanvasPoint(395, 380);
-    CanvasPoint ct = CanvasPoint(65, 330);
-    CanvasTriangle textTriag = CanvasTriangle(at, bt, ct, Colour(255, 0, 0));
-    // drawStrokedTriangle(textTriag);
+  //-- display the texture triangle points
+  CanvasPoint at = CanvasPoint(195,5);
+  CanvasPoint bt = CanvasPoint(395, 380);
+  CanvasPoint ct = CanvasPoint(65, 330);
+  CanvasTriangle textTriag = CanvasTriangle(at, bt, ct, Colour(255, 0, 0));
+  // drawStrokedTriangle(textTriag);
 
   getTexture(t);
 

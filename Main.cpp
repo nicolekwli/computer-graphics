@@ -12,9 +12,21 @@ int main(int argc, char* argv[]){
         if(window.pollForInputEvents(&event)) handleEvent(event);
         update();
 
-        vector<uint32_t> pixels = readPPM(window,"assets/texture.ppm");     
+        // vector<uint32_t> pixels = readPPM(window,"assets/texture.ppm");     
         //vector<float> res = interpolation( 2.2, 8.5, 7 );   
         // drawLine(window, CanvasPoint(100,20), CanvasPoint(20,200));
+
+        CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
+        t.vertices[0].texturePoint.x = 195;
+        t.vertices[0].texturePoint.y = 5;
+        t.vertices[1].texturePoint.x = 395;
+        t.vertices[1].texturePoint.y = 380;
+        t.vertices[2].texturePoint.x = 65;
+        t.vertices[2].texturePoint.y = 330;
+        // drawStrokedTriangle(window, t, Colour(rand()%255, rand()%255, rand()%255));
+
+        vector<vector<uint32_t>>pixels = readPPM(window,"assets/texture.ppm");  
+        fillTextureTriangle(window, pixels, t);
 
         window.renderFrame();
     }

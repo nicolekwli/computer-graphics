@@ -26,7 +26,6 @@ uint32_t bitpackingColour(Colour c);
 vector<float> interpolation(float from, float to, int noOfVals);
 vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals);
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals);
-TexturePoint getTexturePoint(CanvasPoint from, CanvasPoint to, CanvasPoint p);
 
 // ----- Drawing -----
 void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);

@@ -63,23 +63,10 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
         vect.push_back(p);
     }
+    vect.push_back(b);
     return vect;
 }
 
-
-TexturePoint getTexturePoint(CanvasPoint from, CanvasPoint to, CanvasPoint p){
-    TexturePoint tp;
-    if((from.x == to.x && from.y == to.y) || (from.x == p.x && from.y == p.y)){
-        tp = from.texturePoint;
-        return tp;
-    }
-    else if(p.x == to.x && p.y == to.y ){
-        tp = to.texturePoint;
-        return tp;
-    }
-
-    // if it snot the start or end
-}
 
 // ----- Drawing -----
 void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
@@ -147,7 +134,6 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
         heightLine = lineTopRight;
         swap = true;
     }
-    // float height = abs(triangle.vertices[0].y - triangle.vertices[1].y);
     float width;
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<std::max(stepsTopLeft, stepsTopRight); a++){
@@ -243,18 +229,17 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
             if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
                 steps = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
                 
-                int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
-                int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
+                // int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
+                // int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
  
                 for (int c = 0; c < steps; c++){
                     
 
-                    int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
-                    int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
+                    // int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
+                    // int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
                       
-                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[lineTopLeft[a].texturePoint.y][lineTopLeft[a].texturePoint.x + c]);
+                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[lineTopRight[b].texturePoint.y][lineTopLeft[a].texturePoint.x + c]);
                     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[ty][tx]);
-                    
                 }
            }
         }
@@ -285,14 +270,14 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
         if ((int)line[j].y == (int)t.vertices[1].y){
             newP = CanvasPoint(line[j].x, line[j].y);
 
-            // float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
-            // CanvasPoint extra = CanvasPoint(first - scale*(first-third));
+            float scaleX= (t.vertices[0].x - t.vertices[1].x)/(t.vertices[0].x - t.vertices[2].x);
+            float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
 
-            newP.texturePoint.x = line[j].texturePoint.x;
-            newP.texturePoint.y = t.vertices[1].texturePoint.y;
+            //newP.texturePoint.x = line[j].texturePoint.x;
+            //newP.texturePoint.y = t.vertices[1].texturePoint.y;
 
-            // newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
-            // newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
+            newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
+            newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
         }
     }
 
@@ -304,9 +289,9 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(t.vertices[0], newP, abs(t.vertices[0].y - t.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(t.vertices[0], t.vertices[1], abs(t.vertices[0].y - t.vertices[1].y)+1);
-    // fillTexture(window, lineTopLeft, lineTopRight, pixels);
 
-    
+    fillTexture(window, lineTopLeft, lineTopRight, pixels);
+
 
     vector<CanvasPoint> lineBottomLeft = interpolation(t.vertices[2], newP, abs(t.vertices[2].y - t.vertices[1].y)+1);
     vector<CanvasPoint> lineBottomRight = interpolation(t.vertices[2], t.vertices[1], abs(t.vertices[2].y - t.vertices[1].y)+1);

@@ -66,57 +66,6 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     return vect;
 }
 
-// NEEDS DO
-// This gives all point on the line with the corresponding texture points
-vector<CanvasPoint> interpolateTexture(CanvasPoint a, CanvasPoint b, float noOfVals ){
-    vector<CanvasPoint> vect;
-    float intervalsX;
-    float intervalsY;
-    CanvasPoint p;
-    bool swap = false;
-     
-    if (a.y > b.y){
-        if (a.x < b.x){
-            intervalsX = abs(a.x - b.x) / (noOfVals - 1);
-            intervalsY = abs(a.y - b.y) / (noOfVals - 1);
-        } else {
-            swap = true; 
-            intervalsX = (a.x - b.x) / (noOfVals - 1);
-            intervalsY = (a.y - b.y) / (noOfVals - 1);
-        }
-    } else {
-        if (a.x > b.x){
-            swap = true;
-            intervalsY = (a.y - b.y) / (noOfVals - 1);
-            intervalsX = abs(a.x - b.x) / (noOfVals - 1);
-        
-        } else {
-            intervalsY = abs(a.y - b.y) /(noOfVals - 1);
-            intervalsX = abs(a.x - b.x) / (noOfVals - 1);
-        }
-    }
-
-    vect.push_back(a);
-
-    for (int i = 1; i < noOfVals; i++) {
-      if(swap){
-        p = CanvasPoint(b.x + intervalsX * i, b.y + intervalsY * i);
-      } else{
-        p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
-      }
-
-      vect.push_back(p);
-    }
-
-    // TexturePoint tStep = a.texturePoint - b.texturePoint;
-    // for (int i = 0; i <= noOfVals; i++)
-    // {
-    //     TexturePoint t = a.texturePoint + (i * tStep/noOfVals);
-    //     //vect[i].texturePoint = getTexturePoint(a, b, vect[i]);
-    //     vect[i].texturePoint = 
-    // }
-    // return vect;
-}
 
 TexturePoint getTexturePoint(CanvasPoint from, CanvasPoint to, CanvasPoint p){
     TexturePoint tp;
@@ -294,7 +243,6 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
             if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
                 steps = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
                 
-                //vector<CanvasPoint> interpolatedTextures = interpolateTexture(heightLine[a].x,widthLine[b].x,width);
                 int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
                 int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
  

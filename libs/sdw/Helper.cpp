@@ -226,15 +226,19 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
             // for each horizontal line
             if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
                 steps = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
-                //int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
-                // int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
+                int txsteps = (int) abs(lineTopLeft[a].texturePoint.x - lineTopRight[b].texturePoint.x);
+                int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
  
                 for (int c = 0; c < steps; c++){
-                    //int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
-                    // int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
+                    int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
+                    int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
+
+                    vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[b], steps+1);
                       
                     // if ty = lineTopLeft[a] it will fix top triangle but bottom will be sad
-                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[lineTopRight[b].texturePoint.y][lineTopLeft[a].texturePoint.x + c]);
+                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[lineTopLeft[a].texturePoint.y][lineTopLeft[a].texturePoint.x + c]);
+                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
+                    
                     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[ty][tx]);
                 }
            }

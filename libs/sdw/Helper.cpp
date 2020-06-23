@@ -370,7 +370,7 @@ vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
 }
 
 
-vector<ModelTriangle> readOBJ(string filename){
+vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
     ifstream file;
     file.open(filename);
 
@@ -380,7 +380,6 @@ vector<ModelTriangle> readOBJ(string filename){
     string objectName;
 
     vector<ModelTriangle> triangles;
-    vector<Colour> colours;
     vector<glm::vec3> ver;
 
     // get first line matllib
@@ -430,4 +429,31 @@ vector<ModelTriangle> readOBJ(string filename){
     }
     file.close();
     return triangles;
+}
+
+vector<Colour> readMTL(string filename){
+    ifstream file;
+    file.open(filename);
+
+    string line;
+    string *tokens;
+    string name;
+
+    vector<Colour> colours;
+
+    while (!file.eof()){
+        getline(file, line);
+        tokens = split(line, ' ');
+
+        if (tokens[0] == "newmtl"){
+            name = tokens[1];
+        } 
+        else if (tokens[0] == "Kd"){
+            colours.push_back(Colour(name, int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3]))));
+        } else {
+            // else?
+        }
+    }
+    file.close();
+    return colours;
 }

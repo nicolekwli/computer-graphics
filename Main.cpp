@@ -27,7 +27,9 @@ int main(int argc, char* argv[]){
         // vector<vector<uint32_t>>pixels = readPPM(window,"assets/texture.ppm");  
         // fillTextureTriangle(window, pixels, t);
 
-        readOBJ("assets/cornell-box/cornell-box.obj");
+        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        readOBJ("assets/cornell-box/cornell-box.obj", c);
+        
 
         window.renderFrame();
     }

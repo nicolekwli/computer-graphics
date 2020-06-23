@@ -42,5 +42,5 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
 vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
-vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours;);
+vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours);
 vector<Colour> readMTL(string filename);

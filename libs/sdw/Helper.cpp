@@ -368,3 +368,66 @@ vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
     file.close();
     return pixels;
 }
+
+
+vector<ModelTriangle> readOBJ(string filename){
+    ifstream file;
+    file.open(filename);
+
+    string line;
+    string *tokens;
+    Colour col;
+    string objectName;
+
+    vector<ModelTriangle> triangles;
+    vector<Colour> colours;
+    vector<glm::vec3> ver;
+
+    // get first line matllib
+    getline(file, line);
+    
+    while (!file.eof()){
+        getline(file, line);
+        while (!line.empty()){
+
+            tokens = split(line, ' ');
+            //colourPalette p = colourPalette();
+
+            if (tokens[0] == "o"){
+                //p.objectName = tokens[1];
+                objectName = tokens[1];
+                getline(file, line);
+            }
+            else if (tokens[0] == "usemtl") {
+                // p.materialName = tokens[1];
+                // Colour
+                for (std::vector<int>::size_type i = 0; i != colours.size(); i++){
+                    if(colours[i].name == tokens[1]){
+                        col = colours[i];
+                    }
+                }
+           
+                getline(file, line);
+            } 
+            else if (tokens[0] == "v"){
+                glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
+                ver.push_back(vec);
+                getline(file, line);
+            }
+            else if (tokens[0] == "f"){
+                int a = stoi(tokens[1].substr(0, tokens[1].size()-1)) -1;
+                int b = stoi(tokens[2].substr(0, tokens[2].size()-1)) -1;
+                int c = stoi(tokens[3].substr(0, tokens[3].size()-1)) -1;
+
+                triangles.push_back(ModelTriangle(ver[a], ver[b], ver[c], col));
+
+                getline(file, line);                
+            } else {
+                //cout << "wtf is this line" << endl;
+            }
+            // else if its the end of an object?        
+        }
+    }
+    file.close();
+    return triangles;
+}

@@ -28,8 +28,8 @@ int main(int argc, char* argv[]){
         // fillTextureTriangle(window, pixels, t);
 
         vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        readOBJ("assets/cornell-box/cornell-box.obj", c);
-        
+        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
+        createWireframe(window, object);
 
         window.renderFrame();
     }

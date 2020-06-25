@@ -306,20 +306,11 @@ void TransformationMatrix(glm::mat4x4 M){
 
 // takes in a 3D vertex (vec3) and returns a 2D vertex (CanvasPoint)
 CanvasPoint vertex3Dto2D(vec3 vertex3D) {
-    //float yaw = (0.0f * 3.1415926 / 180);
-    //mat3 R = mat3(cos(yaw), 0, sin(yaw), 0, 1, 0, -sin(yaw), 0, cos(yaw));
-    //vec3 point = R * (vertex3D - mycam.cameraPos);
-
     vec3 point = (vertex3D - mycam.cameraPos) * mycam.cameraRot;
     
     float x = point.x;
     float y = point.y;
     float z = point.z;
-
-    //adjust for translation of camera here
-    // formula is from carls lab
-    //float x2D = ((vertex3D.x)*FOCAL/(vertex3D.z)) + (WIDTH/2);
-    //float y2D = ((vertex3D.y)*FOCAL/(vertex3D.z)) + (HEIGHT/2);
 
     float x2D = (FOCAL_LENGTH * x / (z)) + (WIDTH/2);
     float y2D = (FOCAL_LENGTH * y / (z)) + (HEIGHT/2);
@@ -331,13 +322,6 @@ CanvasPoint vertex3Dto2D(vec3 vertex3D) {
 
 // each value is currenlt -1 ... 1
 void modelToCanvasTri(ModelTriangle mt, CanvasTriangle &ct){
-    // each vertex is a vec3 meaning x,y,z and z is the depth of each canvaspoint
-    // colour should be the same
-    // CanvasPoint v0 = CanvasPoint(mt.vertices[0].x, mt.vertices[0].y, mt.vertices[0].z);
-    // CanvasPoint v1 = CanvasPoint(mt.vertices[1].x, mt.vertices[1].y, mt.vertices[1].z);
-    // CanvasPoint v2 = CanvasPoint(mt.vertices[2].x, mt.vertices[2].y, mt.vertices[2].z);
-    // ct = CanvasTriangle(v0, v1, v2, mt.colour);
-
     CanvasPoint v0 = vertex3Dto2D(mt.vertices[0]);
     CanvasPoint v1 = vertex3Dto2D(mt.vertices[1]);
     CanvasPoint v2 = vertex3Dto2D(mt.vertices[2]);

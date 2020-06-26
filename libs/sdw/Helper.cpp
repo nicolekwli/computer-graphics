@@ -154,11 +154,11 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     }
 }
 
-void drawFilledTriangle(DrawingWindow window, Colour c){
-    CanvasTriangle triangle = CanvasTriangle(CanvasPoint(rand()%200, rand()%150), 
-                                             CanvasPoint(rand()%200, rand()%150),
-                                             CanvasPoint(rand()%200, rand()%150),
-                                             c );
+void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle){
+    // CanvasTriangle triangle = CanvasTriangle(CanvasPoint(rand()%200, rand()%150), 
+    //                                          CanvasPoint(rand()%200, rand()%150),
+    //                                          CanvasPoint(rand()%200, rand()%150),
+    //                                          c );
     // sort vertices
     for (int i = 0; i < 3; i++){
         if (triangle.vertices[2].y < triangle.vertices[0].y){
@@ -188,7 +188,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
     }
 
     drawStrokedTriangle(window, triangle);
-    drawLine(window, newP, triangle.vertices[1],c);
+    //drawLine(window, newP, triangle.vertices[1],c);
 
     // Fill top triangle
     float stepsTopLeft = std::max(abs(triangle.vertices[0].x - newP.x), abs(triangle.vertices[0].y - newP.y));
@@ -200,7 +200,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
 
     //fillTriangle(window, lineTopLeft, lineTopRight, stepsTopLeft, stepsTopRight, c);
-    fillTriangle(window, lineTopLeft, lineTopRight, lineTopLeft.size(), lineTopLeft.size(), c);
+    fillTriangle(window, lineTopLeft, lineTopRight, lineTopLeft.size(), lineTopLeft.size(), triangle.colour);
 
     // Bottom triangle
     float stepsBottomLeft = std::max(abs(triangle.vertices[2].x - newP.x), abs(triangle.vertices[2].y - newP.y));
@@ -212,7 +212,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c){
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     
     //fillTriangle(window,lineBottomLeft, lineBottomRight, stepsBottomLeft, stepsBottomRight, c);   
-    fillTriangle(window,lineBottomLeft, lineBottomRight, lineBottomLeft.size(), lineBottomLeft.size(), c); 
+    fillTriangle(window,lineBottomLeft, lineBottomRight, lineBottomLeft.size(), lineBottomLeft.size(), triangle.colour); 
 
 }
 

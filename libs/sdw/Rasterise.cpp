@@ -44,8 +44,6 @@ void modelToCanvasTri(ModelTriangle mt, CanvasTriangle &ct){
 }
 
 void createWireframe(DrawingWindow window, vector<ModelTriangle> t){
-    
-    // TODO
     vector<CanvasTriangle> canvasTriangles; 
     // for each triangle we need to get the canvas triangle first
     // then draw each triangle
@@ -60,5 +58,14 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t){
         drawStrokedTriangle(window, canvasTriangles.back());
 
 
+    }
+}
+
+void rasterise(DrawingWindow window, vector<ModelTriangle> t){
+    for (std::vector<int>::size_type i = 0; i != t.size(); i++){
+        CanvasTriangle ct; 
+ 
+        modelToCanvasTri(t[i], ct);
+        drawFilledTriangle(window, ct.colour, ct);
     }
 }

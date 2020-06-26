@@ -29,7 +29,8 @@ int main(int argc, char* argv[]){
 
         vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
         vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
-        createWireframe(window, object);
+        // createWireframe(window, object);
+        rasterise(window, object);
 
         window.renderFrame();
     }
@@ -53,7 +54,7 @@ void handleEvent(SDL_Event event)
         cout << "U" << endl;
     }
     else if (event.key.keysym.sym == SDLK_f){
-        drawFilledTriangle((window), Colour(rand()%255, rand()%255, rand()%255));
+        //drawFilledTriangle((window), Colour(rand()%255, rand()%255, rand()%255));
     }    
     else if(event.key.keysym.sym == SDLK_f){
      // drawRandomFilledTriangle();

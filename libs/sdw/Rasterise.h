@@ -21,3 +21,4 @@ using glm::vec3;
 CanvasPoint vertex3Dto2D(vec3 vertex3D);
 void modelToCanvasTri(ModelTriangle mt, CanvasTriangle &ct);
 void createWireframe(DrawingWindow window, vector<ModelTriangle> triangles);
+void rasterise(DrawingWindow window, vector<ModelTriangle> t);

@@ -27,12 +27,13 @@ int main(int argc, char* argv[]){
         // vector<vector<uint32_t>>pixels = readPPM(window,"assets/texture.ppm");  
         // fillTextureTriangle(window, pixels, t);
 
-        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
-        // createWireframe(window, object);
-        rasterise(window, object);
+        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
+        // // createWireframe(window, object);
+        // rasterise(window, object);
 
-        savePPM(window, "hello.ppm");
+        // savePPM(window, "hello.ppm");
+        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");  
 
         window.renderFrame();
     }

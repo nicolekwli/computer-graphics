@@ -18,7 +18,7 @@ struct Camera { // struct to hold all camera variables
 };
 
 
-
+// depth buffer stuff? need to recalculate everytime with camera change
 CanvasPoint vertex3Dto2D(vec3 vertex3D) {
     Camera mycam;
     mycam.cameraRot[1][1] = 1.0f;

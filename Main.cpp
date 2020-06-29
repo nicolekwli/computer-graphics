@@ -1,8 +1,8 @@
 #include "Main.h"
 
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 840
+#define HEIGHT 680
 
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 
@@ -31,6 +31,8 @@ int main(int argc, char* argv[]){
         vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
         // createWireframe(window, object);
         rasterise(window, object);
+
+        savePPM(window, "hello.ppm");
 
         window.renderFrame();
     }

@@ -357,16 +357,47 @@ vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
     }
 
     //display to a window
-    // for(int y=height; y>0 ;y--) {
-    //     for(int x=width; x>0 ;x--) {
-    //         cout << pixels[y][x] << endl;
-    //       //window.setPixelColour(x, y, pixels[x][y]);
-    //       //pixels.pop_back();
-    //     }
-    // }
+    for(int y=height; y>0 ;y--) {
+        for(int x=width; x>0 ;x--) {
+            //cout << pixels[y][x] << endl;
+          window.setPixelColour(x, y, pixels[x][y]);
+          //pixels.pop_back();
+        }
+    }
 
     file.close();
     return pixels;
+}
+
+void savePPM(DrawingWindow window, string filename){
+    ofstream file;
+    file.open(filename, ios::out | ios::binary);
+    if (!file) {
+        cerr << "Cannot open file" << endl;
+        //return false;
+    }
+    file << "P6" << endl;
+    file << window.width << "\n";
+    file << window.height << "\n";
+    file << "255" << "\n";
+
+
+    for (int x = 0; x < window.height ; x++) {
+        unsigned char *buff = new unsigned char[window.width * 3];
+        for (int y = 0; y < window.width ; y++){
+            buff[y * 3] = (window.getPixelColour(y,x) & 0xff) >> 8;
+            buff[y * 3 + 1] = (window.getPixelColour(y,x) & 0x00ff00) >> 8;
+            buff[y * 3 + 2] = (window.getPixelColour(y,x) & 0xff0000) >> 16;
+        }
+        file.write((char *)buff, window.width * 3);
+    }
+
+    if (file.fail()) {
+        cerr << "Could not write data" << endl;
+        //return false;
+    }
+
+    file.close();
 }
 
 

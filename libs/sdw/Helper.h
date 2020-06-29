@@ -33,13 +33,13 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals);
 void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t);
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, float stepsTopLeft, float stepsTopRight, Colour c); 
-void drawFilledTriangle(DrawingWindow window, Colour c);
-
+void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle);
 void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels);
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t);
 
 // ----- Parsing -----
 vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename);
+void savePPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
 vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours);

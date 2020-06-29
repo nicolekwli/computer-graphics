@@ -1,8 +1,8 @@
 #include "Main.h"
 
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 840
+#define HEIGHT 680
 
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 
@@ -27,9 +27,13 @@ int main(int argc, char* argv[]){
         // vector<vector<uint32_t>>pixels = readPPM(window,"assets/texture.ppm");  
         // fillTextureTriangle(window, pixels, t);
 
-        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        readOBJ("assets/cornell-box/cornell-box.obj", c);
-        
+        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
+        // // createWireframe(window, object);
+        // rasterise(window, object);
+
+        // savePPM(window, "hello.ppm");
+        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");  
 
         window.renderFrame();
     }
@@ -53,7 +57,7 @@ void handleEvent(SDL_Event event)
         cout << "U" << endl;
     }
     else if (event.key.keysym.sym == SDLK_f){
-        drawFilledTriangle((window), Colour(rand()%255, rand()%255, rand()%255));
+        //drawFilledTriangle((window), Colour(rand()%255, rand()%255, rand()%255));
     }    
     else if(event.key.keysym.sym == SDLK_f){
      // drawRandomFilledTriangle();

@@ -28,6 +28,9 @@ UTILS_OBJECT = libs/sdw/Utils.o
 HELPER_SOURCE = libs/sdw/Helper.cpp
 HELPER_OBJECT = libs/sdw/Helper.o
 
+RASTERISE_SOURCE = libs/sdw/rasterise.cpp
+RASTERISE_OBJECT = libs/sdw/rasterise.o
+
 # Build settings
 COMPILER = g++
 COMPILER_OPTIONS = -c -pipe -Wall -std=c++11
@@ -44,34 +47,33 @@ GLM_COMPILER_FLAGS := -I./libs/glm
 SDL_COMPILER_FLAGS := $(shell sdl2-config --cflags)
 # If you have a manual install of SDL, you might not have sdl2-config. Linker flags should be something like: -L/usr/local/lib -lSDL2
 SDL_LINKER_FLAGS := $(shell sdl2-config --libs)
-SDW_LINKER_FLAGS := $(WINDOW_OBJECT) $(HELPER_OBJECT) $(CANVASPOINT_OBJECT) ${TEXTUREPOINT_OBJECT} ${COLOUR_OBJECT} ${CANVASTRIANGLE_OBJECT} ${MODELTRIANGLE_OBJECT} ${UTILS_OBJECT}
-
+SDW_LINKER_FLAGS := $(WINDOW_OBJECT) $(HELPER_OBJECT) $(CANVASPOINT_OBJECT) ${TEXTUREPOINT_OBJECT} ${COLOUR_OBJECT} ${CANVASTRIANGLE_OBJECT} ${MODELTRIANGLE_OBJECT} ${UTILS_OBJECT} ${RASTERISE_OBJECT}
 
 default: diagnostic
 
 # Rule to help find errors (when you get a segmentation fault)
 # NOTE: Needs the "Address Sanitizer" library to be installed in order to work (might not work on lab machines !)
-diagnostic: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils
+diagnostic: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) $(FUSSY_OPTIONS) $(SANITIZER_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(FUSSY_OPTIONS) $(SANITIZER_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to compile and link for production release
-production: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils
+production: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to compile and link for use with a debugger
-debug: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils
+debug: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) $(DEBUG_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(DEBUG_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to build for high performance executable
-speedy: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils
+speedy: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) $(SPEEDY_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
-	$(COMPILER) $(LINKER_OPTIONS) $(SPEEDY_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS)
+	$(COMPILER) $(LINKER_OPTIONS) $(SPEEDY_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule for building the DisplayWindow
@@ -98,6 +100,9 @@ colour:
 
 utils:
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(UTILS_OBJECT) $(UTILS_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
+
+rasteriser:
+	$(COMPILER) $(COMPILER_OPTIONS) -o $(RASTERISE_OBJECT) $(RASTERISE_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS)
 
 # Files to remove during clean
 clean:

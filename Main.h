@@ -4,6 +4,7 @@
 #include "CanvasTriangle.h"
 #include "Colour.h"
 #include "Helper.h"
+#include "Rasterise.h"
 #include <vector>
 
 

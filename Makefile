@@ -28,8 +28,11 @@ UTILS_OBJECT = libs/sdw/Utils.o
 HELPER_SOURCE = libs/sdw/Helper.cpp
 HELPER_OBJECT = libs/sdw/Helper.o
 
-RASTERISE_SOURCE = libs/sdw/rasterise.cpp
-RASTERISE_OBJECT = libs/sdw/rasterise.o
+CAMERA_SOURCE = libs/sdw/Camera.cpp
+CAMERA_OBJECT = libs/sdw/Camera.o
+
+RASTERISE_SOURCE = libs/sdw/Rasterise.cpp
+RASTERISE_OBJECT = libs/sdw/Rasterise.o
 
 # Build settings
 COMPILER = g++
@@ -53,25 +56,25 @@ default: diagnostic
 
 # Rule to help find errors (when you get a segmentation fault)
 # NOTE: Needs the "Address Sanitizer" library to be installed in order to work (might not work on lab machines !)
-diagnostic: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
+diagnostic: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils camera rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) $(FUSSY_OPTIONS) $(SANITIZER_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(FUSSY_OPTIONS) $(SANITIZER_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to compile and link for production release
-production: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
+production: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils camera rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to compile and link for use with a debugger
-debug: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
+debug: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils camera rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) $(DEBUG_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(DEBUG_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
 
 # Rule to build for high performance executable
-speedy: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils rasteriser
+speedy: window helper canvaspoint texturepoint colour canvastriangle modeltriangle utils camera rasteriser
 	$(COMPILER) $(COMPILER_OPTIONS) $(SPEEDY_OPTIONS) -o $(OBJECT_FILE) $(SOURCE_FILE) $(SDL_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS)
 	$(COMPILER) $(LINKER_OPTIONS) $(SPEEDY_OPTIONS) -o $(EXECUTABLE) $(OBJECT_FILE) $(SDW_LINKER_FLAGS) $(SDL_LINKER_FLAGS) 
 	./$(EXECUTABLE)
@@ -103,6 +106,9 @@ utils:
 
 rasteriser:
 	$(COMPILER) $(COMPILER_OPTIONS) -o $(RASTERISE_OBJECT) $(RASTERISE_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS)
+
+camera:
+	$(COMPILER) $(COMPILER_OPTIONS) -o $(CAMERA_OBJECT) $(CAMERA_SOURCE) $(SDL_COMPILER_FLAGS) $(GLM_COMPILER_FLAGS) $(SDW_COMPILER_FLAGS)
 
 # Files to remove during clean
 clean:

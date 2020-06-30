@@ -6,6 +6,9 @@
 
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 
+// creating a camera
+Camera mycam;
+
 int main(int argc, char* argv[]){
     SDL_Event event;
     while(true){
@@ -27,10 +30,10 @@ int main(int argc, char* argv[]){
         // vector<vector<uint32_t>>pixels = readPPM(window,"assets/texture.ppm");  
         // fillTextureTriangle(window, pixels, t);
 
-        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
-        // // createWireframe(window, object);
-        // rasterise(window, object);
+        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
+        createWireframe(window, object, mycam);
+        // rasterise(window, object, mycam);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");  
@@ -46,10 +49,23 @@ void update() {
 void handleEvent(SDL_Event event)
 {
   if(event.type == SDL_KEYDOWN) {
-    if(event.key.keysym.sym == SDLK_LEFT) cout << "LEFT" << endl;
-    else if(event.key.keysym.sym == SDLK_RIGHT) cout << "RIGHT" << endl;
-    else if(event.key.keysym.sym == SDLK_UP) cout << "UP" << endl;
-    else if(event.key.keysym.sym == SDLK_DOWN) cout << "DOWN" << endl;
+    if(event.key.keysym.sym == SDLK_LEFT){
+        cout << "LEFT" << endl;
+        // if youre moving left, x coord changes
+        // mycam.translate(-2.0f, 0, 0);
+        // mycam.cameraPos = mycam.cameraRig - (mycam.cameraRig * 2.0f);
+    }
+    else if(event.key.keysym.sym == SDLK_RIGHT){
+        cout << "RIGHT" << endl;
+        // mycam.cameraPos = mycam.cameraRig + (mycam.cameraRig * 2.0f);
+    }
+    else if(event.key.keysym.sym == SDLK_UP){
+        cout << "UP" << endl;
+    } 
+    else if(event.key.keysym.sym == SDLK_DOWN){
+        cout << "DOWN" << endl;
+        // mycam.cameraPos = mycam.cameraFor - (mycam.cameraFor * 2.0f);
+    }
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();
         CanvasTriangle t = CanvasTriangle(CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150));

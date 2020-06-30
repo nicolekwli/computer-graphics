@@ -4,11 +4,36 @@
 // Camera::Camera(void){
 //     cout<<"object created"<<endl;
 // }
+Camera::Camera(){
+    cameraPos = vec3(0, 0, -FOCAL);
+    //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
+    cameraRot = mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+    yaw = 0;
+}
+
+void Camera::camUp(){
+    cameraPos += (glm::vec3(0,0.1,0) * cameraRot);
+}
+
+void Camera::camDown(){
+    cameraPos -= (glm::vec3(0,0.1,0) * cameraRot);
+}
+
+void Camera::camLeft(){
+    cameraPos += (glm::vec3(0.1,0,0) * cameraRot);
+}
+
+void Camera::camRight(){
+    cameraPos -= (glm::vec3(0.1,0,0) * cameraRot);
+}
+
 
 void Camera::camForward(){
+    cameraPos += (glm::vec3(0,0,0.1) * cameraRot);
 }
 
 void Camera::camBackward(){
+    cameraPos -= (glm::vec3(0,0,0.1) * cameraRot);
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

@@ -5,6 +5,7 @@
 #include "Colour.h"
 #include "Helper.h"
 #include "Rasterise.h"
+#include "Camera.h"
 #include <vector>
 
 

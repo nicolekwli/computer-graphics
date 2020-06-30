@@ -1,3 +1,5 @@
+#pragma once
+
 #include "CanvasPoint.h"
 #include "CanvasTriangle.h"
 #include "ModelTriangle.h"
@@ -21,14 +23,21 @@ using glm::vec3;
 
 class Camera {
     public:
-        vec3 cameraPos = vec3(0, 0, -FOCAL);
-        mat3 cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
+        // init values shoudl be in cpp when camera is created
+        vec3 cameraPos;
+        mat3 cameraRot;
         vec3 cameraFor;
         vec3 cameraRig;
-        float yaw = 0; //yaw angle controls cam rotation arounf y-axis
+        float yaw; //yaw angle controls cam rotation arounf y-axis
 
         //member functions
-        // Camera(); //constructor
+        Camera(); //constructor
+
+
+        void camUp();
+        void camDown();
+        void camLeft();
+        void camRight();
         void camForward();
         void camBackward();
         void translate(float xpos, float ypos, float zpos);

@@ -119,35 +119,21 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
 }
 
 // the swapping bit can be removed - see fill texture
-void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, float stepsTopLeft, float stepsTopRight, Colour c) {
+void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c) {
     uint32_t colour = bitpackingColour(c);
-    // Start fill top triangle
-    vector<CanvasPoint> widthLine;
-    vector<CanvasPoint> heightLine;
-    bool swap = false; 
 
-    if (std::max(stepsTopLeft, stepsTopRight) == stepsTopLeft){
-        widthLine = lineTopRight;
-        heightLine = lineTopLeft;
-    } else {
-        widthLine = lineTopLeft;
-        heightLine = lineTopRight;
-        swap = true;
-    }
     float width;
     // make sure we fill according to the longer line so it fills
-    for (float a = 0.0; a<std::max(stepsTopLeft, stepsTopRight); a++){
+    for (float a = 0.0; a<lineTopLeft.size(); a++){
         // width of line 
         // draw a horizontal line
-        for (float b = 0.0; b<(widthLine.size()); b++){
-            if ((int)heightLine[a].y == (int)widthLine[b].y){
-                width = abs(heightLine[a].x - widthLine[b].x);
-                for (float c = 0.0; c < width; c++){
-                    if (swap){
-                        window.setPixelColour((int)heightLine[a].x - (int)c, (int)widthLine[b].y, colour);
-                    } else {
-                        window.setPixelColour((int)heightLine[a].x + (int)c, (int)widthLine[b].y, colour);
-                    }
+        for (float b = 0.0; b<(lineTopRight.size()); b++){
+            
+            if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
+                cout << (int)lineTopLeft[a].y << endl;
+                width = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
+                for (float c = 0; c <= width; c++){
+                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
                 }
             }
         }
@@ -187,32 +173,19 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
         swap(newP, triangle.vertices[1]);
     }
 
-    drawStrokedTriangle(window, triangle);
+    //drawStrokedTriangle(window, triangle);
     //drawLine(window, newP, triangle.vertices[1],c);
 
     // Fill top triangle
-    float stepsTopLeft = std::max(abs(triangle.vertices[0].x - newP.x), abs(triangle.vertices[0].y - newP.y));
-    //vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, stepsTopLeft);
     vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
-
-    float stepsTopRight = std::max(abs(triangle.vertices[0].x - triangle.vertices[1].x), abs(triangle.vertices[0].y - triangle.vertices[1].y));
-    //vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], stepsTopRight);
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
-
-    //fillTriangle(window, lineTopLeft, lineTopRight, stepsTopLeft, stepsTopRight, c);
-    fillTriangle(window, lineTopLeft, lineTopRight, lineTopLeft.size(), lineTopLeft.size(), triangle.colour);
+    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour);
 
     // Bottom triangle
-    float stepsBottomLeft = std::max(abs(triangle.vertices[2].x - newP.x), abs(triangle.vertices[2].y - newP.y));
-    //vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], stepsBottomLeft);
-    vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
 
-    float stepsBottomRight = std::max(abs(triangle.vertices[2].x - triangle.vertices[1].x), abs(triangle.vertices[2].y - triangle.vertices[1].y));
-    //vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], stepsBottomRight);
-    vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
-    
-    //fillTriangle(window,lineBottomLeft, lineBottomRight, stepsBottomLeft, stepsBottomRight, c);   
-    fillTriangle(window,lineBottomLeft, lineBottomRight, lineBottomLeft.size(), lineBottomLeft.size(), triangle.colour); 
+    vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
+    vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1); 
+    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour); 
 
 }
 

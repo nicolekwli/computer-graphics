@@ -19,7 +19,7 @@ using namespace glm;
 using std::vector;
 using glm::vec3;
 
-CanvasPoint vertex3Dto2D(vec3 vertex3D, Camera cam);
-void modelToCanvasTri(ModelTriangle mt, CanvasTriangle &ct, Camera cam);
+CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam);
+void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam);
 void createWireframe(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);
 void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam);

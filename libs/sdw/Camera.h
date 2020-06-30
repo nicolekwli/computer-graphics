@@ -10,7 +10,7 @@
 #include <vector>
 
 #define FOCAL 7.5f
-#define FOCAL_LENGTH SCREEN_HEIGHT/FOCAL
+//#define FOCAL_LENGTH HEIGHT/FOCAL
 #define CAMERA_VELOCITY 0.4f
 
 // Maybe this should be in main
@@ -28,6 +28,7 @@ class Camera {
         mat3 cameraRot;
         vec3 cameraFor;
         vec3 cameraRig;
+        float focalLength;
         float yaw; //yaw angle controls cam rotation arounf y-axis
 
         //member functions

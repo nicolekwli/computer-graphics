@@ -16,7 +16,7 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
     // Camera mycam;
     //cam.cameraRot[1][1] = 1.0f;
 
-    vec3 point = (vertex3D - cam.cameraPos) * cam.cameraRot;
+    vec3 point = cam.cameraRot * (vertex3D - cam.cameraPos) ;
     
     float x = point.x;
     float y = point.y;

@@ -13,11 +13,11 @@ Camera::Camera(){
 }
 
 void Camera::camUp(){
-    cameraPos += (glm::vec3(0,0.1,0) * cameraRot);
+    cameraPos += (glm::vec3(0,0.2,0) * cameraRot);
 }
 
 void Camera::camDown(){
-    cameraPos -= (glm::vec3(0,0.1,0) * cameraRot);
+    cameraPos -= (glm::vec3(0,0.2,0) * cameraRot);
 }
 
 void Camera::camLeft(){

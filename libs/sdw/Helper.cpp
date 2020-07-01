@@ -73,7 +73,7 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   uint32_t colour = bitpackingColour(c);
 
   float steps = std::max(abs(p1.x - p2.x), abs(p1.y - p2.y));
-  vector<CanvasPoint> line = interpolation(p1, p2, steps);
+  vector<CanvasPoint> line = interpolation(p2, p1, steps);
 
   for (int i=0; i<(int)steps; i++){
     window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
@@ -130,7 +130,6 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
         for (float b = 0.0; b<(lineTopRight.size()); b++){
             
             if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
-                cout << (int)lineTopLeft[a].y << endl;
                 width = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
                 for (float c = 0; c <= width; c++){
                     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
@@ -161,12 +160,17 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     // get extra point to split triangle into half
     float steps = std::max(abs(triangle.vertices[0].x - triangle.vertices[2].x), abs(triangle.vertices[0].y - triangle.vertices[2].y));
     vector<CanvasPoint> line = interpolation(triangle.vertices[0], triangle.vertices[2], steps);
+
+    float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP;
-    for (int j=0; j<steps; j++){
-        if ((int)line[j].y == (int)triangle.vertices[1].y){
-            newP = CanvasPoint(line[j].x, line[j].y);
-        }
-    }
+    newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y));
+    // for (int j=0; j<steps; j++){
+    //     if ((int)line[j].y == (int)triangle.vertices[1].y){
+    //         newP = CanvasPoint(line[j].x, line[j].y);
+    //     } else {
+    //         cout << "no" << endl;
+    //     }
+    // }
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){
@@ -181,12 +185,11 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
     fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour);
 
-    // Bottom triangle
+    // // // Bottom triangle
 
     vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
-    vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1); 
+    vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour); 
-
 }
 
 

@@ -65,8 +65,15 @@ void handleEvent(SDL_Event event)
     else if(event.key.keysym.sym == SDLK_DOWN){
         cout << "DOWN" << endl;
         mycam.camDown();
-        
     }
+    else if (event.key.keysym.sym == SDLK_e){
+        cout << "FORWARD" << endl;
+        mycam.camForward();
+    } 
+    else if (event.key.keysym.sym == SDLK_q){
+        cout << "BACKWARD" << endl;
+        mycam.camBackward();
+    } 
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();
         CanvasTriangle t = CanvasTriangle(CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150));

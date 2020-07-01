@@ -19,6 +19,7 @@ using namespace glm;
 
 using std::vector;
 using glm::vec3;
+using glm::mat3;
 
 
 class Camera {
@@ -41,5 +42,7 @@ class Camera {
         void camRight();
         void camForward();
         void camBackward();
+        void camOrientation(vec3 rot);
+        void lookAt();
         void translate(float xpos, float ypos, float zpos);
 };

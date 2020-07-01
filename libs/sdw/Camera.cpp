@@ -13,28 +13,42 @@ Camera::Camera(){
 }
 
 void Camera::camUp(){
-    cameraPos += (glm::vec3(0,0.2,0) * cameraRot);
+    cameraPos += (vec3(0,0.2,0) * cameraRot);
 }
 
 void Camera::camDown(){
-    cameraPos -= (glm::vec3(0,0.2,0) * cameraRot);
+    cameraPos -= (vec3(0,0.2,0) * cameraRot);
 }
 
 void Camera::camLeft(){
-    cameraPos += (glm::vec3(0.1,0,0) * cameraRot);
+    cameraPos += (vec3(0.1,0,0) * cameraRot);
 }
 
 void Camera::camRight(){
-    cameraPos -= (glm::vec3(0.1,0,0) * cameraRot);
+    cameraPos -= (vec3(0.1,0,0) * cameraRot);
 }
 
 
 void Camera::camForward(){
-    cameraPos += (glm::vec3(0,0,0.1) * cameraRot);
+    cameraPos += (vec3(0,0,0.1) * cameraRot);
 }
 
 void Camera::camBackward(){
-    cameraPos -= (glm::vec3(0,0,0.1) * cameraRot);
+    cameraPos -= (vec3(0,0,0.1) * cameraRot);
+}
+
+// this does big steps
+void Camera::camOrientation(vec3 rot){
+    mat3 rotateX = mat3(1, 0, 0, 0, cos(rot.x), sin(rot.x), 0, -sin(rot.x), cos(rot.x));
+    mat3 rotateY = mat3(cos(rot.y), 0, -sin(rot.y), 0, 1, 0, sin(rot.y), 0, cos(rot.y));
+    mat3 rotateZ = mat3(cos(rot.z), sin(rot.z), 0, -sin(rot.z), cos(rot.z), 0, 0, 0, 1);
+    cameraRot = rotateX * rotateY * rotateZ * cameraRot;
+}
+
+void lookAt(){
+    vec3 forward = glm::normalize(from - to);
+    vec3 right = glm::normalize(glm::cross(vec3(0, 1, 0), forward));
+    vec3 up = glm::normalize(glm::cross(forward, right));
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

@@ -33,11 +33,14 @@ int main(int argc, char* argv[]){
 
         vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
         vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
-        //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam);
+        // createWireframe(window, object, mycam);
+        // rasterise(window, object, mycam);
 
         // savePPM(window, "hello.ppm");
-        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");  
+        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
+
+        //raytracer
+        drawFilledTriangleRay(window, object, mycam);
 
         window.renderFrame();
     }
@@ -46,6 +49,7 @@ int main(int argc, char* argv[]){
 // Function for performing animation (shifting artifacts or moving the camera)
 void update() {
 }
+
 
 void handleEvent(SDL_Event event)
 {

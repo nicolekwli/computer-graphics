@@ -6,6 +6,7 @@
 #include "Helper.h"
 #include "Rasterise.h"
 #include "Camera.h"
+#include "Raytracer.h"
 #include <vector>
 
 

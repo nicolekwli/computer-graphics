@@ -45,10 +45,12 @@ void Camera::camOrientation(vec3 rot){
     cameraRot = rotateX * rotateY * rotateZ * cameraRot;
 }
 
-void lookAt(){
-    vec3 forward = glm::normalize(from - to);
+void Camera::lookAt(vec3 from){
+    vec3 forward = glm::normalize(from - cameraPos);
     vec3 right = glm::normalize(glm::cross(vec3(0, 1, 0), forward));
     vec3 up = glm::normalize(glm::cross(forward, right));
+
+    cameraRot = vec3(right.x, right.y, right.z, up.x, up.y, up.z, forward.x, forward.y, forward.z);
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

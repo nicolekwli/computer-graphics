@@ -34,13 +34,13 @@ int main(int argc, char* argv[]){
         vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
         vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
         // createWireframe(window, object, mycam);
-        // rasterise(window, object, mycam);
+        rasterise(window, object, mycam);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
         //raytracer
-        drawFilledTriangleRay(window, object, mycam);
+        //drawFilledTriangleRay(window, object, mycam);
 
         window.renderFrame();
     }
@@ -93,6 +93,10 @@ void handleEvent(SDL_Event event)
     else if (event.key.keysym.sym == SDLK_d){
         cout << "ROTATE RIGHT" << endl;
         mycam.camOrientation(vec3(0, -0.1, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_l){
+        cout << "LOOK AT" << endl;
+        mycam.lookAt(vec3(0, 3, 2));
     } 
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();

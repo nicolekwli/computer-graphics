@@ -43,6 +43,6 @@ class Camera {
         void camForward();
         void camBackward();
         void camOrientation(vec3 rot);
-        void lookAt(vec3 from);
+        void lookAt(glm::vec3 from);
         void translate(float xpos, float ypos, float zpos);
 };

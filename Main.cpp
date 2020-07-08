@@ -31,16 +31,20 @@ int main(int argc, char* argv[]){
         // vector<vector<uint32_t>>pixels = readPPM(window,"assets/texture.ppm");  
         // fillTextureTriangle(window, pixels, t);
 
-        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
+        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
         // createWireframe(window, object, mycam);
-        rasterise(window, object, mycam);
+        //rasterise(window, object, mycam);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
         //raytracer
         //drawFilledTriangleRay(window, object, mycam);
+
+        vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
+        vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c);
+        //rasterise(window, object, mycam);
 
         window.renderFrame();
     }
@@ -96,7 +100,7 @@ void handleEvent(SDL_Event event)
     } 
     else if (event.key.keysym.sym == SDLK_l){
         cout << "LOOK AT" << endl;
-        mycam.lookAt(vec3(0, 3, 2));
+        mycam.lookAt(vec3(0, 0, 0));
     } 
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();

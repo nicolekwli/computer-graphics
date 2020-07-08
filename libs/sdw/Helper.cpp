@@ -409,10 +409,19 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
                 getline(file, line);
             } 
             else if (tokens[0] == "v"){
+                cout << "here1";
                 glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
                 ver.push_back(vec);
                 getline(file, line);
             }
+            // need to implement
+            else if (tokens[0] == "vt"){
+                cout << "here";
+                // glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
+                // ver.push_back(vec);
+                // getline(file, line);
+            }
+            // need to change
             else if (tokens[0] == "f"){
                 int a = stoi(tokens[1].substr(0, tokens[1].size()-1)) -1;
                 int b = stoi(tokens[2].substr(0, tokens[2].size()-1)) -1;
@@ -430,6 +439,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
     file.close();
     return triangles;
 }
+
 
 vector<Colour> readMTL(string filename){
     ifstream file;
@@ -450,7 +460,12 @@ vector<Colour> readMTL(string filename){
         } 
         else if (tokens[0] == "Kd"){
             colours.push_back(Colour(name, int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3]))));
-        } else {
+        }
+        // Need do
+        else if (tokens[0] == "map_Kd"){
+            colours.push_back(Colour(name, int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3]))));
+        } 
+        else {
             // else?
         }
     }

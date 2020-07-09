@@ -394,7 +394,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
         if (tokens[0] == "o"){
             //p.objectName = tokens[1];
             objectName = tokens[1];
-            getline(file, line);
+
         }
         else if (tokens[0] == "usemtl") {
             // p.materialName = tokens[1];
@@ -405,56 +405,42 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
                 }
             }
         
-            getline(file, line);
+
         } 
         else if (tokens[0] == "v"){
             glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
             ver.push_back(vec);
-            getline(file, line);
+\
         }
         // need to implement
         else if (tokens[0] == "vt"){
             TexturePoint tp = TexturePoint(stof(tokens[1]), stof(tokens[2]));
             verTexture.push_back(tp);
-            // glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
-            // ver.push_back(vec);
-            // getline(file, line);
         }
-        // TODO
+
         else if (tokens[0] == "f"){
+            // get vertices
+            int a = stoi(split(tokens[1],'/')[0]) - 1;
+            int b = stoi(split(tokens[2],'/')[0]) - 1;
+            int c = stoi(split(tokens[3],'/')[0]) - 1;
+
+            ModelTriangle t = ModelTriangle(ver[a], ver[b], ver[c], col);
             // there is a texture value e.g. f 1/1 2/2 3/3
-            if (tokens[1].find("/") != std::string::npos){
+            if (tokens[1].back() != '/'){
+
                 // face1[0] is the vertex, face[1] is the texture point
                 string *face1 = split(tokens[1],'/');
                 string *face2 = split(tokens[2],'/');
                 string *face3 = split(tokens[3],'/');
 
-                // get vertices
-                int a = stoi(face1[0]) -1;
-                int b = stoi(face2[0]) -1;
-                int c = stoi(face3[0]) -1;
-
-                ModelTriangle t = ModelTriangle(ver[a], ver[b], ver[c], col);
-
-                t.texture[0] = verTexture[stoi(face1[1])-1];
-                t.texture[1] = verTexture[stoi(face2[1])-1];
-                t.texture[2] = verTexture[stoi(face3[1])-1];
-
-                triangles.push_back(t);
-            } else {
-                int a = stoi(tokens[1].substr(0, tokens[1].size()-1)) -1;
-                int b = stoi(tokens[2].substr(0, tokens[2].size()-1)) -1;
-                int c = stoi(tokens[3].substr(0, tokens[3].size()-1)) -1;
-
-                triangles.push_back(ModelTriangle(ver[a], ver[b], ver[c], col));
-            }
-                
-
-            getline(file, line);                
-        } else {
-            //cout << "wtf is this line" << endl;
-        }
-        // else if its the end of an object?        
+                t.texturePoints[0] = verTexture[stoi(face1[1])-1];
+                t.texturePoints[1] = verTexture[stoi(face2[1])-1];
+                t.texturePoints[2] = verTexture[stoi(face3[1])-1];
+  
+            } 
+            triangles.push_back(t);
+                         
+        }       
     }
 
     file.close();

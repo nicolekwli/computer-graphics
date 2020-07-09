@@ -9,7 +9,7 @@ class ModelTriangle
 {
   public:
     glm::vec3 vertices[3];
-    TexturePoint texture[3];
+    TexturePoint texturePoints[3];
     Colour colour;
 
     ModelTriangle();

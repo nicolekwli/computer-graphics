@@ -44,7 +44,8 @@ int main(int argc, char* argv[]){
 
         vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
         vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c);
-        rasterise(window, object, mycam);
+        createWireframe(window, object, mycam);
+        // rasterise(window, object, mycam);
 
         window.renderFrame();
     }

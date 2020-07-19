@@ -54,10 +54,12 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
     float intervalsTX = (b.texturePoint.x - a.texturePoint.x) / (noOfVals);
     float intervalsTY = (b.texturePoint.y - a.texturePoint.y) / (noOfVals);
+    float intervalsDepth = (b.depth - a.depth) / (noOfVals);
     vect.push_back(a);
 
     for (int i = 1; i < noOfVals; i++) {
-        p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i);
+        // double check depth
+        p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i, a.depth + intervalsDepth * i) ;
         p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
         p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 
@@ -108,13 +110,16 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
     vector<CanvasPoint> lineAC = interpolation(t.vertices[0], t.vertices[2], stepsAC);
     
     for (int i=0; i<(int)stepsAB; i++){
-      window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, colour);
+      //window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, colour);
+      window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, lineAB[i].depth ,colour);
     }
     for (int i=0.0; i<(int)stepsBC; i++){
-      window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, colour);
+      //window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, colour);
+      window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, lineBC[i].depth ,colour);
     }
     for (int i=0.0; i<(int)stepsAC; i++){
-      window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, colour);
+      //window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, colour);
+      window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, lineAC[i].depth, colour);
     }
 }
 
@@ -127,15 +132,17 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         // width of line 
         // draw a horizontal line
-        for (float b = 0.0; b<(lineTopRight.size()); b++){
+        //for (float b = 0.0; b<(lineTopRight.size()); b++){
             
-            if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
-                width = (int) abs(lineTopLeft[a].x - lineTopRight[b].x);
+            //if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
+                width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
                 for (float c = 0; c <= width; c++){
-                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
+
+                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
+                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopLeft[a].depth ,colour);
                 }
-            }
-        }
+            //}
+        //}
     }
 }
 
@@ -162,7 +169,10 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     vector<CanvasPoint> line = interpolation(triangle.vertices[0], triangle.vertices[2], steps);
 
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
-    CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y));
+    CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
+                                        triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
+                                        triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
+
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){
@@ -243,6 +253,8 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
     newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
     newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
+
+    // need to get depth
 
 
     // make sure newP has a smaller value x than vertice 1

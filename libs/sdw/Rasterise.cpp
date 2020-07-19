@@ -83,7 +83,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
         // if no texture
         if (ct.vertices[0].texturePoint.x == -1){
             //cout << ct << endl;
-            //drawFilledTriangle(window, ct.colour, ct);
+            drawFilledTriangle(window, ct.colour, ct);
         } else {
             //cout << ct << endl;
             fillTextureTriangle(window, pixels, ct);

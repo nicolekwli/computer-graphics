@@ -12,7 +12,8 @@ Camera::Camera(){
     //cameraRot = mat3(1, 1, 1, 1, 1, 1, 1, 1, 1);
     // original is 480
     //focalLength = 240;
-    focalLength = 480/24;
+    focalLength = 480/FOCAL;
+    //focalLength = 480/24;
     yaw = 0;
 }
 

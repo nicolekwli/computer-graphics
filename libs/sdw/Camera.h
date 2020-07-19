@@ -10,7 +10,7 @@
 #include <vector>
 
 // 7.5f for cornell box
-#define FOCAL 7.5f
+#define FOCAL 2.5f
 //#define FOCAL_LENGTH HEIGHT/FOCAL
 #define CAMERA_VELOCITY 0.4f
 

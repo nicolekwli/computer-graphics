@@ -82,7 +82,7 @@ void DrawingWindow::setPixelColour(int x, int y, float depth, uint32_t colour)
     std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
   }
   else {
-    if(depth >= depthBuffer[(y*width)+x]){
+    if(depth > depthBuffer[(y*width)+x]){
       pixelBuffer[(y*width)+x] = colour; 
       // this breaks
       depthBuffer[(y*width)+x] = depth;
@@ -107,9 +107,12 @@ void DrawingWindow::clearPixels()
 
 void DrawingWindow::clearDepth()
 {
-  memset(depthBuffer, std::numeric_limits<float>::max(), width * height * sizeof(float));
-  // for (int i=0; i < width * height; i++)
-  // {
-  //     depthBuffer[i] = 0;
-  // }
+  //memset(depthBuffer, std::numeric_limits<float>::max(), width * height * sizeof(float));
+  
+  //memset(depthBuffer, std::numeric_limits<float>::infinity(), width * height * sizeof(float));
+  //memset(depthBuffer, 0, width * height * sizeof(float));
+  for (int i=0; i < width * height; i++)
+  {
+      depthBuffer[i] = -99;
+  }
 }

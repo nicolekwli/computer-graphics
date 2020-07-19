@@ -141,7 +141,7 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
         //cout << lineTopLeft[a].depth << endl;
 
         // ** EITHER THIS LINE
-        if (c.name != "Grey") {drawLine(window, lineTopLeft[a], lineTopRight[a], c);
+        drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         // width of line 
         // draw a horizontal line
         //for (float b = 0.0; b<(lineTopRight.size()); b++){
@@ -149,7 +149,7 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
             //if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
                 // width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
 
-                // ** OR THIS FOR LOOP WOULD DO THE SAME THING
+                // // ** OR THIS FOR LOOP WOULD DO THE SAME THING
                 // for (float c = 0; c <= width; c++){
                     
                 //     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
@@ -179,10 +179,10 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     }
 
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
-    float ratioR = (triangle.vertices[1].depth - triangle.vertices[0].depth) / (triangle.vertices[2].depth - triangle.vertices[0].depth);
+    //float ratioR = (triangle.vertices[1].depth - triangle.vertices[0].depth) / (triangle.vertices[2].depth - triangle.vertices[0].depth);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
-                                        triangle.vertices[0].depth + ratioR * (triangle.vertices[2].depth - triangle.vertices[0].depth));
+                                        triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
 
 
     // make sure newP has a smaller value x than vertice 1
@@ -442,7 +442,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm){
         } 
         else if (tokens[0] == "v"){
             // * each by a scale to make smaller
-            glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
+            glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3])*-1);
             ver.push_back(vec);
         }
         else if (tokens[0] == "vt"){

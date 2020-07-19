@@ -14,7 +14,8 @@
 // depth buffer stuff? need to recalculate everytime with camera change
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
-    vec3 point = cam.cameraRot * (vertex3D - cam.cameraPos) ;
+    vec3 point = (vertex3D - cam.cameraPos) * cam.cameraRot;
+    //vec3 point = cam.cameraRot * (cam.cameraPos - vertex3D);
     
     float x = point.x;
     float y = point.y;
@@ -22,6 +23,7 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     float x2D = (cam.focalLength * x / (z)) + (window.width/2);
     float y2D = (window.height/2) - (cam.focalLength * y / (z));
+    //float y2D = (window.height/2) + (cam.focalLength * y / (z));
     CanvasPoint vertex2D = CanvasPoint(x2D, y2D, 1/z);
 
     // what happens if they are negative

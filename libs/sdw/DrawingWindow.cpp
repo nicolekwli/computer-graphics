@@ -107,7 +107,7 @@ void DrawingWindow::clearPixels()
 
 void DrawingWindow::clearDepth()
 {
-  memset(depthBuffer, 0, width * height * sizeof(float));
+  memset(depthBuffer, std::numeric_limits<float>::max(), width * height * sizeof(float));
   // for (int i=0; i < width * height; i++)
   // {
   //     depthBuffer[i] = 0;

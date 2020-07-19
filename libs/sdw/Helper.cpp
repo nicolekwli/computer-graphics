@@ -78,8 +78,8 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   vector<CanvasPoint> line = interpolation(p2, p1, steps);
 
   for (int i=0; i<(int)steps; i++){
-    //window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
-    window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
+    window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
+    //window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
 }
 
@@ -88,42 +88,48 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
   uint32_t colour = bitpackingColour(t.colour);
 
     // sort vertices
-    // for (int i = 0; i < 3; i++){
-    //     if (t.vertices[2].y < t.vertices[0].y){
-    //         swap(t.vertices[2], t.vertices[0]);
-    //     }
-    //     if (t.vertices[1].y < t.vertices[0].y){
-    //         swap(t.vertices[0], t.vertices[1]);
-    //     }
-    //     if (t.vertices[2].y < t.vertices[1].y){
-    //         swap(t.vertices[1], t.vertices[2]);
-    //     }
-    // }
+    for (int i = 0; i < 3; i++){
+        if (t.vertices[2].y < t.vertices[0].y){
+            swap(t.vertices[2], t.vertices[0]);
+        }
+        if (t.vertices[1].y < t.vertices[0].y){
+            swap(t.vertices[0], t.vertices[1]);
+        }
+        if (t.vertices[2].y < t.vertices[1].y){
+            swap(t.vertices[1], t.vertices[2]);
+        }
+    }
+
+    // ** These three lines does the same as the rest
+    drawLine(window, t.vertices[0], t.vertices[1], t.colour);
+    drawLine(window, t.vertices[0], t.vertices[2], t.colour);
+    drawLine(window, t.vertices[1], t.vertices[2], t.colour);
 
     // use interpolation to draw line
-    float stepsAB = std::max(abs(t.vertices[0].x - t.vertices[1].x), abs(t.vertices[0].y - t.vertices[1].y));
-    vector<CanvasPoint> lineAB = interpolation(t.vertices[0], t.vertices[1], stepsAB);
+    // float stepsAB = std::max(abs(t.vertices[0].x - t.vertices[1].x), abs(t.vertices[0].y - t.vertices[1].y));
+    // vector<CanvasPoint> lineAB = interpolation(t.vertices[0], t.vertices[1], stepsAB);
    
-    float stepsBC = std::max(abs(t.vertices[1].x - t.vertices[2].x), abs(t.vertices[1].y - t.vertices[2].y));
-    vector<CanvasPoint> lineBC = interpolation(t.vertices[1], t.vertices[2], stepsBC);
+    // float stepsBC = std::max(abs(t.vertices[1].x - t.vertices[2].x), abs(t.vertices[1].y - t.vertices[2].y));
+    // vector<CanvasPoint> lineBC = interpolation(t.vertices[1], t.vertices[2], stepsBC);
    
-    float stepsAC = std::max(abs(t.vertices[0].x - t.vertices[2].x), abs(t.vertices[0].y - t.vertices[2].y));
-    vector<CanvasPoint> lineAC = interpolation(t.vertices[0], t.vertices[2], stepsAC);
+    // float stepsAC = std::max(abs(t.vertices[0].x - t.vertices[2].x), abs(t.vertices[0].y - t.vertices[2].y));
+    // vector<CanvasPoint> lineAC = interpolation(t.vertices[0], t.vertices[2], stepsAC);
     
-    for (int i=0; i<(int)stepsAB; i++){
-      //window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, colour);
-      window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, lineAB[i].depth ,colour);
-    }
-    for (int i=0.0; i<(int)stepsBC; i++){
-      //window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, colour);
-      window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, lineBC[i].depth ,colour);
-    }
-    for (int i=0.0; i<(int)stepsAC; i++){
-      //window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, colour);
-      window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, lineAC[i].depth, colour);
-    }
+    // for (int i=0; i<(int)stepsAB; i++){
+    //   window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, colour);
+    //   //window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, lineAB[i].depth ,colour);
+    // }
+    // for (int i=0.0; i<(int)stepsBC; i++){
+    //   window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, colour);
+    //  // window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, lineBC[i].depth ,colour);
+    // }
+    // for (int i=0.0; i<(int)stepsAC; i++){
+    //   window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, colour);
+    //   //window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, lineAC[i].depth, colour);
+    // }
 }
 
+//** HAVE CUT DOWN CODE
 // the swapping bit can be removed - see fill texture
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c) {
     uint32_t colour = bitpackingColour(c);
@@ -133,18 +139,22 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         //cout << c << endl;
         //cout << lineTopLeft[a].depth << endl;
-        //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
+
+        // ** EITHER THIS LINE
+        if (c.name != "Grey") {drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         // width of line 
         // draw a horizontal line
         //for (float b = 0.0; b<(lineTopRight.size()); b++){
             
             //if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
-                width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
-                for (float c = 0; c <= width; c++){
+                // width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
+
+                // ** OR THIS FOR LOOP WOULD DO THE SAME THING
+                // for (float c = 0; c <= width; c++){
                     
-                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
-                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopRight[a].depth ,colour);
-                }
+                //     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
+                //     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopRight[a].depth ,colour);
+                // }
             //}
         //}
     }
@@ -169,9 +179,10 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     }
 
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
+    float ratioR = (triangle.vertices[1].depth - triangle.vertices[0].depth) / (triangle.vertices[2].depth - triangle.vertices[0].depth);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
-                                        triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
+                                        triangle.vertices[0].depth + ratioR * (triangle.vertices[2].depth - triangle.vertices[0].depth));
 
 
     // make sure newP has a smaller value x than vertice 1
@@ -179,19 +190,24 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
         swap(newP, triangle.vertices[1]);
     }
 
+    // ** THIS WORKS
     drawStrokedTriangle(window, triangle);
     //drawLine(window, newP, triangle.vertices[1],c);
 
+    // ** PLS CHECK IF THIS GETS THE RIGHT POINTS
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
     fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour);
 
-    // Bottom triangle
+    // // // Bottom triangle
     vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour); 
+
+    
 }
+
 
 
 // to/ from

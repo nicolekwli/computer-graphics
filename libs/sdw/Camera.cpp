@@ -5,10 +5,14 @@
 //     cout<<"object created"<<endl;
 // }
 Camera::Camera(){
+    //cameraPos = vec3(0, 1, -6);
     cameraPos = vec3(0, 0, -FOCAL);
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
     cameraRot = mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
-    focalLength = 880/FOCAL;
+    //cameraRot = mat3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+    // original is 480
+    //focalLength = 240;
+    focalLength = 480/24;
     yaw = 0;
 }
 

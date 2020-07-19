@@ -197,16 +197,18 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
                 int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
  
                 for (int c = 0; c < steps; c++){
-                    int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
-                    int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
+                    // int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
+                    // int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
 
                     vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[b], steps+1);
-                      
-                    // if ty = lineTopLeft[a] it will fix top triangle but bottom will be sad
-                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[lineTopLeft[a].texturePoint.y][lineTopLeft[a].texturePoint.x + c]);
+                    // cout << "pont "<< endl;
+                    // cout << points[c].texturePoint.y << endl;
+                    // cout << points[c].texturePoint.y -1 << endl;
+                    // cout << points[c].texturePoint.x -1 << endl;
+                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[points[c].texturePoint.y-1][points[c].texturePoint.x-1]);
                     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
+                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, 255);
                     
-                    //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[ty][tx]);
                 }
            }
         }
@@ -214,6 +216,7 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
 }
 
 
+//  for logo.obj each texture value is 0.0-1.0, need to convert to the ppm size
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t){
     // sort vertices
     for (int i = 0; i < 3; i++){
@@ -227,33 +230,32 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
             swap(t.vertices[1], t.vertices[2]);
         }
     }
-    drawStrokedTriangle(window, t);
+    //drawStrokedTriangle(window, t);
+    //drawFilledTriangle(window, Colour(0,0,0), t);
+    
 
     // get extra point to split triangle into half
     float steps = std::max(abs(t.vertices[0].x - t.vertices[2].x), abs(t.vertices[0].y - t.vertices[2].y));
     vector<CanvasPoint> line = interpolation(t.vertices[0], t.vertices[2], steps);
-    CanvasPoint newP;
-    for (int j=0; j<steps; j++){
-        if ((int)line[j].y == (int)t.vertices[1].y){
-            newP = CanvasPoint(line[j].x, line[j].y);
 
-            float scaleX= (t.vertices[0].x - t.vertices[1].x)/(t.vertices[0].x - t.vertices[2].x);
-            float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
+    float ratio = (t.vertices[1].y - t.vertices[0].y) / (t.vertices[2].y - t.vertices[0].y);
+    CanvasPoint newP = CanvasPoint(t.vertices[0].x + ratio * (t.vertices[2].x - t.vertices[0].x), t.vertices[0].y + ratio * (t.vertices[2].y - t.vertices[0].y));
+    float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
+    newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
+    newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
 
-            //newP.texturePoint.x = line[j].texturePoint.x;
-            //newP.texturePoint.y = t.vertices[1].texturePoint.y;
-
-            newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
-            newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
-        }
-    }
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > t.vertices[1].x){
         swap(newP, t.vertices[1]);
     }
 
-    // Fill top triangle
+    cout << t << endl;
+    // cout << t.vertices[0].texturePoint << endl;
+    // cout << t.vertices[1].texturePoint << endl;
+    // cout << t.vertices[2].texturePoint << endl;
+
+    // // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(t.vertices[0], newP, abs(t.vertices[0].y - t.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(t.vertices[0], t.vertices[1], abs(t.vertices[0].y - t.vertices[1].y)+1);
     fillTexture(window, lineTopLeft, lineTopRight, pixels);
@@ -264,7 +266,7 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
 }
 
 // ----- Parsing -----
-vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
+PPM readPPM(DrawingWindow window, string filename){
     ifstream file;
     file.open(filename);
 
@@ -280,9 +282,11 @@ vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
 
     size_t found = line.find(' ');
     width = stoi(line.substr(0, found));
+    //cout << width << endl;
 
     size_t found2 = line.find(' ', found + 1);
     height = stoi(line.substr(found + 1, found2 - 1));
+    //cout << height << endl;
 
     getline(file, line);
     max = stoi(line);
@@ -333,7 +337,10 @@ vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename){
     // }
 
     file.close();
-    return pixels;
+
+    PPM ppm = PPM(width, height, pixels);
+    //return pixels;
+    return ppm;
 }
 
 void savePPM(DrawingWindow window, string filename){
@@ -370,7 +377,7 @@ void savePPM(DrawingWindow window, string filename){
 }
 
 
-vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
+vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm){
     ifstream file;
     file.open(filename);
 
@@ -404,17 +411,16 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
                     col = colours[i];
                 }
             }
-        
-
         } 
         else if (tokens[0] == "v"){
+            // * each by a scale to make smaller
             glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3]));
             ver.push_back(vec);
-\
         }
-        // need to implement
         else if (tokens[0] == "vt"){
-            TexturePoint tp = TexturePoint(stof(tokens[1]), stof(tokens[2]));
+            // * each by a scale to make smaller
+            // multiply this by the width/ height to scale the 0.0-1.0 range
+            TexturePoint tp = TexturePoint(stof(tokens[1])*(ppm.width-1), stof(tokens[2])*(ppm.height-1));
             verTexture.push_back(tp);
         }
 
@@ -433,11 +439,13 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours){
                 string *face2 = split(tokens[2],'/');
                 string *face3 = split(tokens[3],'/');
 
+                
                 t.texturePoints[0] = verTexture[stoi(face1[1])-1];
                 t.texturePoints[1] = verTexture[stoi(face2[1])-1];
                 t.texturePoints[2] = verTexture[stoi(face3[1])-1];
   
             } 
+            //cout << t << endl;
             triangles.push_back(t);
                          
         }       

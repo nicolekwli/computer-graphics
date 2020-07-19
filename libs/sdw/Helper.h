@@ -5,6 +5,7 @@
 #include "TexturePoint.h"
 #include "Colour.h"
 #include "Utils.h"
+#include "Ppm.h"
 #include <glm/glm.hpp>
 #include <fstream>
 #include <vector>
@@ -38,9 +39,9 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t);
 
 // ----- Parsing -----
-vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename);
+PPM readPPM(DrawingWindow window, string filename);
 void savePPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
-vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours);
+vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm);
 vector<Colour> readMTL(string filename);

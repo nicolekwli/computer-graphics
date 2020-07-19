@@ -13,8 +13,6 @@
 
 // depth buffer stuff? need to recalculate everytime with camera change
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
-    // Camera mycam;
-    //cam.cameraRot[1][1] = 1.0f;
 
     vec3 point = cam.cameraRot * (vertex3D - cam.cameraPos) ;
     
@@ -26,6 +24,21 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
     float y2D = (window.height/2) - (cam.focalLength * y / (z));
     CanvasPoint vertex2D = CanvasPoint(x2D, y2D, 1/z);
 
+    // what happens if they are negative
+    // do we need this
+
+    // if (vertex2D.x < 0){
+    //     vertex2D.x = 0;
+    // } else if (vertex2D.x > window.width-1) {
+    //     vertex2D.x = window.width-1;
+    // }
+
+    // if (vertex2D.y < 0){
+    //     vertex2D.y = 0;
+    // } else if (vertex2D.y > window.height-1){
+    //     vertex2D.y = window.height-1;
+    // }
+
     return vertex2D;
 }
 
@@ -34,6 +47,14 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
     CanvasPoint v1 = vertex3Dto2D(window, mt.vertices[1], cam);
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
+
+    // if it is texture
+    //if (mt.texturePoints[0].x != -1{
+    // each canvas point has a tp
+    ct.vertices[0].texturePoint = mt.texturePoints[0];
+    ct.vertices[1].texturePoint = mt.texturePoints[1];
+    ct.vertices[2].texturePoint = mt.texturePoints[2];
+    //}
 }
 
 void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
@@ -42,6 +63,7 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
     // then draw each triangle
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
+        //cout << ct << endl;
  
         modelToCanvasTri(window, t[i], ct, cam);
         canvasTriangles.push_back(ct);
@@ -50,11 +72,21 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
     }
 }
 
-void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
+// each triangle has a colour name ppm
+void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels){
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
+
         CanvasTriangle ct; 
- 
+
         modelToCanvasTri(window, t[i], ct, cam);
-        drawFilledTriangle(window, ct.colour, ct);
+
+        // if no texture
+        if (ct.vertices[0].texturePoint.x == -1){
+            //cout << ct << endl;
+            //drawFilledTriangle(window, ct.colour, ct);
+        } else {
+            //cout << ct << endl;
+            fillTextureTriangle(window, pixels, ct);
+        }   
     }
 }

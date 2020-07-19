@@ -78,6 +78,7 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   vector<CanvasPoint> line = interpolation(p2, p1, steps);
 
   for (int i=0; i<(int)steps; i++){
+    //window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
     window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
 }
@@ -130,6 +131,9 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     float width;
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
+        //cout << c << endl;
+        //cout << lineTopLeft[a].depth << endl;
+        //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         // width of line 
         // draw a horizontal line
         //for (float b = 0.0; b<(lineTopRight.size()); b++){
@@ -137,9 +141,9 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
             //if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
                 width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
                 for (float c = 0; c <= width; c++){
-
+                    
                     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
-                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopLeft[a].depth ,colour);
+                    window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopRight[a].depth ,colour);
                 }
             //}
         //}
@@ -151,7 +155,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     //                                          CanvasPoint(rand()%200, rand()%150),
     //                                          CanvasPoint(rand()%200, rand()%150),
     //                                          c );
-    // sort vertices
+    // sort vertices, [0] is at the topm [1] middle [2] bottom
     for (int i = 0; i < 3; i++){
         if (triangle.vertices[2].y < triangle.vertices[0].y){
             swap(triangle.vertices[2], triangle.vertices[0]);
@@ -164,10 +168,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
         }
     }
 
-    // get extra point to split triangle into half
-    float steps = std::max(abs(triangle.vertices[0].x - triangle.vertices[2].x), abs(triangle.vertices[0].y - triangle.vertices[2].y));
-    vector<CanvasPoint> line = interpolation(triangle.vertices[0], triangle.vertices[2], steps);
-
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
@@ -179,7 +179,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
         swap(newP, triangle.vertices[1]);
     }
 
-    //drawStrokedTriangle(window, triangle);
+    drawStrokedTriangle(window, triangle);
     //drawLine(window, newP, triangle.vertices[1],c);
 
     // Fill top triangle

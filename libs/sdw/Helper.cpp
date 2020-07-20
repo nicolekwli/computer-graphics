@@ -77,7 +77,7 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   float steps = std::max(abs(p1.x - p2.x), abs(p1.y - p2.y));
   vector<CanvasPoint> line = interpolation(p2, p1, steps);
 
-  for (int i=0; i<(int)steps; i++){
+  for (int i=0; i<(int)steps+1; i++){
     window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
     //window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
@@ -100,33 +100,9 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
         }
     }
 
-    // ** These three lines does the same as the rest
     drawLine(window, t.vertices[0], t.vertices[1], t.colour);
     drawLine(window, t.vertices[0], t.vertices[2], t.colour);
     drawLine(window, t.vertices[1], t.vertices[2], t.colour);
-
-    // use interpolation to draw line
-    // float stepsAB = std::max(abs(t.vertices[0].x - t.vertices[1].x), abs(t.vertices[0].y - t.vertices[1].y));
-    // vector<CanvasPoint> lineAB = interpolation(t.vertices[0], t.vertices[1], stepsAB);
-   
-    // float stepsBC = std::max(abs(t.vertices[1].x - t.vertices[2].x), abs(t.vertices[1].y - t.vertices[2].y));
-    // vector<CanvasPoint> lineBC = interpolation(t.vertices[1], t.vertices[2], stepsBC);
-   
-    // float stepsAC = std::max(abs(t.vertices[0].x - t.vertices[2].x), abs(t.vertices[0].y - t.vertices[2].y));
-    // vector<CanvasPoint> lineAC = interpolation(t.vertices[0], t.vertices[2], stepsAC);
-    
-    // for (int i=0; i<(int)stepsAB; i++){
-    //   window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, colour);
-    //   //window.setPixelColour((int)lineAB[i].x, (int)lineAB[i].y, lineAB[i].depth ,colour);
-    // }
-    // for (int i=0.0; i<(int)stepsBC; i++){
-    //   window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, colour);
-    //  // window.setPixelColour((int)lineBC[i].x, (int)lineBC[i].y, lineBC[i].depth ,colour);
-    // }
-    // for (int i=0.0; i<(int)stepsAC; i++){
-    //   window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, colour);
-    //   //window.setPixelColour((int)lineAC[i].x, (int)lineAC[i].y, lineAC[i].depth, colour);
-    // }
 }
 
 //** HAVE CUT DOWN CODE
@@ -142,21 +118,18 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
         // ** EITHER THIS LINE
         drawLine(window, lineTopLeft[a], lineTopRight[a], c);
-        // width of line 
-        // draw a horizontal line
-        //for (float b = 0.0; b<(lineTopRight.size()); b++){
             
-            //if ((int)lineTopLeft[a].y == (int)lineTopRight[b].y){
-                // width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
 
-                // // ** OR THIS FOR LOOP WOULD DO THE SAME THING
-                // for (float c = 0; c <= width; c++){
-                    
-                //     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
-                //     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopRight[a].depth ,colour);
-                // }
-            //}
-        //}
+        // ** OR THIS FOR LOOP WOULD DO THE SAME THING
+        // width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
+
+        
+        // for (float c = 0; c <= width; c++){
+            
+        //     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
+        //     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopRight[a].depth ,colour);
+        // }
+
     }
 }
 
@@ -192,7 +165,10 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
 
     // ** THIS WORKS
     drawStrokedTriangle(window, triangle);
-    //drawLine(window, newP, triangle.vertices[1],c);
+    drawLine(window, newP, triangle.vertices[1],c);
+    drawLine(window, newP, triangle.vertices[2],c);
+    drawLine(window, triangle.vertices[0], triangle.vertices[1],c);
+    drawLine(window, triangle.vertices[1], triangle.vertices[2],c);
 
     // ** PLS CHECK IF THIS GETS THE RIGHT POINTS
     // Fill top triangle
@@ -205,7 +181,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour); 
 
-    
 }
 
 
@@ -223,14 +198,8 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
                 int tysteps = (int) abs(lineTopLeft[a].texturePoint.y - lineTopRight[b].texturePoint.y);
  
                 for (int c = 0; c < steps; c++){
-                    // int tx = lineTopLeft[a].texturePoint.x + (c * txsteps/steps);
-                    // int ty = lineTopRight[b].texturePoint.y + (c * tysteps/steps);
 
                     vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[b], steps+1);
-                    // cout << "pont "<< endl;
-                    // cout << points[c].texturePoint.y << endl;
-                    // cout << points[c].texturePoint.y -1 << endl;
-                    // cout << points[c].texturePoint.x -1 << endl;
                     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[points[c].texturePoint.y-1][points[c].texturePoint.x-1]);
                     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
                     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, 255);

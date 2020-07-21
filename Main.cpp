@@ -25,20 +25,20 @@ int main(int argc, char* argv[]){
         //vector<float> res = interpolation( 2.2, 8.5, 7 );   
         // drawLine(window, CanvasPoint(100,20), CanvasPoint(20,200));
 
-        CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
-        t.vertices[0].texturePoint.x = 195;
-        t.vertices[0].texturePoint.y = 5;
-        t.vertices[1].texturePoint.x = 395;
-        t.vertices[1].texturePoint.y = 380;
-        t.vertices[2].texturePoint.x = 65;
-        t.vertices[2].texturePoint.y = 330;
+        // CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
+        // t.vertices[0].texturePoint.x = 195;
+        // t.vertices[0].texturePoint.y = 5;
+        // t.vertices[1].texturePoint.x = 395;
+        // t.vertices[1].texturePoint.y = 380;
+        // t.vertices[2].texturePoint.x = 65;
+        // t.vertices[2].texturePoint.y = 330;
 
         //pixels = readPPM(window,"assets/texture.ppm");  
         ppm = readPPM(window,"assets/texture.ppm"); 
-        fillTextureTriangle(window, ppm.pixels, t);
+        // fillTextureTriangle(window, ppm.pixels, t);
 
         // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm);
+        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
 
@@ -48,10 +48,10 @@ int main(int argc, char* argv[]){
         //raytracer
         //drawFilledTriangleRay(window, object, mycam);
 
-        // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm);
-        // createWireframe(window, object, mycam);
-        //rasterise(window, object, mycam, ppm.pixels);
+        vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
+        vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
+        //createWireframe(window, object, mycam);
+        rasterise(window, object, mycam, ppm.pixels);
 
         window.renderFrame();
     }

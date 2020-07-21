@@ -266,24 +266,6 @@ PPM readPPM(DrawingWindow window, string filename){
     vector<uint32_t> pixel;
     vector<vector<uint32_t>> pixels;
 
-    // int i = 0;
-    // while (file.get(tempPixel))
-    // {
-    //   vector<uint32_t> pixel;
-    //   if (i == 0){
-    //     r = tempPixel;
-    //     i++;
-    //   } else if (i == 1){
-    //     g = tempPixel;
-    //     i++;
-    //   } else {
-    //     b = tempPixel;
-    //     uint32_t colour = (255<<24) + (int(r)<<16) + (int(g)<<8) + int(b);
-    //     pixel.push_back(colour);
-    //     pixels.push_back(pixel);
-    //     i = 0;
-    //   }
-    // }
     for(int y = 0; y < height; y++){
         vector<uint32_t> pixel;
         for (int x = 0; x < width; x++){
@@ -347,7 +329,7 @@ void savePPM(DrawingWindow window, string filename){
 }
 
 
-vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm){
+vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, float rescale){
     ifstream file;
     file.open(filename);
 
@@ -362,7 +344,6 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm){
 
     // get first line matllib
     getline(file, line);
-    
     
     while (getline(file, line)){
         tokens = split(line, ' ');
@@ -384,7 +365,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm){
         } 
         else if (tokens[0] == "v"){
             // * each by a scale to make smaller
-            glm::vec3 vec = vec3(stof(tokens[1]), stof(tokens[2]), stof(tokens[3])*-1);
+            glm::vec3 vec = vec3(stof(tokens[1])*rescale, stof(tokens[2])*rescale, stof(tokens[3])*-rescale);
             ver.push_back(vec);
         }
         else if (tokens[0] == "vt"){

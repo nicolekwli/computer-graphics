@@ -252,11 +252,9 @@ PPM readPPM(DrawingWindow window, string filename){
 
     size_t found = line.find(' ');
     width = stoi(line.substr(0, found));
-    //cout << width << endl;
 
     size_t found2 = line.find(' ', found + 1);
     height = stoi(line.substr(found + 1, found2 - 1));
-    //cout << height << endl;
 
     getline(file, line);
     max = stoi(line);
@@ -291,7 +289,7 @@ PPM readPPM(DrawingWindow window, string filename){
     file.close();
 
     PPM ppm = PPM(width, height, pixels);
-    //return pixels;
+
     return ppm;
 }
 
@@ -347,15 +345,12 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
     
     while (getline(file, line)){
         tokens = split(line, ' ');
-        //colourPalette p = colourPalette();
 
         if (tokens[0] == "o"){
-            //p.objectName = tokens[1];
             objectName = tokens[1];
 
         }
         else if (tokens[0] == "usemtl") {
-            // p.materialName = tokens[1];
             // Colour
             for (std::vector<int>::size_type i = 0; i != colours.size(); i++){
                 if(colours[i].name == tokens[1]){
@@ -364,12 +359,12 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
             }
         } 
         else if (tokens[0] == "v"){
-            // * each by a scale to make smaller
+            // * each by a scale to make smaller if need
             glm::vec3 vec = vec3(stof(tokens[1])*rescale, stof(tokens[2])*rescale, stof(tokens[3])*-rescale);
             ver.push_back(vec);
         }
         else if (tokens[0] == "vt"){
-            // * each by a scale to make smaller
+            // * each by a scale to make smaller ( need add )
             // multiply this by the width/ height to scale the 0.0-1.0 range
             TexturePoint tp = TexturePoint(stof(tokens[1])*(ppm.width-1), stof(tokens[2])*(ppm.height-1));
             verTexture.push_back(tp);
@@ -396,9 +391,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
                 t.texturePoints[2] = verTexture[stoi(face3[1])-1];
   
             } 
-            //cout << t << endl;
-            triangles.push_back(t);
-                         
+            triangles.push_back(t);             
         }       
     }
 
@@ -428,7 +421,6 @@ vector<Colour> readMTL(string filename){
             colours.push_back(Colour(name, int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3]))));
         }
         else if (tokens[0] == "map_Kd"){
-            //cout << tokens[1] << endl;
             // tokens[1] should be the texture file name
             colours.push_back(Colour(tokens[1], 0, 0, 0));
         } 

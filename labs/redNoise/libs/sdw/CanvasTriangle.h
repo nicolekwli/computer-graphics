@@ -29,8 +29,9 @@ class CanvasTriangle
 
 };
 
-std::ostream& operator<<(std::ostream& os, const CanvasTriangle& triangle)
-{
-    os << triangle.vertices[0]  << triangle.vertices[1]  << triangle.vertices[2] << std::endl;
-    return os;
-}
+// commented out cos it was causes errors for some reason and we arent really using this operator
+// std::ostream& operator<<(std::ostream& os, const CanvasTriangle& triangle)
+// {
+//     os << triangle.vertices[0]  << triangle.vertices[1]  << triangle.vertices[2] << std::endl;
+//     return os;
+// }

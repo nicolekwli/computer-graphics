@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
-        //raytracer
+        //raytracer stuff
         drawFilledTriangleRay(window, object, mycam);
 
         window.renderFrame();

@@ -86,42 +86,43 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
             final.push_back(ct);
             return final; // would returning ruin the whole thing
         }
-        else if (discard.size() == 3){
+        else if (discard.size() > 0){
+            cout << 'here';
             return final; // would returning ruin the whole thing
         }
         // for some reason this should not have areturn till the end?
-        else if (keep.size() == 1){
-            // get distance ratio to get 2 new points
-            float ratio1 = dot(norm[i], keep[0])  / dot(norm[i], discard[0]);
-            float ratio2 = dot(norm[i], keep[0])  / dot(norm[i], discard[1]);
+        // else if (keep.size() == 1){
+        //     // get distance ratio to get 2 new points
+        //     float ratio1 = dot(norm[i], keep[0])  / dot(norm[i], discard[0]);
+        //     float ratio2 = dot(norm[i], keep[0])  / dot(norm[i], discard[1]);
 
-            vec3 np1 = keep[0] + ratio1 * (discard[0] - keep[0]);
-            vec3 np2 = keep[0] + ratio2 * (discard[1] - keep[1]);
+        //     vec3 np1 = keep[0] + ratio1 * (discard[0] - keep[0]);
+        //     vec3 np2 = keep[0] + ratio2 * (discard[1] - keep[1]);
 
-            CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
-            CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
+        //     CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
+        //     CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
 
-            CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
-            final.push_back(CanvasTriangle(p, newP1, newP2));
-            return final;
-        }
-        else if (keep.size() == 2){
-            // get two triangles 
-            float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], keep[0]);
-            float ratio2 = dot(norm[i], discard[0])  / dot(norm[i], keep[1]);
+        //     CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
+        //     final.push_back(CanvasTriangle(p, newP1, newP2));
+        //     //return final;
+        // }
+        // else if (keep.size() == 2){
+        //     // get two triangles 
+        //     float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], keep[0]);
+        //     float ratio2 = dot(norm[i], discard[0])  / dot(norm[i], keep[1]);
 
-            vec3 np1 = keep[0] + ratio1 * (discard[0] - keep[0]);
-            vec3 np2 = keep[0] + ratio2 * (discard[1] - keep[1]);
+        //     vec3 np1 = keep[0] + ratio1 * (discard[0] - keep[0]);
+        //     vec3 np2 = keep[0] + ratio2 * (discard[1] - keep[1]);
 
-            CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
-            CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
+        //     CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
+        //     CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
 
-            CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
-            CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
-            final.push_back(CanvasTriangle(p1, p2, newP1));
-            final.push_back(CanvasTriangle(p2, newP1, newP2));
-            return final;
-        }
+        //     CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
+        //     CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
+        //     final.push_back(CanvasTriangle(p1, p2, newP1));
+        //     final.push_back(CanvasTriangle(p2, newP1, newP2));
+        //     return final;
+        // }
     }
 
     return final;
@@ -151,6 +152,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
         canvasTriangles.push_back(ct);
 
         vector<CanvasTriangle> cts = clipping(window, ct);
+
         for (int j = 0; j < cts.size(); j++){
             if (ct.vertices[0].texturePoint.x == -1){
                 drawFilledTriangle(window, ct.colour, cts[j]);

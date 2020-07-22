@@ -84,6 +84,10 @@ void handleEvent(SDL_Event event)
     else if (event.key.keysym.sym == SDLK_e){
         cout << "FORWARD" << endl;
         mycam.camForward();
+        // some sampel code for fly through
+        // if (mycam.cameraPos.z < -9.3){
+        //   mycam.camForward();
+        // }
     } 
     else if (event.key.keysym.sym == SDLK_q){
         cout << "BACKWARD" << endl;

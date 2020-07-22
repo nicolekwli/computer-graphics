@@ -37,7 +37,10 @@ int main(int argc, char* argv[]){
         rasterise(window, object, mycam);
 
         // savePPM(window, "hello.ppm");
-        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");  
+        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
+
+        //raytracer stuff
+        drawFilledTriangleRay(window, object, mycam);
 
         window.renderFrame();
     }

@@ -20,8 +20,9 @@ class RayTriangleIntersection
     }
 };
 
-std::ostream& operator<<(std::ostream& os, const RayTriangleIntersection& intersection)
-{
-    os << "Intersection is at " << intersection.intersectionPoint << " on triangle " << intersection.intersectedTriangle << " at a distance of " << intersection.distanceFromCamera << std::endl;
-    return os;
-}
+// commented out cos it was giving some warning and i cba to fix it cos we aint even using this operator
+// std::ostream& operator<<(std::ostream& os, const RayTriangleIntersection& intersection)
+// {
+//     os << "Intersection is at " << intersection.intersectionPoint << " on triangle " << intersection.intersectedTriangle << " at a distance of " << intersection.distanceFromCamera << std::endl;
+//     return os;
+// }

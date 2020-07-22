@@ -6,7 +6,7 @@
 // }
 Camera::Camera(){
     //cameraPos = vec3(0, 1, -6);
-    cameraPos = vec3(0, 1, -FOCAL);
+    cameraPos = vec3(0, 2, -FOCAL);
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
     //cameraRot = mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
     cameraRot = mat3(cos(0), 0, sin(0), 0, 1, 0, -sin(0), 0, cos(0));

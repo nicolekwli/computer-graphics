@@ -38,6 +38,9 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
 void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels);
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t);
 
+// ----- Drawing Helpers -----
+
+
 // ----- Parsing -----
 PPM readPPM(DrawingWindow window, string filename);
 void savePPM(DrawingWindow window, string filename);

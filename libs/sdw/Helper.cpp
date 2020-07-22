@@ -187,6 +187,8 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
         // drawLine(lineTopLeft[a], lineTopRight, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
 
         for (int c = 0; c < steps; c++){
+            // Add bit that does shading/ illumination in carl's
+            // depth buffer is already a kind of shading?
             window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[a].y, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
         }
     }
@@ -234,6 +236,8 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     vector<CanvasPoint> lineBottomRight = interpolation(t.vertices[2], t.vertices[1], abs(t.vertices[2].y - t.vertices[1].y)+1);
     fillTexture(window,lineBottomLeft, lineBottomRight, pixels); 
 }
+
+// ----- Drawing Helpers -----
 
 // ----- Parsing -----
 PPM readPPM(DrawingWindow window, string filename){

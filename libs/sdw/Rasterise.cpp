@@ -84,45 +84,49 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
 
         if (keep.size() == 3) {
             final.push_back(ct);
+            return final; 
+        }
+        else if (discard.size() == 3){
+            cout << "here";
             return final; // would returning ruin the whole thing
         }
-        else if (discard.size() > 0){
-            cout << 'here';
-            return final; // would returning ruin the whole thing
+        // for some reason this should not have areturn till the end? so it works for all sides i guess
+        else if (keep.size() == 1){
+            // get distance ratio to get 2 new points
+            float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], (keep[0] - discard[0]));
+            float ratio2 = dot(norm[i], discard[1])  / dot(norm[i], (keep[0] - discard[1]));
+
+            vec3 np1 = discard[0] - ratio1 * (keep[0] - discard[0]);
+            vec3 np2 = discard[1] - ratio2 * (keep[0] - discard[1]);
+
+            CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
+            CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
+
+            CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
+
+            final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
+            return final;
         }
-        // for some reason this should not have areturn till the end?
-        // else if (keep.size() == 1){
-        //     // get distance ratio to get 2 new points
-        //     float ratio1 = dot(norm[i], keep[0])  / dot(norm[i], discard[0]);
-        //     float ratio2 = dot(norm[i], keep[0])  / dot(norm[i], discard[1]);
 
-        //     vec3 np1 = keep[0] + ratio1 * (discard[0] - keep[0]);
-        //     vec3 np2 = keep[0] + ratio2 * (discard[1] - keep[1]);
+        // this breaks
+        else if (keep.size() == 2){
+            // get two triangles 
+            float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], (keep[0] - discard[0]));
+            float ratio2 = dot(norm[i], discard[0])  / dot(norm[i], (keep[1] - discard[0]));
 
-        //     CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
-        //     CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
+            vec3 np1 = discard[0] - ratio1 * (keep[0] - discard[0]);
+            vec3 np2 = discard[0] - ratio2 * (keep[1] - discard[0]);
 
-        //     CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
-        //     final.push_back(CanvasTriangle(p, newP1, newP2));
-        //     //return final;
-        // }
-        // else if (keep.size() == 2){
-        //     // get two triangles 
-        //     float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], keep[0]);
-        //     float ratio2 = dot(norm[i], discard[0])  / dot(norm[i], keep[1]);
+            CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
+            CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
 
-        //     vec3 np1 = keep[0] + ratio1 * (discard[0] - keep[0]);
-        //     vec3 np2 = keep[0] + ratio2 * (discard[1] - keep[1]);
+            CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
+            CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
 
-        //     CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
-        //     CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
-
-        //     CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
-        //     CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
-        //     final.push_back(CanvasTriangle(p1, p2, newP1));
-        //     final.push_back(CanvasTriangle(p2, newP1, newP2));
-        //     return final;
-        // }
+            final.push_back(CanvasTriangle(p1, p2, newP1, ct.colour));
+            final.push_back(CanvasTriangle(p2, newP1, newP2, ct.colour));
+            return final;
+        }
     }
 
     return final;

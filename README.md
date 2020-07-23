@@ -2,27 +2,27 @@
 
 ## Features:  
 ### (40s) all of...
-* ~~OBJ loading (geometry and materials)~~
-* ~~Wireframe rendering~~
-* ~~Flat shaded rasterising~~
-* ~~Moving camera (position only)~~
-* ~~Saving of PPM files~~
+- [x] ~~OBJ loading (geometry and materials)~~
+- [x] ~~Wireframe rendering~~
+- [x] ~~Flat shaded rasterising~~
+- [x] ~~Moving camera (position only)~~
+- [x] ~~Saving of PPM files~~
 
 ### (50s) some of...
 - [x] Changing camera orientation (via orientation matrix)
 - [x] LookAt
 * _Some form of generative geometry_
-* Ambient lighting
-* Diffuse lighting (proximity and angle-of-incidence)
+- [ ] Ambient lighting
+- [ ] Diffuse lighting (proximity and angle-of-incidence)
 
 
 ### (60s) some of...
 * Hard Shadow
 * Gouraud shading
-* ~~Naive (non-perspective corrected) texture mapping~~
+- [x] Naive (non-perspective corrected) texture mapping~~
 * Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
-* Basic culling/clipping (far-plane, near-plan, back-face)
+- [x] Basic culling/clipping (far-plane, near-plan, back-face)
 * _Basic (image plane) anti-aliasing_
 
 ### (70s) some of...

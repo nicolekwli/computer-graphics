@@ -9,8 +9,8 @@
 * ~~Saving of PPM files~~
 
 ### (50s) some of...
-* Changing camera orientation (via orientation matrix)
-* LookAt
+- [x] Changing camera orientation (via orientation matrix)
+- [x] LookAt
 * _Some form of generative geometry_
 * Ambient lighting
 * Diffuse lighting (proximity and angle-of-incidence)

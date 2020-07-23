@@ -83,6 +83,46 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   }
 }
 
+void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
+  uint32_t colour = bitpackingColour(c);
+
+  // make sure p2 > p1?
+  if (p2.x < p1.x){
+      swap(p1,p2);
+  }
+
+
+  float dx = p2.x - p1.x;
+  float dy = p2.y - p1.y;
+
+  float d = 2 * dy - dx;
+
+  int x = abs(p1.x);
+  int y = abs(p1.y);
+
+  while ( x < p2.x ){
+    if (d < 0){
+      d += 2 * dy;
+      window.setPixelColour(x, y, colour);
+      x++;
+
+    } else {
+      d += 2 * (dy - dx);
+      window.setPixelColour(x, y, colour);
+      y++;
+    }
+  }
+
+  // make sure drawing from left to right so p1 < p2
+
+//   float steps = std::max(abs(p1.x - p2.x), abs(p1.y - p2.y));
+//   vector<CanvasPoint> line = interpolation(p2, p1, steps);
+
+//   for (int i=0; i<(int)steps+1; i++){
+//     window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
+//   }
+}
+
 
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
   uint32_t colour = bitpackingColour(t.colour);
@@ -100,9 +140,9 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
         }
     }
 
-    drawLine(window, t.vertices[0], t.vertices[1], t.colour);
-    drawLine(window, t.vertices[0], t.vertices[2], t.colour);
-    drawLine(window, t.vertices[1], t.vertices[2], t.colour);
+    drawLineB(window, t.vertices[0], t.vertices[1], t.colour);
+    drawLineB(window, t.vertices[0], t.vertices[2], t.colour);
+    drawLineB(window, t.vertices[1], t.vertices[2], t.colour);
 }
 
 //** HAVE CUT DOWN CODE

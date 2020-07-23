@@ -16,7 +16,6 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
     CanvasPoint vertex2D = CanvasPoint(x2D, y2D, 1/z);
 
     // make sure they are within the screen
-    // basic clipping?
     if (vertex2D.x < 0){
         vertex2D.x = 0;
     } else if (vertex2D.x > window.width-1) {

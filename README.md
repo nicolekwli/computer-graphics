@@ -2,11 +2,11 @@
 
 ## Features:  
 ### (40s) all of...
-- [x] ~~OBJ loading (geometry and materials)~~
-- [x] ~~Wireframe rendering~~
-- [x] ~~Flat shaded rasterising~~
-- [x] ~~Moving camera (position only)~~
-- [x] ~~Saving of PPM files~~
+- [x] OBJ loading (geometry and materials)
+- [x] Wireframe rendering
+- [x] Flat shaded rasterising
+- [x] Moving camera (position only)
+- [x] Saving of PPM files
 
 ### (50s) some of...
 - [x] Changing camera orientation (via orientation matrix)
@@ -19,7 +19,7 @@
 ### (60s) some of...
 * Hard Shadow
 * Gouraud shading
-- [x] Naive (non-perspective corrected) texture mapping~~
+- [x] Naive (non-perspective corrected) texture mapping
 * Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
 - [x] Basic culling/clipping (far-plane, near-plan, back-face)

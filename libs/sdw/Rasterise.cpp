@@ -1,21 +1,10 @@
 #include "Rasterise.h"
 
 
-// ALL NEED TO BE IN MAIN/ CAMERA
-// #define WIDTH 600
-// #define HEIGHT 600
-// #define SCREEN_WIDTH 512
-// #define SCREEN_HEIGHT 512
-// #define FOCAL 7.5f
-// #define FOCAL_LENGTH SCREEN_HEIGHT/FOCAL
-// #define CAMERA_VELOCITY 0.4f
 
-
-// depth buffer stuff? need to recalculate everytime with camera change
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     vec3 point = (vertex3D - cam.cameraPos) * cam.cameraRot;
-    //vec3 point = cam.cameraRot * (cam.cameraPos - vertex3D);
     
     float x = point.x;
     float y = point.y;
@@ -26,20 +15,19 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     CanvasPoint vertex2D = CanvasPoint(x2D, y2D, 1/z);
 
-    // what happens if they are negative
-    // do we need this
+    // make sure they are within the screen
+    // basic clipping?
+    if (vertex2D.x < 0){
+        vertex2D.x = 0;
+    } else if (vertex2D.x > window.width-1) {
+        vertex2D.x = window.width-1;
+    }
 
-    // if (vertex2D.x < 0){
-    //     vertex2D.x = 0;
-    // } else if (vertex2D.x > window.width-1) {
-    //     vertex2D.x = window.width-1;
-    // }
-
-    // if (vertex2D.y < 0){
-    //     vertex2D.y = 0;
-    // } else if (vertex2D.y > window.height-1){
-    //     vertex2D.y = window.height-1;
-    // }
+    if (vertex2D.y < 0){
+        vertex2D.y = 0;
+    } else if (vertex2D.y > window.height-1){
+        vertex2D.y = window.height-1;
+    }
 
     return vertex2D;
 }
@@ -58,16 +46,17 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
 
 vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
     vector<vec3> norm;
-    norm.push_back(vec3(1,0,0)); 
-    norm.push_back(vec3(-1,0,0)); 
-    norm.push_back(vec3(0,1,0));
-    norm.push_back(vec3(0,-1,0));
+    norm.push_back(vec3(1,0,0)); // this does left
+    //norm.push_back(vec3(-1,0,0)); 
+    norm.push_back(vec3(0,1,0)); // this does top
+    //norm.push_back(vec3(0,-1,0)); 
     norm.push_back(vec3(0,0,1));
-    norm.push_back(vec3(0,0,-1));
+    //norm.push_back(vec3(0,0,-1)); 
+
 
     vector<CanvasTriangle> final;
     // for each normal
-    for (int i=0; i<6; i++){
+    for (int i=0; i<3; i++){
         float distance;
         vector<vec3> keep;
         vector<vec3> discard;
@@ -75,7 +64,7 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
         // calc each point's distance to norm
         for (int j=0; j<3; j++){
             vec3 v = vec3(ct.vertices[j].x, ct.vertices[j].y, ct.vertices[j].depth);
-            distance = dot(norm[i], v);
+            distance = dot(v, norm[i]);
 
             if (distance >= 0){
                 keep.push_back(v);
@@ -83,14 +72,19 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
         }
 
         if (keep.size() == 3) {
-            final.push_back(ct);
-            return final; 
+            // return final; 
+            //final.push_back(ct);
+            //return final; 
+            continue; // break would get out of the for loop i think
         }
+
         else if (discard.size() == 3){
-            cout << "here";
-            return final; // would returning ruin the whole thing
+            // final.push_back(ct); // this hsouldnt be here but it make up and left work
+            return final; 
+            //break;
         }
-        // for some reason this should not have areturn till the end? so it works for all sides i guess
+
+        // this doesnt work fully
         else if (keep.size() == 1){
             // get distance ratio to get 2 new points
             float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], (keep[0] - discard[0]));
@@ -104,11 +98,14 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
 
             CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
 
-            final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
-            return final;
+            ct.vertices[1] = p;
+            ct.vertices[0] = newP1;
+            ct.vertices[2] = newP2;
+
+            //final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
+            //return final;
         }
 
-        // this breaks
         else if (keep.size() == 2){
             // get two triangles 
             float ratio1 = dot(norm[i], discard[0])  / dot(norm[i], (keep[0] - discard[0]));
@@ -123,12 +120,18 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
             CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
             CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
 
-            final.push_back(CanvasTriangle(p1, p2, newP1, ct.colour));
-            final.push_back(CanvasTriangle(p2, newP1, newP2, ct.colour));
+            //final.push_back(CanvasTriangle(p1, p2, newP1, ct.colour));
+            //final.push_back(CanvasTriangle(p2, newP1, newP2, ct.colour));
+
+            vector<CanvasTriangle> clipped1 = clipping(window, CanvasTriangle(p1, p2, newP1, ct.colour));
+            vector<CanvasTriangle> clipped2 = clipping(window, CanvasTriangle(p2, newP1, newP2, ct.colour));
+
+            for (int a=0; a<clipped1.size(); a++) final.push_back(clipped1[a]);
+            for (int b=0; b<clipped2.size(); b++) final.push_back(clipped2[b]);
             return final;
         }
     }
-
+    final.push_back(ct);
     return final;
 }
 

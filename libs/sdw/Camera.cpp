@@ -4,7 +4,7 @@
 // Camera::Camera(void){
 //     cout<<"object created"<<endl;
 // }
-Camera::Camera(){
+Camera::Camera(int height, int width){
     //cameraPos = vec3(0, 1, -6);
     cameraPos = vec3(0, 2, -FOCAL);
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
@@ -15,6 +15,10 @@ Camera::Camera(){
     focalLength = 480/FOCAL;
     //focalLength = 480/24;
     yaw = 0;
+
+    setupFrus(height, width);
+
+    
 }
 
 void Camera::camUp(){
@@ -65,6 +69,46 @@ void Camera::lookAt(glm::vec3 from){
     cameraRot[0][2] = forward.x;
     cameraRot[1][2] = forward.y;
     cameraRot[2][2] = forward.z;
+}
+
+void Camera::setupFrus(int height, int width){
+    float angle_horizontal =  atan2(width/2,focalLength)-0.0001;
+    float angle_vertical   =  atan2(height/2,focalLength)-0.0001;
+    float sh               =  sin(angle_horizontal);
+    float sv               =  sin(angle_vertical);
+    float ch               =  cos(angle_horizontal);
+    float cv               =  cos(angle_vertical);
+
+    // left
+    f.sides[0].normal.x=ch;
+    f.sides[0].normal.y=0;
+    f.sides[0].normal.z=sh;
+    f.sides[0].distance = 0;
+    // right
+    f.sides[1].normal.x=-ch;
+    f.sides[1].normal.y=0;
+    f.sides[1].normal.z=sh;
+    f.sides[1].distance = 0;
+    // top
+    f.sides[2].normal.x=0;
+    f.sides[2].normal.y=cv;
+    f.sides[2].normal.z=sv;
+    f.sides[2].distance = 0;
+    // bottom
+    f.sides[3].normal.x=0;
+    f.sides[3].normal.y=-cv;
+    f.sides[3].normal.z=sv;
+    f.sides[3].distance = 0;
+    // z-near clipping plane
+    f.znear.normal.x=0;
+    f.znear.normal.y=0;
+    f.znear.normal.z=1;
+    f.znear.distance = -10;
+    // far-plane
+    f.zfar.normal.x = 0;
+    f.zfar.normal.y = 0;
+    f.zfar.normal.z = -1;
+    f.zfar.distance = 1000;
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

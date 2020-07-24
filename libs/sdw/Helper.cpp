@@ -84,33 +84,81 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
 }
 
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
-  uint32_t colour = bitpackingColour(c);
+    uint32_t colour = bitpackingColour(c);
+    
 
-  // make sure p2 > p1?
-  if (p2.x < p1.x){
-      swap(p1,p2);
-  }
-
-  float dx = p2.x - p1.x;
-  float dy = p2.y - p1.y;
-
-  float d = 2 * dy - dx;
-
-  int x = abs(p1.x);
-  int y = abs(p1.y);
-
-  while ( x < p2.x ){
-    if (d < 0){
-      d += 2 * dy;
-      window.setPixelColour(x, y, colour);
-      x++;
-
+    int dx = p2.x - p1.x;
+    if (dx == 0){
+        drawLine(window, p1, p2, c);
     } else {
-      d += 2 * (dy - dx);
-      window.setPixelColour(x, y, colour);
-      y++;
-    }
-  }
+       
+        // bool steep = abs(p2.y - p1.y) > abs(p2.x - p1.x);
+
+        // if (steep){
+        //     swap(p1.x, p1.y);
+        //     swap(p2.x, p2.y);
+
+        // }
+        // if (p2.x < p1.x){
+        //     swap(p1,p2);
+        // }
+
+        if (p2.x < p1.x){
+            swap(p1,p2);
+        }
+
+        int dx = p2.x - p1.x;
+        int dy = p2.y - p1.y;
+
+        int x = abs(p1.x);
+        int y = abs(p1.y);
+
+        float depthStep = abs(p2.depth - p1.depth) / abs(dx);
+        if (p2.depth < p1.depth) depthStep *= -1;
+
+        float depth = p1.depth;
+
+        if((dy / dx) < 1){ // slope < 1
+            window.setPixelColour(x, y, depth, colour);
+
+            depth += depthStep;
+
+            int pk = (2 * abs(dy)) - abs(dx);
+
+            for(int i = 0; i < abs(dx) ; i++)
+            {
+                x = x + 1;
+                if(pk < 0)
+                    pk = pk + (2 * abs(dy));
+                else
+                {
+                    if (p1.y > p2.y) y -= 1;
+                    else y = y + 1;
+                    pk = pk + (2 * abs(dy)) - (2 * abs(dx));
+                }
+                window.setPixelColour(x, y, depth, colour);
+            }
+        } else { // slope >= 1
+            window.setPixelColour(x, y, depth, colour);
+
+            depth += depthStep;
+            int pk = (2 * abs(dx)) - abs(dy);
+
+            for(int i = 0; i < abs(dy) ; i++)
+            {
+                y = y + 1;
+                if(pk < 0)
+                    pk = pk + (2 * abs(dx));
+                else
+                {
+                    x = x + 1;
+                    pk = pk + (2 * abs(dx)) - (2 *abs(dy));
+                }
+
+                window.setPixelColour(x, y, depth, colour);
+            }
+        }
+    }  
 }
 
 
@@ -130,8 +178,8 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
         }
     }
 
-    drawLineB(window, t.vertices[0], t.vertices[1], t.colour);
-    drawLineB(window, t.vertices[0], t.vertices[2], t.colour);
+    drawLineB(window, t.vertices[1], t.vertices[0], t.colour);
+    drawLineB(window, t.vertices[2], t.vertices[0], t.colour);
     drawLineB(window, t.vertices[1], t.vertices[2], t.colour);
 }
 
@@ -141,15 +189,8 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
-        // ** EITHER THIS LINE
         drawLine(window, lineTopLeft[a], lineTopRight[a], c);
-
-        // ** OR THIS FOR LOOP WOULD DO THE SAME THING
-        // width = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
-        // for (float c = 0; c <= width; c++){
-        //     //window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[b].y, colour);
-        //     window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopLeft[a].y, lineTopRight[a].depth ,colour);
-        // }
+        //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
 
     }
 }
@@ -184,11 +225,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
         swap(newP, triangle.vertices[1]);
     }
 
-    drawStrokedTriangle(window, triangle);
-    drawLine(window, newP, triangle.vertices[1],c);
-    drawLine(window, newP, triangle.vertices[2],c);
-    drawLine(window, triangle.vertices[0], triangle.vertices[1],c);
-    drawLine(window, triangle.vertices[1], triangle.vertices[2],c);
+    //drawStrokedTriangle(window, triangle);
 
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
@@ -409,17 +446,14 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
             ModelTriangle t = ModelTriangle(ver[a], ver[b], ver[c], col);
             // there is a texture value e.g. f 1/1 2/2 3/3
             if (tokens[1].back() != '/'){
-
                 // face1[0] is the vertex, face[1] is the texture point
                 string *face1 = split(tokens[1],'/');
                 string *face2 = split(tokens[2],'/');
                 string *face3 = split(tokens[3],'/');
-
                 
                 t.texturePoints[0] = verTexture[stoi(face1[1])-1];
                 t.texturePoints[1] = verTexture[stoi(face2[1])-1];
                 t.texturePoints[2] = verTexture[stoi(face3[1])-1];
-  
             } 
             triangles.push_back(t);             
         }       
@@ -454,9 +488,6 @@ vector<Colour> readMTL(string filename){
             // tokens[1] should be the texture file name
             colours.push_back(Colour(tokens[1], 0, 0, 0));
         } 
-        else {
-            // else?
-        }
     }
     file.close();
     return colours;

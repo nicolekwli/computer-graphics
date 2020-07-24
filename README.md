@@ -22,7 +22,7 @@
 - [x] Naive (non-perspective corrected) texture mapping
 * Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
-- [x] Basic culling/clipping (far-plane, near-plan, back-face)
+- [x] Basic culling/clipping (far-plane, near-plan, back-face) [Need perfecting]
 * _Basic (image plane) anti-aliasing_
 
 ### (70s) some of...
@@ -38,7 +38,7 @@
 ### (80s) some of...
 * Environment maps
 * Complex “interesting” materials (e.g. glass)
-* Line drawing optimisations (e.g. Bresenham)
+- [x] Line drawing optimisations (e.g. Bresenham) [Need perfecting]
 * Advance clipping (frustum)
 * Photon maps and caustics
 * “Intelligent” model simplification

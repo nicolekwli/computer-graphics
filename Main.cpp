@@ -21,12 +21,14 @@ int main(int argc, char* argv[]){
         update();
         window.clearPixels();
         window.clearDepth();
+
     
         //vector<float> res = interpolation( 2.2, 8.5, 7 );   
         //drawLine(window, CanvasPoint(100,20), CanvasPoint(20,200));
-        drawLineB(window, CanvasPoint(200,50), CanvasPoint(180,90), Colour(12,120,120));
+        // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,10), Colour(12,120,120));
+        // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,150), Colour(12,120,120));
 
-        // CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
+        //CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
         // t.vertices[0].texturePoint.x = 195;
         // t.vertices[0].texturePoint.y = 5;
         // t.vertices[1].texturePoint.x = 395;
@@ -34,14 +36,16 @@ int main(int argc, char* argv[]){
         // t.vertices[2].texturePoint.x = 65;
         // t.vertices[2].texturePoint.y = 330;
 
+        //drawStrokedTriangle(window, t);
+
         //pixels = readPPM(window,"assets/texture.ppm");  
         //ppm = readPPM(window,"assets/texture.ppm"); 
         // fillTextureTriangle(window, ppm.pixels, t);
 
-        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
-        // //createWireframe(window, object, mycam);
-        //rasterise(window, object, mycam, ppm.pixels);
+        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+        //createWireframe(window, object, mycam);
+        rasterise(window, object, mycam, ppm.pixels);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
@@ -117,7 +121,7 @@ void handleEvent(SDL_Event event)
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();
         CanvasTriangle t = CanvasTriangle(CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150));
-        drawStrokedTriangle(window, t), Colour(rand()%255, rand()%255, rand()%255);
+        drawStrokedTriangle(window, t);
         cout << "U" << endl;
     }
     else if (event.key.keysym.sym == SDLK_f){

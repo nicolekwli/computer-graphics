@@ -83,84 +83,53 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   }
 }
 
+
+// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depth
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
     uint32_t colour = bitpackingColour(c);
     
-
     int dx = p2.x - p1.x;
     if (dx == 0){
         drawLine(window, p1, p2, c);
     } else {
-       
-        // bool steep = abs(p2.y - p1.y) > abs(p2.x - p1.x);
-
-        // if (steep){
-        //     swap(p1.x, p1.y);
-        //     swap(p2.x, p2.y);
-
-        // }
-        // if (p2.x < p1.x){
-        //     swap(p1,p2);
-        // }
+        bool steep = abs(p2.y - p1.y) > abs(p2.x - p1.x);
+        if (steep){
+            swap(p1.x, p1.y);
+            swap(p2.x, p2.y);
+        }
 
         if (p2.x < p1.x){
             swap(p1,p2);
         }
 
+        int dErr = abs(p2.y - p1.y);
+        int yStep = p1.y > p2.y ? -1 : 1;
+        
         int dx = p2.x - p1.x;
-        int dy = p2.y - p1.y;
 
-        int x = abs(p1.x);
-        int y = abs(p1.y);
+        float dStep = (p2.depth - p1.depth) / dx;
+        float d = p1.depth;
 
-        float depthStep = abs(p2.depth - p1.depth) / abs(dx);
-        if (p2.depth < p1.depth) depthStep *= -1;
+        int err = dx / 2;
+        int y = p1.y;
 
-        float depth = p1.depth;
-
-        if((dy / dx) < 1){ // slope < 1
-            window.setPixelColour(x, y, depth, colour);
-
-            depth += depthStep;
-
-            int pk = (2 * abs(dy)) - abs(dx);
-
-            for(int i = 0; i < abs(dx) ; i++)
-            {
-                x = x + 1;
-                if(pk < 0)
-                    pk = pk + (2 * abs(dy));
-                else
-                {
-                    if (p1.y > p2.y) y -= 1;
-                    else y = y + 1;
-                    pk = pk + (2 * abs(dy)) - (2 * abs(dx));
-                }
-                window.setPixelColour(x, y, depth, colour);
+        for (int i=p1.x; i<p2.x; i++){
+            if (steep){
+                window.setPixelColour(y, i, d, colour);
+            } else {
+                window.setPixelColour(i, y, d, colour);
             }
-        } else { // slope >= 1
-            window.setPixelColour(x, y, depth, colour);
-
-            depth += depthStep;
-            int pk = (2 * abs(dx)) - abs(dy);
-
-            for(int i = 0; i < abs(dy) ; i++)
-            {
-                y = y + 1;
-                if(pk < 0)
-                    pk = pk + (2 * abs(dx));
-                else
-                {
-                    x = x + 1;
-                    pk = pk + (2 * abs(dx)) - (2 *abs(dy));
-                }
-
-                window.setPixelColour(x, y, depth, colour);
+            
+            err -= dErr;
+            if (err < 0){
+                y += yStep;
+                err += dx;
             }
+            d += dStep;
+            
         }
-    }  
+    }
 }
-
 
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
   uint32_t colour = bitpackingColour(t.colour);
@@ -189,8 +158,8 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
-        drawLine(window, lineTopLeft[a], lineTopRight[a], c);
-        //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
+        //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
+        drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
 
     }
 }

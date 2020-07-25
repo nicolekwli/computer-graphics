@@ -28,24 +28,25 @@ int main(int argc, char* argv[]){
         // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,10), Colour(12,120,120));
         // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,150), Colour(12,120,120));
 
-        //CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
-        // t.vertices[0].texturePoint.x = 195;
-        // t.vertices[0].texturePoint.y = 5;
-        // t.vertices[1].texturePoint.x = 395;
-        // t.vertices[1].texturePoint.y = 380;
-        // t.vertices[2].texturePoint.x = 65;
-        // t.vertices[2].texturePoint.y = 330;
+        CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
+        t.vertices[0].texturePoint.x = 195;
+        t.vertices[0].texturePoint.y = 5;
+        t.vertices[1].texturePoint.x = 395;
+        t.vertices[1].texturePoint.y = 380;
+        t.vertices[2].texturePoint.x = 65;
+        t.vertices[2].texturePoint.y = 330;
 
         //drawStrokedTriangle(window, t);
 
         //pixels = readPPM(window,"assets/texture.ppm");  
-        //ppm = readPPM(window,"assets/texture.ppm"); 
-        // fillTextureTriangle(window, ppm.pixels, t);
+        ppm = readPPM(window,"assets/texture.ppm"); 
+        //ppm = readPPM(window,"assets/texture1.ppm"); 
+        fillTextureTriangle(window, ppm.pixels, t);
 
-        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
-        //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam, ppm.pixels);
+        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+        // //createWireframe(window, object, mycam);
+        //rasterise(window, object, mycam, ppm.pixels);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
@@ -53,10 +54,14 @@ int main(int argc, char* argv[]){
         //raytracer
         //drawFilledTriangleRay(window, object, mycam);
 
-        // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
-        // createWireframe(window, object, mycam);
+        //vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
+        //vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
+        //createWireframe(window, object, mycam);
         //rasterise(window, object, mycam, ppm.pixels);
+
+        // vector<Colour> c = readMTL("assets/Crate/Crate1.mtl");
+        // vector<ModelTriangle> object = readOBJ("assets/Crate/Crate1.obj", c, ppm, 1);
+        // rasterise(window, object, mycam, ppm.pixels);
 
         window.renderFrame();
     }

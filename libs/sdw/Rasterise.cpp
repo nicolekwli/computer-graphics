@@ -1,7 +1,5 @@
 #include "Rasterise.h"
 
-
-
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     vec3 point = (vertex3D - cam.cameraPos) * cam.cameraRot;
@@ -14,6 +12,8 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
     float y2D = (window.height/2) - (cam.focalLength * y / (z));
 
     CanvasPoint vertex2D = CanvasPoint(x2D, y2D, 1/z);
+
+    // add in bit for colour? for shading
 
     // make sure they are within the screen
     if (vertex2D.x < 0){
@@ -71,16 +71,11 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
         }
 
         if (keep.size() == 3) {
-            // return final; 
-            //final.push_back(ct);
-            //return final; 
-            continue; // break would get out of the for loop i think
+            continue; // break would get out of the for loop
         }
 
         else if (discard.size() == 3){
-            // final.push_back(ct); // this hsouldnt be here but it make up and left work
             return final; 
-            //break;
         }
 
         // this doesnt work fully
@@ -119,8 +114,6 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
             CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
             CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
 
-            //final.push_back(CanvasTriangle(p1, p2, newP1, ct.colour));
-            //final.push_back(CanvasTriangle(p2, newP1, newP2, ct.colour));
 
             vector<CanvasTriangle> clipped1 = clipping(window, CanvasTriangle(p1, p2, newP1, ct.colour));
             vector<CanvasTriangle> clipped2 = clipping(window, CanvasTriangle(p2, newP1, newP2, ct.colour));
@@ -158,6 +151,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
         canvasTriangles.push_back(ct);
 
         vector<CanvasTriangle> cts = clipping(window, ct);
+
 
         for (int j = 0; j < cts.size(); j++){
             if (ct.vertices[0].texturePoint.x == -1){

@@ -42,6 +42,22 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals){
     return vect;
 }
 
+// vector<Colour> interpolation(Colour from, Colour to, int noOfVals){
+//     uint32_t colourFrom = bitpackingColour(from);
+//     uint32_t colourTo  = bitpackingColour(to);
+//     vector<Colour> vect;
+//     uint32_t intervals;
+
+//     intervals = (to - from) / (noOfVals - 1.0f);
+//     vect.push_back(from);
+    
+//     for (int i = 1; i < noOfVals; i++) {
+//         vect.push_back(from + intervals*(float)i);
+//     }
+
+//     return vect;
+// }
+
 // a = from, b = to
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
     vector<CanvasPoint> vect;
@@ -60,6 +76,8 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     for (int i = 1; i < noOfVals; i++) {
         // double check depth
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i, a.depth + intervalsDepth * i) ;
+        //texPointCorrected(a, b, p);
+        // need perspective correctied
         p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
         p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 
@@ -67,6 +85,19 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     }
     vect.push_back(b);
     return vect;
+}
+
+void texPointCorrected(CanvasPoint a, CanvasPoint b, CanvasPoint &newP){
+    float shortD = sqrt(pow((newP.x - a.x), 2) + pow((newP.y - a.y), 2));
+    float longD = sqrt(pow((b.x - a.x), 2) + pow((b.y - a.y), 2));
+    float q = shortD / longD;
+    float z = 1 / ((1 / a.depth * (1-q))  + (1 / b.depth * q));
+    //float z = a.depth * (1-q) + (b.depth * q);
+    float texX = abs(((a.x * (1 - q) * a.depth) + (b.x * q * b.depth))*z);
+    float texY = abs(((a.y * (1 - q) * a.depth) + (b.y * q * b.depth)) *z);
+    newP.texturePoint.x = texX;
+    newP.texturePoint.y = texY;
+
 }
 
 
@@ -78,13 +109,14 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   vector<CanvasPoint> line = interpolation(p2, p1, steps);
 
   for (int i=0; i<(int)steps+1; i++){
+    // interpolate to get cllours 
     window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
     //window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
 }
 
 
-// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depth
+// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depthgit
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
     uint32_t colour = bitpackingColour(c);
     
@@ -183,7 +215,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     }
 
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
-    //float ratioR = (triangle.vertices[1].depth - triangle.vertices[0].depth) / (triangle.vertices[2].depth - triangle.vertices[0].depth);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
                                         triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
@@ -219,9 +250,7 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
         // drawLine(lineTopLeft[a], lineTopRight, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
 
         for (int c = 0; c < steps; c++){
-            // Add bit that does shading/ illumination in carl's
-            // depth buffer is already a kind of shading?
-            window.setPixelColour((int)lineTopLeft[a].x + c, (int)lineTopRight[a].y, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
+            window.setPixelColour((int)points[c].x, (int)points[c].y, points[c].depth, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
         }
     }
 }
@@ -250,7 +279,20 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
                                         t.vertices[0].y + ratio * (t.vertices[2].y - t.vertices[0].y),
                                         t.vertices[0].depth + ratio * (t.vertices[2].depth) - t.vertices[0].depth);
 
-    float scale = (t.vertices[0].y-t.vertices[1].y)/(t.vertices[0].y-t.vertices[2].y);
+    // CanvasPoint newP = CanvasPoint(t.vertices[0].x + ratio * (t.vertices[2].x - t.vertices[0].x), 
+    //                                     t.vertices[0].y + ratio * (t.vertices[2].y - t.vertices[0].y));
+
+    // // depth
+    // float ratioD = (t.vertices[1].depth - t.vertices[0].depth) / (t.vertices[2].depth - t.vertices[0].depth);
+    // newP.depth = t.vertices[0].depth + ratioD * (t.vertices[2].y - t.vertices[0].y);
+
+    // REDO DEPTH USING BARY
+    // DOUBLE CHECK FUNCTION
+
+    // get texture points
+    //texPointCorrected(t.vertices[0], t.vertices[2], newP);
+    
+    float scale = (t.vertices[0].y-t.vertices[1].y) / (t.vertices[0].y-t.vertices[2].y);
     newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
     newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
 

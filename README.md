@@ -38,7 +38,7 @@
 ### (80s) some of...
 * Environment maps
 * Complex “interesting” materials (e.g. glass)
-- [x] Line drawing optimisations (e.g. Bresenham) [Need perfecting]
+- [x] Line drawing optimisations (e.g. Bresenham)
 * Advance clipping (frustum)
 * Photon maps and caustics
 * “Intelligent” model simplification

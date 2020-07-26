@@ -29,7 +29,7 @@
 * Phong Shading
 * Fairly “interesting” materials (e.g. mirrors)
 * Super Sampling Anti-Aliasing
-* Perspective corrected texture mapping
+- [x] Perspective corrected texture mapping
 * “Fancy” animation
 * Soft shadow
 * Bump maps

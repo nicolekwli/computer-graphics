@@ -39,9 +39,9 @@ int main(int argc, char* argv[]){
         //drawStrokedTriangle(window, t);
 
         //pixels = readPPM(window,"assets/texture.ppm");  
-        ppm = readPPM(window,"assets/texture.ppm"); 
-        //ppm = readPPM(window,"assets/texture1.ppm"); 
-        fillTextureTriangle(window, ppm.pixels, t);
+        //ppm = readPPM(window,"assets/texture.ppm"); 
+        ppm = readPPM(window,"assets/texture1.ppm"); 
+        //fillTextureTriangle(window, ppm.pixels, t);
 
         // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
         // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
@@ -54,10 +54,10 @@ int main(int argc, char* argv[]){
         //raytracer
         //drawFilledTriangleRay(window, object, mycam);
 
-        //vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
-        //vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
+        vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
+        vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
         //createWireframe(window, object, mycam);
-        //rasterise(window, object, mycam, ppm.pixels);
+        rasterise(window, object, mycam, ppm.pixels);
 
         // vector<Colour> c = readMTL("assets/Crate/Crate1.mtl");
         // vector<ModelTriangle> object = readOBJ("assets/Crate/Crate1.obj", c, ppm, 1);

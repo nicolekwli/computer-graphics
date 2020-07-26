@@ -76,10 +76,10 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     for (int i = 1; i < noOfVals; i++) {
         // double check depth
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i, a.depth + intervalsDepth * i) ;
-        //texPointCorrected(a, b, p);
+        texPointCorrected(a, b, p);
         // need perspective correctied
-        p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
-        p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
+        //p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
+        //p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 
         vect.push_back(p);
     }
@@ -93,8 +93,8 @@ void texPointCorrected(CanvasPoint a, CanvasPoint b, CanvasPoint &newP){
     float q = shortD / longD;
     float z = 1 / ((1 / a.depth * (1-q))  + (1 / b.depth * q));
     //float z = a.depth * (1-q) + (b.depth * q);
-    float texX = abs(((a.x * (1 - q) * a.depth) + (b.x * q * b.depth))*z);
-    float texY = abs(((a.y * (1 - q) * a.depth) + (b.y * q * b.depth)) *z);
+    float texX = abs(((a.texturePoint.x * (1 - q) / a.depth) + (b.texturePoint.x * q / b.depth))*newP.depth);
+    float texY = abs(((a.texturePoint.y * (1 - q) / a.depth) + (b.texturePoint.y * q / b.depth)) *newP.depth);
     newP.texturePoint.x = texX;
     newP.texturePoint.y = texY;
 
@@ -282,19 +282,19 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     // CanvasPoint newP = CanvasPoint(t.vertices[0].x + ratio * (t.vertices[2].x - t.vertices[0].x), 
     //                                     t.vertices[0].y + ratio * (t.vertices[2].y - t.vertices[0].y));
 
-    // // depth
-    // float ratioD = (t.vertices[1].depth - t.vertices[0].depth) / (t.vertices[2].depth - t.vertices[0].depth);
-    // newP.depth = t.vertices[0].depth + ratioD * (t.vertices[2].y - t.vertices[0].y);
+    // depth
+    float q = (newP.x - t.vertices[0].x) / (t.vertices[2].x - t.vertices[0].x);
+    newP.depth = 1 / t.vertices[0].depth * (1-q) + 1 / t.vertices[2].depth * q;
+    newP.depth = 1/ newP.depth;
 
-    // REDO DEPTH USING BARY
     // DOUBLE CHECK FUNCTION
 
     // get texture points
-    //texPointCorrected(t.vertices[0], t.vertices[2], newP);
+    texPointCorrected(t.vertices[0], t.vertices[2], newP);
     
-    float scale = (t.vertices[0].y-t.vertices[1].y) / (t.vertices[0].y-t.vertices[2].y);
-    newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
-    newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
+    // float scale = (t.vertices[0].y-t.vertices[1].y) / (t.vertices[0].y-t.vertices[2].y);
+    // newP.texturePoint.x = t.vertices[0].texturePoint.x - scale * (t.vertices[0].texturePoint.x - t.vertices[2].texturePoint.x);
+    // newP.texturePoint.y = t.vertices[0].texturePoint.y - scale * (t.vertices[0].texturePoint.y - t.vertices[2].texturePoint.y);
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > t.vertices[1].x){

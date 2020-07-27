@@ -81,50 +81,20 @@ void Camera::setupFrus(int height, int width){
     float ratio = width / height;
 
     // near plane height and width
-    float Hnear = 2 * tan(fov / 2) * nearDist;
+    //float Hnear = 2 * tan(fov / 2) * nearDist;
+    float Hnear = tan(fov / 2) * nearDist;
 	float Wnear = Hnear * ratio;
 
     // far plane height and width
-    // float Hfar = 2 * tan(fov / 2) * farDist;
-	// float Wfar = Hfar * ratio;
+    float Hfar = 2 * tan(fov / 2) * farDist;
+	float Wfar = Hfar * ratio;
 
-    // directions
     vec3 right = vec3(1,0,0) * cameraRot;
     vec3 up = vec3(0,1,0) * cameraRot;
     vec3 forward = vec3(0,0,1) * cameraRot;
 
-    // far / near center
-    glm::vec3 fc = cameraPos + forward * farDist;
-    f.zfar.point = fc;
-    f.zfar.normal = forward;
-
-    vec3 nc = cameraPos + forward * nearDist;
-    f.znear.point = nc;
-    f.znear.normal = -forward;
-
-    // top
-    vec3 pos = nc + up * Hnear;
-    vec3 top = normalize(pos - cameraPos) * right;
-    f.sides[0].normal = top;
-    f.sides[0].point = pos;
-
-    // bottom
-    pos = nc - up * Hnear;
-    vec3 bottom = normalize(pos - cameraPos) * right;
-    f.sides[1].normal = bottom;
-    f.sides[1].point = pos;
-
-    // left
-    pos = nc + right * Wnear;
-    vec3 left = normalize(pos - cameraPos) * up;
-    f.sides[2].normal = left;
-    f.sides[2].point = pos;
-
-    // right
-    pos = nc - right * Wnear;
-    left = normalize(pos - cameraPos) * up;
-    f.sides[3].normal = left;
-    f.sides[3].point = pos;
+    // vec3 fc = cameraPos + forward * farDist;
+    // vec3 nc = cameraPos + forward * nearDist;
 
     // corners of each plane
 	// vec3 ftl = fc + (up * Hfar/2) - (right * Wfar/2);
@@ -135,7 +105,64 @@ void Camera::setupFrus(int height, int width){
     // vec3 ntl = nc + (up * Hnear/2) - (right * Wnear/2);
 	// vec3 ntr = nc + (up * Hnear/2) + (right * Wnear/2);
 	// vec3 nbl = nc - (up * Hnear/2) - (right * Wnear/2);
-	// vec3 nbr = nc - (up * Hnear/2) + (right * Wnear/2);f
+	// vec3 nbr = nc - (up * Hnear/2) + (right * Wnear/2);
+
+    // Calculate normal and point of each plane
+
+    // far / near center
+    glm::vec3 fc = cameraPos + forward * farDist;
+    f.sides[4].point = fc;
+    f.sides[4].normal = -forward;
+    // f.zfar.point = fc;
+    // f.zfar.normal = -forward;
+
+    vec3 nc = cameraPos + forward * nearDist;
+    f.sides[5].point = nc;
+    f.sides[5].normal = forward;
+    // f.znear.point = nc;
+    // f.znear.normal = forward;
+
+    // top
+    vec3 pos = (nc + up * (Hnear / 2)) - cameraPos;
+    vec3 top = normalize(pos);
+    top = cross(top, right);
+    //vec3 pos = nc + (up * Hnear);
+    //vec3 top = normalize(pos - cameraPos) * right;
+    //vec3 top = normalize(cross((pos - cameraPos), right));
+    f.sides[0].normal = top;
+    f.sides[0].point = pos;
+
+    // bottom
+    pos = (nc - up * (Hnear / 2)) - cameraPos;
+    vec3 bottom = -normalize(pos);
+    bottom = cross(right, bottom);
+    //pos = nc - (up * Hnear);
+    //vec3 bottom = normalize(pos - cameraPos) * right;
+    //vec3 bottom = -normalize(cross(right, (pos - cameraPos)));
+    f.sides[1].normal = bottom;
+    f.sides[1].point = pos;
+
+    // left
+    pos = (nc + right * (Wnear / 2)) - cameraPos;
+    vec3 left = -normalize(pos);
+    left = cross(left, up);
+    //pos = nc + (right * Wnear);
+    //vec3 left = normalize(pos - cameraPos) * up;
+    //vec3 left = -normalize(cross((pos - cameraPos), up));
+    f.sides[2].normal = left;
+    f.sides[2].point = pos;
+
+    // right
+    pos = (nc - right * (Wnear / 2)) - cameraPos;
+    left = normalize(pos);
+    left = cross(up, left);
+    //pos = nc - (right * Wnear);
+    //left = normalize(pos - cameraPos) * up;
+    //left = normalize(cross(up, (pos - cameraPos)));
+    f.sides[3].normal = left;
+    f.sides[3].point = pos;
+
+    
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

@@ -33,7 +33,7 @@ class Camera {
 
         struct frustum
         {
-            plane sides[4];          // represent the 4 sides of the frustum
+            plane sides[6];          // represent the 4 sides of the frustum
             plane znear;             // the z-near plane
             plane zfar;
         };

@@ -129,13 +129,18 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
 vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriangle ct){
     vector<CanvasTriangle> final;
     // for each side 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 6; i++){
         float distance;
         vector<vec3> keep;
         vector<vec3> discard;
         for (int j=0; j<3; j++){
             vec3 v = vec3(ct.vertices[j].x, ct.vertices[j].y, ct.vertices[j].depth);
-            distance = dot(c.f.sides[i].normal, v);
+            //distance = dotproduct (point, plane.normal) - plane.distance;
+            // (currentp - p) * n
+            distance = dot(c.f.sides[i].normal, (v-c.f.sides[i].point));
+            // or (currentp * n) - d
+                // d = p*n
+            //distance = dot(c.f.sides[i].normal, v);
             //distance = dot(v, c.f.sides[i].normal);
 
             if (distance >= 0){
@@ -157,9 +162,8 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
         // this doesnt work fully
         else if ((discard.size() == 2) && (keep.size() == 1)){
             // get distance ratio to get 2 new points
-            cout << "hi" << endl;
-            float ratio1 = dot(c.f.sides[i].normal, discard[0])  / dot(c.f.sides[i].normal, normalize(keep[0] - discard[0]));
-            float ratio2 = dot(c.f.sides[i].normal, discard[1])  / dot(c.f.sides[i].normal, normalize(keep[0] - discard[1]));
+            float ratio1 = dot(c.f.sides[i].normal, discard[0])  / dot(c.f.sides[i].normal, keep[0] - discard[0]);
+            float ratio2 = dot(c.f.sides[i].normal, discard[1])  / dot(c.f.sides[i].normal, keep[0] - discard[1]);
 
             vec3 np1 = discard[0] - ratio1 * (keep[0] - discard[0]);
             vec3 np2 = discard[1] - ratio2 * (keep[0] - discard[1]);
@@ -169,8 +173,8 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
 
             CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
 
-            ct.vertices[1] = p;
-            ct.vertices[0] = newP1;
+            ct.vertices[0] = p;
+            ct.vertices[1] = newP1;
             ct.vertices[2] = newP2;
 
             // final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
@@ -178,7 +182,6 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
         }
 
         else if ((keep.size() == 2) && (discard.size() == 1)){
-            cout << "here" << endl;
             // get two triangles 
             float ratio1 = dot(c.f.sides[i].normal, discard[0])  / dot(c.f.sides[i].normal, (keep[0] - discard[0]));
             float ratio2 = dot(c.f.sides[i].normal, discard[0])  / dot(c.f.sides[i].normal, (keep[1] - discard[0]));
@@ -231,8 +234,8 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
         modelToCanvasTri(window, t[i], ct, cam);
         canvasTriangles.push_back(ct);
 
-        vector<CanvasTriangle> cts = clipping(window, ct);
-        //vector<CanvasTriangle> cts = clippingFrus(window, cam, ct);
+        //vector<CanvasTriangle> cts = clipping(window, ct);
+        vector<CanvasTriangle> cts = clippingFrus(window, cam, ct);
 
 
         for (int j = 0; j < cts.size(); j++){

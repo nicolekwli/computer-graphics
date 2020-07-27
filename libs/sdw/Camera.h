@@ -28,7 +28,7 @@ class Camera {
         struct plane
         {
             vec3  normal;         // normalized Normal-Vector of the plane
-            float    distance;       // shortest distance from plane to Origin
+            vec3    point;       // shortest distance from plane to Origin
         };
 
         struct frustum
@@ -45,6 +45,9 @@ class Camera {
         vec3 cameraRig;
         float focalLength;
         float yaw; //yaw angle controls cam rotation arounf y-axis
+        float nearDist;
+        float farDist;
+        float fov;
         frustum f;
 
         //member functions

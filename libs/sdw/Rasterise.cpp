@@ -143,7 +143,7 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
         vector<vec3> discard;
         for (int j=0; j<3; j++){
             vec3 v = vec3(ct.vertices[j].x, ct.vertices[j].y, ct.vertices[j].depth);
-            distance = dot(c.f.sides[i].normal, v) - c.f.sides[i].distance;
+            distance = dot(c.f.sides[i].normal, v);
             //distance = dot(v, c.f.sides[i].normal);
 
             if (distance >= 0){
@@ -169,17 +169,17 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
             float ratio1 = dot(c.f.sides[i].normal, discard[0])  / dot(c.f.sides[i].normal, normalize(keep[0] - discard[0]));
             float ratio2 = dot(c.f.sides[i].normal, discard[1])  / dot(c.f.sides[i].normal, normalize(keep[0] - discard[1]));
 
-            // vec3 np1 = discard[0] - ratio1 * (keep[0] - discard[0]);
-            // vec3 np2 = discard[1] - ratio2 * (keep[0] - discard[1]);
+            vec3 np1 = discard[0] - ratio1 * (keep[0] - discard[0]);
+            vec3 np2 = discard[1] - ratio2 * (keep[0] - discard[1]);
 
-            // CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
-            // CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
+            CanvasPoint newP1 = CanvasPoint(np1.x, np1.y, np1.z);
+            CanvasPoint newP2 = CanvasPoint(np2.x, np2.y, np2.z);
 
-            // CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
+            CanvasPoint p = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
 
-            // ct.vertices[1] = p;
-            // ct.vertices[0] = newP1;
-            // ct.vertices[2] = newP2;
+            ct.vertices[1] = p;
+            ct.vertices[0] = newP1;
+            ct.vertices[2] = newP2;
 
             // final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
             // return final;

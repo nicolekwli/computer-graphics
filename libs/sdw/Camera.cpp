@@ -16,6 +16,10 @@ Camera::Camera(int height, int width){
     //focalLength = 480/24;
     yaw = 0;
 
+    nearDist = 1;
+    farDist = 100;
+    fov = 90.0f;
+
     setupFrus(height, width);
 
     
@@ -71,44 +75,67 @@ void Camera::lookAt(glm::vec3 from){
     cameraRot[2][2] = forward.z;
 }
 
+// referrenced from http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-extracting-the-planes/
 void Camera::setupFrus(int height, int width){
-    float angle_horizontal =  atan2(width/2,focalLength)-0.0001;
-    float angle_vertical   =  atan2(height/2,focalLength)-0.0001;
-    float sh               =  sin(angle_horizontal);
-    float sv               =  sin(angle_vertical);
-    float ch               =  cos(angle_horizontal);
-    float cv               =  cos(angle_vertical);
+
+    float ratio = width / height;
+
+    // near plane height and width
+    float Hnear = 2 * tan(fov / 2) * nearDist;
+	float Wnear = Hnear * ratio;
+
+    // far plane height and width
+    // float Hfar = 2 * tan(fov / 2) * farDist;
+	// float Wfar = Hfar * ratio;
+
+    // directions
+    vec3 right = vec3(1,0,0) * cameraRot;
+    vec3 up = vec3(0,1,0) * cameraRot;
+    vec3 forward = vec3(0,0,1) * cameraRot;
+
+    // far / near center
+    glm::vec3 fc = cameraPos + forward * farDist;
+    f.zfar.point = fc;
+    f.zfar.normal = forward;
+
+    vec3 nc = cameraPos + forward * nearDist;
+    f.znear.point = nc;
+    f.znear.normal = -forward;
+
+    // top
+    vec3 pos = nc + up * Hnear;
+    vec3 top = normalize(pos - cameraPos) * right;
+    f.sides[0].normal = top;
+    f.sides[0].point = pos;
+
+    // bottom
+    pos = nc - up * Hnear;
+    vec3 bottom = normalize(pos - cameraPos) * right;
+    f.sides[1].normal = bottom;
+    f.sides[1].point = pos;
 
     // left
-    f.sides[0].normal.x=ch;
-    f.sides[0].normal.y=0;
-    f.sides[0].normal.z=sh;
-    f.sides[0].distance = 0;
+    pos = nc + right * Wnear;
+    vec3 left = normalize(pos - cameraPos) * up;
+    f.sides[2].normal = left;
+    f.sides[2].point = pos;
+
     // right
-    f.sides[1].normal.x=-ch;
-    f.sides[1].normal.y=0;
-    f.sides[1].normal.z=sh;
-    f.sides[1].distance = 0;
-    // top
-    f.sides[2].normal.x=0;
-    f.sides[2].normal.y=cv;
-    f.sides[2].normal.z=sv;
-    f.sides[2].distance = 0;
-    // bottom
-    f.sides[3].normal.x=0;
-    f.sides[3].normal.y=-cv;
-    f.sides[3].normal.z=sv;
-    f.sides[3].distance = 0;
-    // z-near clipping plane
-    f.znear.normal.x=0;
-    f.znear.normal.y=0;
-    f.znear.normal.z=1;
-    f.znear.distance = -10;
-    // far-plane
-    f.zfar.normal.x = 0;
-    f.zfar.normal.y = 0;
-    f.zfar.normal.z = -1;
-    f.zfar.distance = 1000;
+    pos = nc - right * Wnear;
+    left = normalize(pos - cameraPos) * up;
+    f.sides[3].normal = left;
+    f.sides[3].point = pos;
+
+    // corners of each plane
+	// vec3 ftl = fc + (up * Hfar/2) - (right * Wfar/2);
+    // vec3 ftr = fc + (up * Hfar/2) + (right * Wfar/2);
+	// vec3 fbl = fc - (up * Hfar/2) - (right * Wfar/2);
+	// vec3 fbr = fc - (up * Hfar/2) + (right * Wfar/2);
+
+    // vec3 ntl = nc + (up * Hnear/2) - (right * Wnear/2);
+	// vec3 ntr = nc + (up * Hnear/2) + (right * Wnear/2);
+	// vec3 nbl = nc - (up * Hnear/2) - (right * Wnear/2);
+	// vec3 nbr = nc - (up * Hnear/2) + (right * Wnear/2);f
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

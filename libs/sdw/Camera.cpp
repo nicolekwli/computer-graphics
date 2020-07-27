@@ -4,7 +4,7 @@
 // Camera::Camera(void){
 //     cout<<"object created"<<endl;
 // }
-Camera::Camera(){
+Camera::Camera(int height, int width){
     //cameraPos = vec3(0, 1, -6);
     cameraPos = vec3(0, 2, -FOCAL);
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
@@ -15,6 +15,14 @@ Camera::Camera(){
     focalLength = 480/FOCAL;
     //focalLength = 480/24;
     yaw = 0;
+
+    nearDist = 1;
+    farDist = 100;
+    fov = 90.0f;
+
+    setupFrus(height, width);
+
+    
 }
 
 void Camera::camUp(){
@@ -65,6 +73,69 @@ void Camera::lookAt(glm::vec3 from){
     cameraRot[0][2] = forward.x;
     cameraRot[1][2] = forward.y;
     cameraRot[2][2] = forward.z;
+}
+
+// referrenced from http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-extracting-the-planes/
+void Camera::setupFrus(int height, int width){
+
+    float ratio = width / height;
+
+    // near plane height and width
+    float Hnear = 2 * tan(fov / 2) * nearDist;
+	float Wnear = Hnear * ratio;
+
+    // far plane height and width
+    // float Hfar = 2 * tan(fov / 2) * farDist;
+	// float Wfar = Hfar * ratio;
+
+    // directions
+    vec3 right = vec3(1,0,0) * cameraRot;
+    vec3 up = vec3(0,1,0) * cameraRot;
+    vec3 forward = vec3(0,0,1) * cameraRot;
+
+    // far / near center
+    glm::vec3 fc = cameraPos + forward * farDist;
+    f.zfar.point = fc;
+    f.zfar.normal = forward;
+
+    vec3 nc = cameraPos + forward * nearDist;
+    f.znear.point = nc;
+    f.znear.normal = -forward;
+
+    // top
+    vec3 pos = nc + up * Hnear;
+    vec3 top = normalize(pos - cameraPos) * right;
+    f.sides[0].normal = top;
+    f.sides[0].point = pos;
+
+    // bottom
+    pos = nc - up * Hnear;
+    vec3 bottom = normalize(pos - cameraPos) * right;
+    f.sides[1].normal = bottom;
+    f.sides[1].point = pos;
+
+    // left
+    pos = nc + right * Wnear;
+    vec3 left = normalize(pos - cameraPos) * up;
+    f.sides[2].normal = left;
+    f.sides[2].point = pos;
+
+    // right
+    pos = nc - right * Wnear;
+    left = normalize(pos - cameraPos) * up;
+    f.sides[3].normal = left;
+    f.sides[3].point = pos;
+
+    // corners of each plane
+	// vec3 ftl = fc + (up * Hfar/2) - (right * Wfar/2);
+    // vec3 ftr = fc + (up * Hfar/2) + (right * Wfar/2);
+	// vec3 fbl = fc - (up * Hfar/2) - (right * Wfar/2);
+	// vec3 fbr = fc - (up * Hfar/2) + (right * Wfar/2);
+
+    // vec3 ntl = nc + (up * Hnear/2) - (right * Wnear/2);
+	// vec3 ntr = nc + (up * Hnear/2) + (right * Wnear/2);
+	// vec3 nbl = nc - (up * Hnear/2) - (right * Wnear/2);
+	// vec3 nbr = nc - (up * Hnear/2) + (right * Wnear/2);f
 }
 
 void Camera::translate(float xpos, float ypos, float zpos){

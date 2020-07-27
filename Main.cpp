@@ -10,7 +10,7 @@
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 
 // creating a camera
-Camera mycam = Camera();
+Camera mycam = Camera(HEIGHT, WIDTH);
 //vector<vector<uint32_t>> pixels;
 PPM ppm;
 
@@ -105,19 +105,19 @@ void handleEvent(SDL_Event event)
     } 
     else if (event.key.keysym.sym == SDLK_w){
         cout << "ROTATE UP" << endl;
-        mycam.camOrientation(vec3(0.1, 0, 0));
+        mycam.camOrientation(vec3(0.01, 0, 0));
     } 
     else if (event.key.keysym.sym == SDLK_s){
         cout << "ROTATE down" << endl;
-        mycam.camOrientation(vec3(-0.1, 0, 0));
+        mycam.camOrientation(vec3(-0.01, 0, 0));
     } 
     else if (event.key.keysym.sym == SDLK_a){
         cout << "ROTATE LEFT" << endl;
-        mycam.camOrientation(vec3(0, 0.1, 0));
+        mycam.camOrientation(vec3(0, 0.01, 0));
     } 
     else if (event.key.keysym.sym == SDLK_d){
         cout << "ROTATE RIGHT" << endl;
-        mycam.camOrientation(vec3(0, -0.1, 0));
+        mycam.camOrientation(vec3(0, -0.01, 0));
     } 
     else if (event.key.keysym.sym == SDLK_l){
         cout << "LOOK AT" << endl;

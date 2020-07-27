@@ -1,9 +1,5 @@
 #include "Camera.h"
 
-// empty constructor to create class
-// Camera::Camera(void){
-//     cout<<"object created"<<endl;
-// }
 Camera::Camera(){
     cameraPos = vec3(0, 0, -FOCAL);
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);

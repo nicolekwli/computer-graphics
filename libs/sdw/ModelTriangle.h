@@ -2,12 +2,14 @@
 
 #include <glm/glm.hpp>
 #include "Colour.h"
+#include "TexturePoint.h"
 #include <string>
 
 class ModelTriangle
 {
   public:
     glm::vec3 vertices[3];
+    TexturePoint texturePoints[3];
     Colour colour;
 
     ModelTriangle();

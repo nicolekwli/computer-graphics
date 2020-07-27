@@ -5,6 +5,7 @@
 #include "TexturePoint.h"
 #include "Colour.h"
 #include "Utils.h"
+#include "Ppm.h"
 #include <glm/glm.hpp>
 #include <fstream>
 #include <vector>
@@ -28,19 +29,25 @@ uint32_t bitpackingColour(Colour c);
 vector<float> interpolation(float from, float to, int noOfVals);
 vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals);
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals);
+void texPointCorrected(CanvasPoint a, CanvasPoint b, CanvasPoint &newP);
+
 
 // ----- Drawing -----
 void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
+void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t);
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c); 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle);
 void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels);
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t);
 
+// ----- Drawing Helpers -----
+
+
 // ----- Parsing -----
-vector<vector<uint32_t>> readPPM(DrawingWindow window, string filename);
+PPM readPPM(DrawingWindow window, string filename);
 void savePPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
-vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours);
+vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, float rescale);
 vector<Colour> readMTL(string filename);

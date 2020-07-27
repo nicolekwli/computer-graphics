@@ -74,7 +74,6 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     vect.push_back(a);
 
     for (int i = 1; i < noOfVals; i++) {
-        // double check depth
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i) ;
         float q = (p.x - a.x) / (b.x - a.x);
         p.depth = 1 / a.depth * (1-q) + 1 / b.depth * q;
@@ -82,7 +81,6 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
 
         texPointCorrected(a, b, p);
-        // need perspective correctied
         //p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
         //p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 

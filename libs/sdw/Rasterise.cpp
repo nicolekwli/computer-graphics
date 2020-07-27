@@ -13,7 +13,6 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     CanvasPoint vertex2D = CanvasPoint(x2D, y2D, 1/z);
 
-    // add in bit for colour? for shading
 
     // make sure they are within the screen
     if (vertex2D.x < 0){

@@ -2,7 +2,7 @@
 
 Camera::Camera(int height, int width){
     //cameraPos = vec3(0, 1, -6);
-    cameraPos = vec3(0, 2, -FOCAL);
+    cameraPos = vec3(0, 2, -FOCAL); //(0, 0, -FOCAL)
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
     //cameraRot = mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
     cameraRot = mat3(cos(0), 0, sin(0), 0, 1, 0, -sin(0), 0, cos(0));
@@ -160,24 +160,3 @@ void Camera::setupFrus(int height, int width){
 
     
 }
-
-void Camera::translate(float xpos, float ypos, float zpos){
-    // the below cant work?
-    // cameraPos = cameraRig - (cameraRig * 2.0f);
-
-    // need to use transformation matrix or something to update the movement of camera
-    cout<< xpos << " " << ypos << endl;
-}
-
-void TransformationMatrix(glm::mat4x4 M){
-    // P is point in world space
-    // C is where the camera is relative to the coordinate system
-    // P-C is the point in the coordinate system centered at 0,0
-    // R is rotation matrix
-    // P' = R. (P-C)
-}
-
-
-//  homogenous coordinates!!! ???
-
-

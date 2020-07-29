@@ -33,13 +33,13 @@
 * “Fancy” animation
 * Soft shadow
 * Bump maps
-* Bounding box clipping
+* Bounding box clipping [?? man im confused which is which]
 
 ### (80s) some of...
 * Environment maps
 * Complex “interesting” materials (e.g. glass)
 - [x] Line drawing optimisations (e.g. Bresenham)
-* Advance clipping (frustum)
+- [x] Advance clipping (frustum) [Need perfecting]
 * Photon maps and caustics
 * “Intelligent” model simplification
 

@@ -153,7 +153,7 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
         }
 
 
-        if (discard.size() == 3){
+        else if (discard.size() == 3){
             // final.push_back(ct); // this hsouldnt be here but it make up and left work
             return final; 
             //break;
@@ -211,6 +211,7 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
     return final;
 }
 
+
 void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
     vector<CanvasTriangle> canvasTriangles; 
     // for each triangle we need to get the canvas triangle first
@@ -221,7 +222,10 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
         modelToCanvasTri(window, t[i], ct, cam);
         canvasTriangles.push_back(ct);
 
-        drawStrokedTriangle(window, canvasTriangles.back());
+        vector<CanvasTriangle> cts = clipping(window, ct);
+        for (int j = 0; j < cts.size(); j++){
+            drawStrokedTriangle(window, cts[j]);
+        }
     }
 }
 
@@ -239,6 +243,26 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
 
 
         for (int j = 0; j < cts.size(); j++){
+            // sort vertices
+            for (int i = 0; i < 3; i++){
+                if (cts[j].vertices[2].y < cts[j].vertices[0].y){
+                    swap(cts[j].vertices[2], cts[j].vertices[0]);
+                }
+                if (cts[j].vertices[1].y < cts[j].vertices[0].y){
+                    swap(cts[j].vertices[0], cts[j].vertices[1]);
+                }
+                if (cts[j].vertices[2].y < cts[j].vertices[1].y){
+                    swap(cts[j].vertices[1], cts[j].vertices[2]);
+                }
+            }
+            // calculate normal of triangle mesh and poitns
+            // need to make them all vec3
+            //cts[j].normal = cross((cts[j].vertices[2] - cts[j].vertices[0]), (cts[j].vertices[1] - cts[j].vertices[0]));
+            // vec3 v = vec3(cts.vertices[j].x, cts.vertices[j].y, cts.vertices[j].depth);
+            // cts[j].vertices[0].normal = normalize(cam.cameraPos - v);
+            // cts[j].vertices[0].normal = ;
+            // cts[j].vertices[0].normal = ;
+
             if (ct.vertices[0].texturePoint.x == -1){
                 drawFilledTriangle(window, ct.colour, cts[j]);
             } else {

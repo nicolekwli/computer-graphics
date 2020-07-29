@@ -43,10 +43,10 @@ int main(int argc, char* argv[]){
         ppm = readPPM(window,"assets/texture1.ppm"); 
         //fillTextureTriangle(window, ppm.pixels, t);
 
-        vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
-        //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam, ppm.pixels);
+        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+        // //createWireframe(window, object, mycam);
+        // rasterise(window, object, mycam, ppm.pixels);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
@@ -62,6 +62,11 @@ int main(int argc, char* argv[]){
         // vector<Colour> c = readMTL("assets/Crate/Crate1.mtl");
         // vector<ModelTriangle> object = readOBJ("assets/Crate/Crate1.obj", c, ppm, 1);
         // rasterise(window, object, mycam, ppm.pixels);
+
+        vector<Colour> c = readMTL("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+        vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", c, ppm, 1);
+        createWireframe(window, object, mycam);
+        //rasterise(window, object, mycam, ppm.pixels);
 
         window.renderFrame();
     }

@@ -50,4 +50,5 @@ void savePPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
 vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, float rescale);
+vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM ppm, float rescale);
 vector<Colour> readMTL(string filename);

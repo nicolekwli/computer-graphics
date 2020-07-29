@@ -205,17 +205,17 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     //                                          CanvasPoint(rand()%200, rand()%150),
     //                                          c );
     // sort vertices, [0] is at the topm [1] middle [2] bottom
-    for (int i = 0; i < 3; i++){
-        if (triangle.vertices[2].y < triangle.vertices[0].y){
-            swap(triangle.vertices[2], triangle.vertices[0]);
-        }
-        if (triangle.vertices[1].y < triangle.vertices[0].y){
-            swap(triangle.vertices[0], triangle.vertices[1]);
-        }
-        if (triangle.vertices[2].y < triangle.vertices[1].y){
-            swap(triangle.vertices[1], triangle.vertices[2]);
-        }
-    }
+    // for (int i = 0; i < 3; i++){
+    //     if (triangle.vertices[2].y < triangle.vertices[0].y){
+    //         swap(triangle.vertices[2], triangle.vertices[0]);
+    //     }
+    //     if (triangle.vertices[1].y < triangle.vertices[0].y){
+    //         swap(triangle.vertices[0], triangle.vertices[1]);
+    //     }
+    //     if (triangle.vertices[2].y < triangle.vertices[1].y){
+    //         swap(triangle.vertices[1], triangle.vertices[2]);
+    //     }
+    // }
 
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
@@ -427,7 +427,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
     while (getline(file, line)){
         tokens = split(line, ' ');
 
-        if (tokens[0] == "o"){
+        if ((tokens[0] == "o") || (tokens[1] == "Object")){
             objectName = tokens[1];
 
         }
@@ -477,6 +477,99 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
     return triangles;
 }
 
+// This function reads obj files by reading all vertices and normals then creates the ModelTriangles
+vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM ppm, float rescale){
+
+    string line;
+    string *tokens;
+    string objectName;
+    vector<vec3> Vs;
+    vector<vec3> VNs;
+    vector<TexturePoint> VTs;
+    Colour col;
+    vector<ModelTriangle> triangles;
+
+    ifstream file;
+    file.open(filename);
+
+    while (getline(file, line)){
+        tokens = split(line, ' ');
+
+        if (tokens[0] == "#"){
+            continue;
+
+        } else if ((tokens[0] == "o") || (tokens[1] == "Object")){
+            objectName = tokens[1];
+
+        } else if (tokens[0] == "usemtl") {
+            // Colour
+            for (std::vector<int>::size_type i = 0; i != colours.size(); i++){
+                if(colours[i].name == tokens[1]){
+                    col = colours[i];
+                }
+            }
+        }  else if (tokens[0] == "v"){
+            glm::vec3 vec = vec3(stof(tokens[2])*rescale, stof(tokens[3])*rescale, stof(tokens[4])*-rescale);
+            cout << vec.x << endl;
+            Vs.push_back(vec);
+        } else if (tokens[0] == "vn"){
+            cout << tokens[3] << endl;
+            glm::vec3 vec = vec3(stof(tokens[1])*rescale, stof(tokens[2])*rescale, stof(tokens[3])*-rescale);
+            VNs.push_back(vec);
+        } else if (tokens[0] == "vt"){
+            TexturePoint tp = TexturePoint(stof(tokens[1])*(ppm.width-1), stof(tokens[2])*(ppm.height-1));
+            VTs.push_back(tp);
+        }
+        else if (tokens[0] == "f"){
+            ModelTriangle t;
+            std::size_t found = tokens[1].find("//");
+            // v and vn
+            if (found != std::string::npos){
+                int a = stoi(split(tokens[1],'//')[0]) - 1;
+                int b = stoi(split(tokens[2],'//')[0]) - 1;
+                int c = stoi(split(tokens[3],'//')[0]) - 1;
+
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c], col);
+                string *face1 = split(tokens[1],'/');
+                string *face2 = split(tokens[2],'/');
+                string *face3 = split(tokens[3],'/');
+
+                t.normals[0] = VNs[stoi(face1[2])-1];
+                t.normals[1] = VNs[stoi(face2[2])-1];
+                t.normals[2] = VNs[stoi(face3[2])-1];
+            } else {
+                // get vertices
+                int a = stoi(split(tokens[1],'/')[0]) - 1;
+                int b = stoi(split(tokens[2],'/')[0]) - 1;
+                int c = stoi(split(tokens[3],'/')[0]) - 1;
+
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c], col);
+                // there is a texture value e.g. f 1/1 2/2 3/3
+                // or 1/1/1
+                if (tokens[1].back() != '/'){
+                    // face1[0] is the vertex, face[1] is the texture point
+                    string *face1 = split(tokens[1],'/');
+                    string *face2 = split(tokens[2],'/');
+                    string *face3 = split(tokens[3],'/');
+                    
+                    t.normals[0] = VNs[stoi(face1[1])-1];
+                    t.normals[1] = VNs[stoi(face2[1])-1];
+                    t.normals[2] = VNs[stoi(face3[1])-1];
+
+                    t.texturePoints[0] = VTs[stoi(face1[2])-1];
+                    t.texturePoints[1] = VTs[stoi(face2[2])-1];
+                    t.texturePoints[2] = VTs[stoi(face3[2])-1];
+                } 
+            }
+            
+            triangles.push_back(t);        
+            cout << "pushed" << endl;     
+        }   
+
+    }
+    return triangles;
+}
+
 
 vector<Colour> readMTL(string filename){
     ifstream file;
@@ -488,8 +581,9 @@ vector<Colour> readMTL(string filename){
 
     vector<Colour> colours;
 
-    while (!file.eof()){
-        getline(file, line);
+    while (getline(file, line)){
+        //getline(file, line);
+        cout << line << endl;
         tokens = split(line, ' ');
 
         if (tokens[0] == "newmtl"){
@@ -501,7 +595,7 @@ vector<Colour> readMTL(string filename){
         else if (tokens[0] == "map_Kd"){
             // tokens[1] should be the texture file name
             colours.push_back(Colour(tokens[1], 0, 0, 0));
-        } 
+        } else continue;
     }
     file.close();
     return colours;

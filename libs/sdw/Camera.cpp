@@ -76,6 +76,7 @@ void Camera::lookAt(glm::vec3 from){
 }
 
 // referrenced from http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-extracting-the-planes/
+// https://www.cubic.org/docs/3dclip.htm
 void Camera::setupFrus(int height, int width){
 
     float ratio = width / height;

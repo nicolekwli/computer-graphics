@@ -20,6 +20,14 @@ using namespace glm;
 using std::vector;
 using glm::vec3;
 
+struct material{
+    string name;
+    Colour colour; //kd
+    vec3 ambient; //ka
+    vec3 specular; //ks
+    float highlight; //ns
+    float illum;
+}
 
 uint32_t bitpackingColour(Colour c);
 
@@ -52,3 +60,4 @@ void savePPM(DrawingWindow window, string filename);
 vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, float rescale);
 vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM ppm, float rescale);
 vector<Colour> readMTL(string filename);
+vector<Colour> readMTLAlt(string filename);

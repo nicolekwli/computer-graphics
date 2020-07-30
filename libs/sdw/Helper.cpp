@@ -248,8 +248,11 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
     int steps;
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
+
         steps = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
         vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[a], steps+1);
+
+        
         // drawLine(lineTopLeft[a], lineTopRight, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
 
         for (int c = 0; c < steps; c++){
@@ -493,13 +496,15 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
     file.open(filename);
 
     while (getline(file, line)){
+        //cout << line << endl;
         tokens = split(line, ' ');
 
-        if (tokens[0] == "#"){
+        if ((tokens[0] == "#") || (tokens[0] == "g")){
             continue;
 
-        } else if ((tokens[0] == "o") || (tokens[1] == "Object")){
-            objectName = tokens[1];
+        } else if (tokens[1] == "Object"){
+            objectName = tokens[2];
+            cout << "hi" << endl;
 
         } else if (tokens[0] == "usemtl") {
             // Colour
@@ -510,10 +515,9 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
             }
         }  else if (tokens[0] == "v"){
             glm::vec3 vec = vec3(stof(tokens[2])*rescale, stof(tokens[3])*rescale, stof(tokens[4])*-rescale);
-            cout << vec.x << endl;
+            //if (objectName == "rightwall") cout << vec.z << endl;
             Vs.push_back(vec);
         } else if (tokens[0] == "vn"){
-            cout << tokens[3] << endl;
             glm::vec3 vec = vec3(stof(tokens[1])*rescale, stof(tokens[2])*rescale, stof(tokens[3])*-rescale);
             VNs.push_back(vec);
         } else if (tokens[0] == "vt"){
@@ -562,8 +566,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
                 } 
             }
             
-            triangles.push_back(t);        
-            cout << "pushed" << endl;     
+            triangles.push_back(t);         
         }   
 
     }
@@ -583,7 +586,6 @@ vector<Colour> readMTL(string filename){
 
     while (getline(file, line)){
         //getline(file, line);
-        cout << line << endl;
         tokens = split(line, ' ');
 
         if (tokens[0] == "newmtl"){
@@ -599,4 +601,51 @@ vector<Colour> readMTL(string filename){
     }
     file.close();
     return colours;
+}
+
+vector<Colour> readMTLAlt(string filename){
+    ifstream file;
+    file.open(filename);
+
+    string line;
+    string *tokens;
+    string name;
+
+    vector<material> final;
+    
+    vector<Colour> colours;
+
+    while (getline(file, line)){
+        //getline(file, line);
+        material mat;
+        tokens = split(line, ' ');
+
+        if (tokens[0] == "newmtl"){
+            mat.name = tokens[1];
+        } 
+        else if (tokens[0] == "Ka"){
+            mat.ambient = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+        }
+        else if (tokens[0] == "Kd"){
+            mat.colour = Colour(name, int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+        }
+        else if (tokens[0] == "Ks"){
+            mat.specular = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+        }
+        else if (tokens[0] == "Ns"){
+            mat.highlight = stof(tokens[1]);
+        }
+        else if (tokens[0] == "illum"){
+            mat.illum = stof(tokens[1]);
+        }
+        else if (tokens[0] == "map_Kd"){
+            // tokens[1] should be the texture file name
+            colours.push_back(Colour(tokens[1], 0, 0, 0));
+        } 
+
+        final.push_back(mat);
+    }
+    file.close();
+    return colours;
+
 }

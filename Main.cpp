@@ -14,6 +14,9 @@ Camera mycam = Camera(HEIGHT, WIDTH);
 //vector<vector<uint32_t>> pixels;
 PPM ppm;
 
+vector<Colour> c = readMTL("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", c, ppm, 1);
+
 int main(int argc, char* argv[]){
     SDL_Event event;
     while(true){
@@ -39,8 +42,8 @@ int main(int argc, char* argv[]){
         //drawStrokedTriangle(window, t);
 
         //pixels = readPPM(window,"assets/texture.ppm");  
-        //ppm = readPPM(window,"assets/texture.ppm"); 
-        ppm = readPPM(window,"assets/texture1.ppm"); 
+        ppm = readPPM(window,"assets/texture.ppm"); 
+        //ppm = readPPM(window,"assets/texture1.ppm"); 
         //fillTextureTriangle(window, ppm.pixels, t);
 
         // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
@@ -63,10 +66,8 @@ int main(int argc, char* argv[]){
         // vector<ModelTriangle> object = readOBJ("assets/Crate/Crate1.obj", c, ppm, 1);
         // rasterise(window, object, mycam, ppm.pixels);
 
-        vector<Colour> c = readMTL("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-        vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", c, ppm, 1);
-        createWireframe(window, object, mycam);
-        //rasterise(window, object, mycam, ppm.pixels);
+        //createWireframe(window, object, mycam);
+        rasterise(window, object, mycam, ppm.pixels);
 
         window.renderFrame();
     }

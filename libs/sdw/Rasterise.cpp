@@ -256,6 +256,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
                 }
             }
             // calculate normal of triangle mesh and poitns
+
             // need to make them all vec3
             //cts[j].normal = cross((cts[j].vertices[2] - cts[j].vertices[0]), (cts[j].vertices[1] - cts[j].vertices[0]));
             // vec3 v = vec3(cts.vertices[j].x, cts.vertices[j].y, cts.vertices[j].depth);
@@ -263,11 +264,15 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
             // cts[j].vertices[0].normal = ;
             // cts[j].vertices[0].normal = ;
 
-            if (ct.vertices[0].texturePoint.x == -1){
-                drawFilledTriangle(window, ct.colour, cts[j]);
-            } else {
-                fillTextureTriangle(window, pixels, cts[j]);
-            }  
+            // GOURAUD SHADING
+            // Caluculate the new colour with light illumination
+
+            drawFilledTriangle(window, ct.colour, cts[j]);
+            // if (ct.vertices[0].texturePoint.x == -1){
+            //     drawFilledTriangle(window, ct.colour, cts[j]);
+            // } else {
+            //     fillTextureTriangle(window, pixels, cts[j]);
+            // }  
         }
     }
 

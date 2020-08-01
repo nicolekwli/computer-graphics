@@ -6,6 +6,8 @@
 #include "Camera.h"
 #include "Colour.h"
 #include "Utils.h"
+#include "Helper.h"
+#include "RayTriangleIntersection.h"
 #include <glm/glm.hpp>
 #include <fstream>
 #include <vector>
@@ -22,3 +24,4 @@ using glm::vec3;
 
 void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> t, Camera cam);
 void getClosestIntersection(ModelTriangle t, Camera cam);
+bool checkConstraints(vec3 sol);

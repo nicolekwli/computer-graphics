@@ -55,7 +55,7 @@ int main(int argc, char* argv[]){
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
         //raytracer stuff
-        drawFilledTriangleRay(window, object, mycam);
+        //drawFilledTriangleRay(window, object, mycam);
 
         // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
         // vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);

@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "CanvasPoint.h"
 #include "CanvasTriangle.h"
 #include "ModelTriangle.h"
@@ -27,7 +29,7 @@ struct material{
     vec3 specular; //ks
     float highlight; //ns
     float illum;
-}
+};
 
 uint32_t bitpackingColour(Colour c);
 

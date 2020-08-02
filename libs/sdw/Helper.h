@@ -22,9 +22,9 @@ using namespace glm;
 using std::vector;
 using glm::vec3;
 
-struct material{
+struct Material{
     string name;
-    Colour colour; //kd
+    vec3 diffuse; //kd -diffuse
     vec3 ambient; //ka
     vec3 specular; //ks
     float highlight; //ns
@@ -60,6 +60,8 @@ void savePPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
 vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, float rescale);
-vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM ppm, float rescale);
+vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm, float rescale);
 vector<Colour> readMTL(string filename);
-vector<Colour> readMTLAlt(string filename);
+vector<Material> readMTLAlt(string filename);
+
+void SSAA(DrawingWindow window);

@@ -14,8 +14,14 @@ Camera mycam = Camera(HEIGHT, WIDTH);
 //vector<vector<uint32_t>> pixels;
 PPM ppm;
 
-vector<Colour> c = readMTL("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", c, ppm, 1);
+vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+
+vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+// vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", c, ppm, 1);
+
+// vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
+// vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
 
 int main(int argc, char* argv[]){
     SDL_Event event;
@@ -31,13 +37,13 @@ int main(int argc, char* argv[]){
         // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,10), Colour(12,120,120));
         // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,150), Colour(12,120,120));
 
-        CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
-        t.vertices[0].texturePoint.x = 195;
-        t.vertices[0].texturePoint.y = 5;
-        t.vertices[1].texturePoint.x = 395;
-        t.vertices[1].texturePoint.y = 380;
-        t.vertices[2].texturePoint.x = 65;
-        t.vertices[2].texturePoint.y = 330;
+        // CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
+        // t.vertices[0].texturePoint.x = 195;
+        // t.vertices[0].texturePoint.y = 5;
+        // t.vertices[1].texturePoint.x = 395;
+        // t.vertices[1].texturePoint.y = 380;
+        // t.vertices[2].texturePoint.x = 65;
+        // t.vertices[2].texturePoint.y = 330;
 
         //drawStrokedTriangle(window, t);
 
@@ -46,8 +52,7 @@ int main(int argc, char* argv[]){
         //ppm = readPPM(window,"assets/texture1.ppm"); 
         //fillTextureTriangle(window, ppm.pixels, t);
 
-        // vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+        
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
 
@@ -57,8 +62,6 @@ int main(int argc, char* argv[]){
         //raytracer stuff
         //drawFilledTriangleRay(window, object, mycam);
 
-        // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
-        // vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
 
@@ -67,7 +70,7 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam, ppm.pixels);
+        rasterise(window, object, mycam, ppm.pixels, m, 1);
 
         window.renderFrame();
     }

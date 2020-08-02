@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TexturePoint.h"
+#include "Colour.h"
 #include <iostream>
 #include <glm/glm.hpp>
 
@@ -16,6 +17,7 @@ class CanvasPoint
     float brightness;
     TexturePoint texturePoint;
     vec3 normal;
+    Colour c;
 
     CanvasPoint();
 

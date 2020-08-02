@@ -84,6 +84,8 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         //p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
         //p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 
+        // INTERPOLATE COLOUR AS WELL
+
         vect.push_back(p);
     }
     vect.push_back(b);
@@ -119,7 +121,7 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
 }
 
 
-// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depthgit
+// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depth
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
     uint32_t colour = bitpackingColour(c);
     
@@ -200,28 +202,10 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 }
 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle){
-    // CanvasTriangle triangle = CanvasTriangle(CanvasPoint(rand()%200, rand()%150), 
-    //                                          CanvasPoint(rand()%200, rand()%150),
-    //                                          CanvasPoint(rand()%200, rand()%150),
-    //                                          c );
-    // sort vertices, [0] is at the topm [1] middle [2] bottom
-    // for (int i = 0; i < 3; i++){
-    //     if (triangle.vertices[2].y < triangle.vertices[0].y){
-    //         swap(triangle.vertices[2], triangle.vertices[0]);
-    //     }
-    //     if (triangle.vertices[1].y < triangle.vertices[0].y){
-    //         swap(triangle.vertices[0], triangle.vertices[1]);
-    //     }
-    //     if (triangle.vertices[2].y < triangle.vertices[1].y){
-    //         swap(triangle.vertices[1], triangle.vertices[2]);
-    //     }
-    // }
-
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
                                         triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
-
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){
@@ -481,7 +465,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
 }
 
 // This function reads obj files by reading all vertices and normals then creates the ModelTriangles
-vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM ppm, float rescale){
+vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm, float rescale){
 
     string line;
     string *tokens;
@@ -489,7 +473,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
     vector<vec3> Vs;
     vector<vec3> VNs;
     vector<TexturePoint> VTs;
-    Colour col;
+    Material material;
     vector<ModelTriangle> triangles;
 
     ifstream file;
@@ -504,13 +488,18 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
 
         } else if (tokens[1] == "Object"){
             objectName = tokens[2];
-            cout << "hi" << endl;
 
         } else if (tokens[0] == "usemtl") {
             // Colour
-            for (std::vector<int>::size_type i = 0; i != colours.size(); i++){
-                if(colours[i].name == tokens[1]){
-                    col = colours[i];
+            for (std::vector<int>::size_type i = 0; i != mtls.size(); i++){
+                // calculate colour using the whole lot 
+                if(mtls[i].name == tokens[1]){
+                    // do calculations for new vertex colour with lighting
+
+                    // int r=0;
+                    // int g=0;
+                    // int b=0;
+                    material = mtls[i];
                 }
             }
         }  else if (tokens[0] == "v"){
@@ -533,7 +522,14 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
                 int b = stoi(split(tokens[2],'//')[0]) - 1;
                 int c = stoi(split(tokens[3],'//')[0]) - 1;
 
-                t = ModelTriangle(Vs[a], Vs[b], Vs[c], col);
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t.mat.name = material.name;
+                t.mat.ambient = material.ambient;
+                t.mat.diffuse = material.diffuse;
+                t.mat.highlight = material.highlight;
+                t.mat.illum = material.illum;
+                t.mat.specular = material.specular;
+
                 string *face1 = split(tokens[1],'/');
                 string *face2 = split(tokens[2],'/');
                 string *face3 = split(tokens[3],'/');
@@ -547,7 +543,14 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Colour> colours, PPM pp
                 int b = stoi(split(tokens[2],'/')[0]) - 1;
                 int c = stoi(split(tokens[3],'/')[0]) - 1;
 
-                t = ModelTriangle(Vs[a], Vs[b], Vs[c], col);
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t.mat.name = material.name;
+                t.mat.ambient = material.ambient;
+                t.mat.diffuse = material.diffuse;
+                t.mat.highlight = material.highlight;
+                t.mat.illum = material.illum;
+                t.mat.specular = material.specular;
+
                 // there is a texture value e.g. f 1/1 2/2 3/3
                 // or 1/1/1
                 if (tokens[1].back() != '/'){
@@ -603,7 +606,7 @@ vector<Colour> readMTL(string filename){
     return colours;
 }
 
-vector<Colour> readMTLAlt(string filename){
+vector<Material> readMTLAlt(string filename){
     ifstream file;
     file.open(filename);
 
@@ -611,26 +614,29 @@ vector<Colour> readMTLAlt(string filename){
     string *tokens;
     string name;
 
-    vector<material> final;
+    vector<Material> final;
     
     vector<Colour> colours;
+    Material mat;
 
     while (getline(file, line)){
         //getline(file, line);
-        material mat;
+        
         tokens = split(line, ' ');
 
         if (tokens[0] == "newmtl"){
+            final.push_back(mat);
             mat.name = tokens[1];
         } 
         else if (tokens[0] == "Ka"){
             mat.ambient = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Kd"){
-            mat.colour = Colour(name, int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+            mat.diffuse = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Ks"){
             mat.specular = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+            
         }
         else if (tokens[0] == "Ns"){
             mat.highlight = stof(tokens[1]);
@@ -643,9 +649,22 @@ vector<Colour> readMTLAlt(string filename){
             colours.push_back(Colour(tokens[1], 0, 0, 0));
         } 
 
-        final.push_back(mat);
+        
     }
     file.close();
-    return colours;
+    return final;
+
+}
+
+
+void SSAA(DrawingWindow window){
+    uint32_t p, sp;
+    uint32_t r,g,b=0;
+    int samples= 4*4;
+
+    for (int y = 0; y < window.height; y++) {
+        for (int x = 0; x < window.width; x++) {
+        }
+    }
 
 }

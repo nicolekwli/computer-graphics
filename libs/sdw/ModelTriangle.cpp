@@ -4,6 +4,18 @@ ModelTriangle::ModelTriangle()
 {
 }
 
+ModelTriangle::ModelTriangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2)
+{
+    vertices[0] = v0;
+    vertices[1] = v1;
+    vertices[2] = v2;
+
+    texturePoints[0]  = TexturePoint(-1,-1);
+    texturePoints[1]  = TexturePoint(-1,-1);
+    texturePoints[2]  = TexturePoint(-1,-1);
+    
+}
+
 ModelTriangle::ModelTriangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2, Colour trigColour)
 {
     vertices[0] = v0;

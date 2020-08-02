@@ -1,5 +1,9 @@
 #include "Rasterise.h"
 
+vec3 lightPos(0, 0, -5.0);
+vec3 lightPower = 16.f * vec3(1, 1, 1);
+vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
+
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     vec3 point = (vertex3D - cam.cameraPos) * cam.cameraRot;
@@ -31,9 +35,22 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 }
 
 void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam){
+    // calculate new colour for each vertex
+    vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
+    vec3 amb = mt.mat.ambient * Ia;
+    
+    //vec3 diff = mt.mat.diffuse * lightPower * dot(mt.normals, (lightPos - mt.vertices));
+
+    // get new colours with lighting info before fillign in triangles
+    //Colour newC;
+    //v0.c = newC;
+
     CanvasPoint v0 = vertex3Dto2D(window, mt.vertices[0], cam);
     CanvasPoint v1 = vertex3Dto2D(window, mt.vertices[1], cam);
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
+    v0.c = mt.colour;
+    v1.c = mt.colour;
+    v2.c = mt.colour;
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
 
     // each canvas point has a tp
@@ -230,11 +247,14 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
 }
 
 // each triangle has a colour name ppm
-void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels){
+void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels, vector<Material> material, int kind){
     vector<CanvasTriangle> canvasTriangles; 
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
+        
+            
 
         CanvasTriangle ct; 
+
         modelToCanvasTri(window, t[i], ct, cam);
         canvasTriangles.push_back(ct);
 
@@ -258,16 +278,23 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
             // calculate normal of triangle mesh and poitns
 
             // need to make them all vec3
-            //cts[j].normal = cross((cts[j].vertices[2] - cts[j].vertices[0]), (cts[j].vertices[1] - cts[j].vertices[0]));
+            //cts[j].normal = cross((cts[j].vertices[2] - cts[j].vertices[0]), (cts[j].vertices[1] - cts[j].vertices[0])); // surfac normal
             // vec3 v = vec3(cts.vertices[j].x, cts.vertices[j].y, cts.vertices[j].depth);
             // cts[j].vertices[0].normal = normalize(cam.cameraPos - v);
             // cts[j].vertices[0].normal = ;
             // cts[j].vertices[0].normal = ;
 
-            // GOURAUD SHADING
-            // Caluculate the new colour with light illumination
-
             drawFilledTriangle(window, ct.colour, cts[j]);
+            if (kind == 1){ // fill triangles
+                drawFilledTriangle(window, ct.colour, cts[j]);
+            } else if (kind == 2){ // texture
+                fillTextureTriangle(window, pixels, cts[j]);
+            } else if (kind == 3) { // gouraud
+
+                
+                drawFilledTriangle(window, ct.colour, cts[j]);
+
+            }
             // if (ct.vertices[0].texturePoint.x == -1){
             //     drawFilledTriangle(window, ct.colour, cts[j]);
             // } else {

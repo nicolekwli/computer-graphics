@@ -189,25 +189,36 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
 
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
-        float gradient = dy/dx;
+        float gradient = (float)dy/dx;
 
         int xend = round(p1.x);
-        float yend = p1.y + gradient * (xend - p1.x);
-        float xgap = 1 - (abs(p1.x + 0.5) - floor(abs(p1.x + 0.5)));
+        float yend = (float) (p1.y + gradient * (xend - p1.x));
+        float xgap = (float) (1 - (abs(p1.x + 0.5) - floor(abs(p1.x + 0.5))));
 
         int xpxl1 = xend;
         int ypxl1 = floor(yend);
 
-        uint32_t alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
-        uint32_t newColour = (((uint32_t)255*alpha) << 24)| colour;
+        uint32_t alpha;
+        uint32_t newColour;
 
         if (steep) {
+            alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+            newColour = (((uint32_t)255*alpha) << 24)| colour;
             window.setPixelColour(ypxl1, xpxl1, newColour);
+
+            alpha = floor(yend) * xgap;
+            newColour = (((uint32_t)255*alpha) << 24)| colour;
             window.setPixelColour(ypxl1+1, xpxl1, newColour);
             //plot(ypxl1, xpxl1, rfpart(yend) * xgap, rgb);
             //plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap, rgb);
         } else {
+            alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+            
+            newColour = (((uint32_t)255*alpha) << 24)| colour;
             window.setPixelColour(xpxl1, ypxl1, newColour);
+
+            alpha = floor(yend) * xgap;
+            newColour = (((uint32_t)255*alpha) << 24)| colour;
             window.setPixelColour(xpxl1, ypxl1+1, newColour);
             //plot(xpxl1, ypxl1, rfpart(yend) * xgap, rgb);
             //plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap, rgb);
@@ -241,7 +252,7 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
         int y = p1.y;
         int yStep = p1.y > p2.y ? -1 : 1;
         // draw line 
-        for (int x = xpxl1 + 1; x < xpxl2; x ++) {
+        for (int x = xpxl1 + 1; x <= xpxl2; x ++) {
             // need to FIX
             
 
@@ -249,8 +260,8 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
                 alpha = (1 - (abs(intery) - floor(abs(intery))));
                 newColour = (((uint32_t)255*alpha) << 24)| colour;
                 window.setPixelColour(y, x, newColour);
-                
-                alpha = floor(intery);
+
+                alpha = abs(intery) - floor(abs(intery));
                 newColour = (((uint32_t)255*alpha) << 24)| colour;
                 window.setPixelColour(y + 1, x, newColour);
                 //plot(ipart(intery), x, rfpart(intery), rgb);
@@ -258,10 +269,10 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
             } else {
                 alpha = (1 - (abs(intery) - floor(abs(intery))));
                 newColour = (((uint32_t)255*alpha) << 24)| colour;
+                
                 window.setPixelColour(x, y, newColour);
-
-                alpha = floor(intery);
-                newColour = (((uint32_t)255*alpha) << 24)| colour;
+                alpha = (abs(intery) - floor(abs(intery)));
+                newColour = ((255*alpha) << 24)| (colour & 0x00ffffff);
                 window.setPixelColour(x, y+1, newColour);
                 //plot(x, ipart(intery), rfpart(intery), rgb);
                 //plot(x, ipart(intery) + 1, fpart(intery), rgb);
@@ -294,8 +305,8 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
     }
 
     drawLineWu(window, t.vertices[1], t.vertices[0], t.colour);
-    //drawLineB(window, t.vertices[2], t.vertices[0], t.colour);
-    //drawLineB(window, t.vertices[1], t.vertices[2], t.colour);
+    drawLineWu(window, t.vertices[2], t.vertices[0], t.colour);
+    drawLineWu(window, t.vertices[1], t.vertices[2], t.colour);
 }
 
 
@@ -305,7 +316,8 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
-        drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
+        //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
+        drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
 
     }
 }

@@ -37,7 +37,7 @@ int main(int argc, char* argv[]){
         // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,10), Colour(12,120,120));
         // drawLineB(window, CanvasPoint(10,200), CanvasPoint(200,150), Colour(12,120,120));
 
-        CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
+        //CanvasTriangle t = CanvasTriangle(CanvasPoint(160, 10), CanvasPoint(300, 230), CanvasPoint(10, 150));
         // t.vertices[0].texturePoint.x = 195;
         // t.vertices[0].texturePoint.y = 5;
         // t.vertices[1].texturePoint.x = 395;
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]){
         // t.vertices[2].texturePoint.x = 65;
         // t.vertices[2].texturePoint.y = 330;
 
-        drawStrokedTriangle(window, t);
+        //drawStrokedTriangle(window, t);
 
         //pixels = readPPM(window,"assets/texture.ppm");  
         ppm = readPPM(window,"assets/texture.ppm"); 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         //createWireframe(window, object, mycam);
-        //rasterise(window, object, mycam, ppm.pixels, m, 1);
+        rasterise(window, object, mycam, ppm.pixels, m, 1);
         //SSAA(window);
 
         window.renderFrame();

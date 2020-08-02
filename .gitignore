@@ -31,3 +31,16 @@
 *.exe
 *.out
 *.app
+
+##### Qt
+# C++ objects and libs
+*.slo
+*.lo
+*.o
+*.a
+*.la
+*.lai
+*.so
+*.so.*
+*.dll
+*.dylib

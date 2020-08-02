@@ -169,7 +169,112 @@ void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
 }
 
 void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
+    uint32_t colour = bitpackingColour(c);
+    
+    int dx = p2.x - p1.x;
+    if (dx == 0){
+        drawLine(window, p1, p2, c);
+    } else {
+        // wu line
+        bool steep = abs(p2.y - p1.y) > abs(p2.x - p1.x);
 
+        if (steep){
+            swap(p1.x, p1.y);
+            swap(p2.x, p2.y);
+        }
+
+        if (p2.x < p1.x){
+            swap(p1,p2);
+        }
+
+        int dx = p2.x - p1.x;
+        int dy = p2.y - p1.y;
+        float gradient = dy/dx;
+
+        int xend = round(p1.x);
+        float yend = p1.y + gradient * (xend - p1.x);
+        float xgap = 1 - (abs(p1.x + 0.5) - floor(abs(p1.x + 0.5)));
+
+        int xpxl1 = xend;
+        int ypxl1 = floor(yend);
+
+        uint32_t alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+        uint32_t newColour = (((uint32_t)255*alpha) << 24)| colour;
+
+        if (steep) {
+            window.setPixelColour(ypxl1, xpxl1, newColour);
+            window.setPixelColour(ypxl1+1, xpxl1, newColour);
+            //plot(ypxl1, xpxl1, rfpart(yend) * xgap, rgb);
+            //plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap, rgb);
+        } else {
+            window.setPixelColour(xpxl1, ypxl1, newColour);
+            window.setPixelColour(xpxl1, ypxl1+1, newColour);
+            //plot(xpxl1, ypxl1, rfpart(yend) * xgap, rgb);
+            //plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap, rgb);
+        }
+
+        int intery = yend + gradient;
+        xend = round(p2.x);
+        yend = p2.y + gradient * (xend - p2.x);
+        xgap = 1 - (abs(p2.x + 0.5) - floor(abs(p2.x + 0.5)));
+        int xpxl2 = xend;
+        int ypxl2 = floor(yend);
+
+        alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+        newColour = (((uint32_t)255*alpha) << 24)| colour;
+
+        if (steep) {
+            window.setPixelColour(ypxl2, xpxl2, newColour);
+            window.setPixelColour(ypxl2 + 1, xpxl2, newColour);
+            //plot(ypxl2, xpxl2, rfpart(yend) * xgap, rgb);
+            //plot(ypxl2 + 1, xpxl2, fpart(yend) * xgap, rgb);
+        } else {
+            window.setPixelColour(xpxl2, ypxl2, newColour);
+            window.setPixelColour(xpxl2, ypxl2+1, newColour);
+            //plot(xpxl2, ypxl2, rfpart(yend) * xgap, rgb);
+            //plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap, rgb);
+        }
+
+        // combine with Bresenhams
+        int dErr = abs(p2.y - p1.y);
+        int err = dx / 2;
+        int y = p1.y;
+        int yStep = p1.y > p2.y ? -1 : 1;
+        // draw line 
+        for (int x = xpxl1 + 1; x < xpxl2; x ++) {
+            // need to FIX
+            
+
+            if (steep) {
+                alpha = (1 - (abs(intery) - floor(abs(intery))));
+                newColour = (((uint32_t)255*alpha) << 24)| colour;
+                window.setPixelColour(y, x, newColour);
+                
+                alpha = floor(intery);
+                newColour = (((uint32_t)255*alpha) << 24)| colour;
+                window.setPixelColour(y + 1, x, newColour);
+                //plot(ipart(intery), x, rfpart(intery), rgb);
+                //plot(ipart(intery) + 1, x, fpart(intery), rgb);
+            } else {
+                alpha = (1 - (abs(intery) - floor(abs(intery))));
+                newColour = (((uint32_t)255*alpha) << 24)| colour;
+                window.setPixelColour(x, y, newColour);
+
+                alpha = floor(intery);
+                newColour = (((uint32_t)255*alpha) << 24)| colour;
+                window.setPixelColour(x, y+1, newColour);
+                //plot(x, ipart(intery), rfpart(intery), rgb);
+                //plot(x, ipart(intery) + 1, fpart(intery), rgb);
+            }
+            err -= dErr;
+            if (err < 0){
+                y += yStep;
+                err += dx;
+            }
+            intery = intery + gradient;
+        }
+
+    }
 }
 
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
@@ -188,9 +293,9 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
         }
     }
 
-    drawLineB(window, t.vertices[1], t.vertices[0], t.colour);
-    drawLineB(window, t.vertices[2], t.vertices[0], t.colour);
-    drawLineB(window, t.vertices[1], t.vertices[2], t.colour);
+    drawLineWu(window, t.vertices[1], t.vertices[0], t.colour);
+    //drawLineB(window, t.vertices[2], t.vertices[0], t.colour);
+    //drawLineB(window, t.vertices[1], t.vertices[2], t.colour);
 }
 
 
@@ -651,9 +756,7 @@ vector<Material> readMTLAlt(string filename){
         else if (tokens[0] == "map_Kd"){
             // tokens[1] should be the texture file name
             colours.push_back(Colour(tokens[1], 0, 0, 0));
-        } 
-
-        
+        }     
     }
     file.close();
     return final;
@@ -664,18 +767,18 @@ vector<Material> readMTLAlt(string filename){
 void SSAA(DrawingWindow window){
     uint32_t p, sp;
     uint32_t r,g,b=0;
-    int samples= 2*2;
+    int samples= 3*3;
 
-    for (int y = 0; y < window.height-1; y++) {
-        for (int x = 0; x < window.width-1; x++) {
+    for (int y = 1; y < window.height-1; y++) {
+        for (int x = 1; x < window.width-1; x++) {
             r,g,b=0;
             // get colour from the area that would contribute to final pixel
-            for (int suby = 0; suby < 2; suby++) {
-                for (int subx = 0; subx < 2; subx++) {
+            for (int suby = -1; suby < 2; suby++) {
+                for (int subx = -1; subx < 2; subx++) {
                     sp = window.getPixelColour(x + subx, y + suby);
-                    r += sp & 0x00ff0000;
-                    g += sp & 0x0000ff00;
-                    b += sp & 0x000000ff;
+                    r += (sp & 0x00ff0000);
+                    g += (sp & 0x0000ff00);
+                    b += (sp & 0x000000ff);
                 }
             }
             // avg it out 

@@ -168,6 +168,10 @@ void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
     }
 }
 
+void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
+
+}
+
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
   uint32_t colour = bitpackingColour(t.colour);
 
@@ -656,14 +660,27 @@ vector<Material> readMTLAlt(string filename){
 
 }
 
-
+// once rasterising is done at a higher resolution this should work 
 void SSAA(DrawingWindow window){
     uint32_t p, sp;
     uint32_t r,g,b=0;
-    int samples= 4*4;
+    int samples= 2*2;
 
-    for (int y = 0; y < window.height; y++) {
-        for (int x = 0; x < window.width; x++) {
+    for (int y = 0; y < window.height-1; y++) {
+        for (int x = 0; x < window.width-1; x++) {
+            r,g,b=0;
+            // get colour from the area that would contribute to final pixel
+            for (int suby = 0; suby < 2; suby++) {
+                for (int subx = 0; subx < 2; subx++) {
+                    sp = window.getPixelColour(x + subx, y + suby);
+                    r += sp & 0x00ff0000;
+                    g += sp & 0x0000ff00;
+                    b += sp & 0x000000ff;
+                }
+            }
+            // avg it out 
+            p = 0xff000000 | ((r/samples)& 0x00ff0000) | ((g/samples)& 0x0000ff00) | ((b/samples)& 0x000000ff);
+            window.setPixelColour(x,y,p);
         }
     }
 

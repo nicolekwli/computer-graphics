@@ -71,6 +71,7 @@ int main(int argc, char* argv[]){
 
         //createWireframe(window, object, mycam);
         rasterise(window, object, mycam, ppm.pixels, m, 1);
+        SSAA(window);
 
         window.renderFrame();
     }

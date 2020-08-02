@@ -45,6 +45,7 @@ void texPointCorrected(CanvasPoint a, CanvasPoint b, CanvasPoint &newP);
 // ----- Drawing -----
 void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
+void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t);
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c); 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle);

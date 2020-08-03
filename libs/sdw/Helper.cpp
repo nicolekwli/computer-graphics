@@ -198,33 +198,33 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
         int xpxl1 = xend;
         int ypxl1 = floor(yend);
 
-        uint32_t alpha;
+        float alpha;
         uint32_t newColour;
 
         if (steep) {
             alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
-            newColour = (((uint32_t)255*alpha) << 24)| colour;
-            window.setPixelColour(ypxl1, xpxl1, newColour);
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(ypxl1, xpxl1, p1.depth, newColour);
 
             alpha = floor(yend) * xgap;
-            newColour = (((uint32_t)255*alpha) << 24)| colour;
-            window.setPixelColour(ypxl1+1, xpxl1, newColour);
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(ypxl1+1, xpxl1, p1.depth, newColour);
             //plot(ypxl1, xpxl1, rfpart(yend) * xgap, rgb);
             //plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap, rgb);
         } else {
             alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
             
-            newColour = (((uint32_t)255*alpha) << 24)| colour;
-            window.setPixelColour(xpxl1, ypxl1, newColour);
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(xpxl1, ypxl1, p1.depth, newColour);
 
             alpha = floor(yend) * xgap;
-            newColour = (((uint32_t)255*alpha) << 24)| colour;
-            window.setPixelColour(xpxl1, ypxl1+1, newColour);
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(xpxl1, ypxl1+1, p1.depth, newColour);
             //plot(xpxl1, ypxl1, rfpart(yend) * xgap, rgb);
             //plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap, rgb);
         }
 
-        int intery = yend + gradient;
+        double intery = yend + gradient;
         xend = round(p2.x);
         yend = p2.y + gradient * (xend - p2.x);
         xgap = 1 - (abs(p2.x + 0.5) - floor(abs(p2.x + 0.5)));
@@ -232,56 +232,49 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
         int ypxl2 = floor(yend);
 
         alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
-        newColour = (((uint32_t)255*alpha) << 24)| colour;
+        newColour = (((uint32_t) floor(255*alpha))<< 24)| colour;
 
         if (steep) {
-            window.setPixelColour(ypxl2, xpxl2, newColour);
-            window.setPixelColour(ypxl2 + 1, xpxl2, newColour);
+            window.setPixelColour(ypxl2, xpxl2, p2.depth, newColour);
+            window.setPixelColour(ypxl2 + 1, xpxl2, p2.depth, newColour);
             //plot(ypxl2, xpxl2, rfpart(yend) * xgap, rgb);
             //plot(ypxl2 + 1, xpxl2, fpart(yend) * xgap, rgb);
         } else {
-            window.setPixelColour(xpxl2, ypxl2, newColour);
-            window.setPixelColour(xpxl2, ypxl2+1, newColour);
+            window.setPixelColour(xpxl2, ypxl2, p2.depth, newColour);
+            window.setPixelColour(xpxl2, ypxl2+1, p2.depth, newColour);
             //plot(xpxl2, ypxl2, rfpart(yend) * xgap, rgb);
             //plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap, rgb);
         }
 
-        // combine with Bresenhams
-        int dErr = abs(p2.y - p1.y);
-        int err = dx / 2;
-        int y = p1.y;
-        int yStep = p1.y > p2.y ? -1 : 1;
+        float dStep = (p2.depth - p1.depth) / dx;
+        float d = p1.depth;
         // draw line 
         for (int x = xpxl1 + 1; x <= xpxl2; x ++) {
-            // need to FIX
             
-
             if (steep) {
                 alpha = (1 - (abs(intery) - floor(abs(intery))));
-                newColour = (((uint32_t)255*alpha) << 24)| colour;
-                window.setPixelColour(y, x, newColour);
+                newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+                window.setPixelColour(floor(intery), x, d, newColour);
 
                 alpha = abs(intery) - floor(abs(intery));
-                newColour = (((uint32_t)255*alpha) << 24)| colour;
-                window.setPixelColour(y + 1, x, newColour);
+                newColour = (((uint32_t) floor(255*alpha))<< 24)| colour;
+                window.setPixelColour(floor(intery) + 1, x, d, newColour);
                 //plot(ipart(intery), x, rfpart(intery), rgb);
                 //plot(ipart(intery) + 1, x, fpart(intery), rgb);
             } else {
                 alpha = (1 - (abs(intery) - floor(abs(intery))));
-                newColour = (((uint32_t)255*alpha) << 24)| colour;
-                
-                window.setPixelColour(x, y, newColour);
+                newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+                window.setPixelColour(x, floor(intery), d, newColour);
+                //cout << "a1: " << ((uint32_t) floor(255*alpha)) << endl;
+
                 alpha = (abs(intery) - floor(abs(intery)));
-                newColour = ((255*alpha) << 24)| (colour & 0x00ffffff);
-                window.setPixelColour(x, y+1, newColour);
+                newColour = (((uint32_t) floor(255*alpha)) << 24)| (colour & 0x00ffffff);
+                window.setPixelColour(x, floor(intery)+1, d, newColour);
                 //plot(x, ipart(intery), rfpart(intery), rgb);
                 //plot(x, ipart(intery) + 1, fpart(intery), rgb);
+                //cout << "a2: " << ((uint32_t) floor(255*alpha)) << endl;
             }
-            err -= dErr;
-            if (err < 0){
-                y += yStep;
-                err += dx;
-            }
+            d += dStep;
             intery = intery + gradient;
         }
 

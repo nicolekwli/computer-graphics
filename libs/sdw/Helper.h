@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "CanvasPoint.h"
 #include "CanvasTriangle.h"
 #include "ModelTriangle.h"
@@ -20,6 +22,14 @@ using namespace glm;
 using std::vector;
 using glm::vec3;
 
+struct Material{
+    string name;
+    vec3 diffuse; //kd -diffuse
+    vec3 ambient; //ka
+    vec3 specular; //ks
+    float highlight; //ns
+    float illum;
+};
 
 uint32_t bitpackingColour(Colour c);
 
@@ -35,6 +45,7 @@ void texPointCorrected(CanvasPoint a, CanvasPoint b, CanvasPoint &newP);
 // ----- Drawing -----
 void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
+void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t);
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c); 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle);
@@ -50,4 +61,8 @@ void savePPM(DrawingWindow window, string filename);
 
 // need to call mtl before obj
 vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, float rescale);
+vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm, float rescale);
 vector<Colour> readMTL(string filename);
+vector<Material> readMTLAlt(string filename);
+
+void SSAA(DrawingWindow window);

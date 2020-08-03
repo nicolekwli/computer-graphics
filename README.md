@@ -23,7 +23,7 @@
 * Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
 - [x] Basic culling/clipping (far-plane, near-plan, back-face) [Need perfecting]
-* _Basic (image plane) anti-aliasing_
+- [x] _Basic (image plane) anti-aliasing_ [wu line 2D]
 
 ### (70s) some of...
 * Phong Shading
@@ -33,13 +33,13 @@
 * “Fancy” animation
 * Soft shadow
 * Bump maps
-* Bounding box clipping
+* Bounding box clipping [?? man im confused which is which]
 
 ### (80s) some of...
 * Environment maps
 * Complex “interesting” materials (e.g. glass)
 - [x] Line drawing optimisations (e.g. Bresenham)
-* Advance clipping (frustum)
+- [x] Advance clipping (frustum) [Need perfecting]
 * Photon maps and caustics
 * “Intelligent” model simplification
 

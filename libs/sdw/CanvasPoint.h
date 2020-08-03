@@ -1,7 +1,12 @@
 #pragma once
 
 #include "TexturePoint.h"
+#include "Colour.h"
 #include <iostream>
+#include <glm/glm.hpp>
+
+using namespace glm;
+using glm::vec3;
 
 class CanvasPoint
 {
@@ -11,6 +16,8 @@ class CanvasPoint
     double depth;
     float brightness;
     TexturePoint texturePoint;
+    vec3 normal;
+    Colour c;
 
     CanvasPoint();
 

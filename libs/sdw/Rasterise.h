@@ -24,4 +24,4 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
 vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct);
 vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriangle ct);
 void createWireframe(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);
-void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels); // no texture
+void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels, vector<Material> material, int kind);

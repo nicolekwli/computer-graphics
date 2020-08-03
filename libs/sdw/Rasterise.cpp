@@ -1,5 +1,9 @@
 #include "Rasterise.h"
 
+vec3 lightPos(0, 0, -5.0);
+vec3 lightPower = 16.f * vec3(1, 1, 1);
+vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
+
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
     vec3 point = (vertex3D - cam.cameraPos) * cam.cameraRot;
@@ -30,10 +34,34 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
     return vertex2D;
 }
 
+// our little vertex shader?
 void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam){
+    // calculate new colour for each vertex
+    vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
+    vec3 amb = mt.mat.ambient * Ia;
+    
+
+    // get new colours with lighting info before fillign in triangles
+    //Colour newC;
+    //v0.c = newC;
+    vec3 diff = mt.mat.diffuse * lightPower * dot(mt.normals[0], (lightPos - mt.vertices[0]));
+    vec3 illum = amb + diff;
+    // vec3 spec = mt.mat.specular * lightPower * ()
     CanvasPoint v0 = vertex3Dto2D(window, mt.vertices[0], cam);
+    v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+
+
+    diff = mt.mat.diffuse * lightPower * dot(mt.normals[1], (lightPos - mt.vertices[1]));
+    illum = amb + diff;
     CanvasPoint v1 = vertex3Dto2D(window, mt.vertices[1], cam);
+    v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+
+    diff = mt.mat.diffuse * lightPower * dot(mt.normals[2], (lightPos - mt.vertices[2]));
+    illum = amb + diff;
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
+    v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+
+
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
 
     // each canvas point has a tp
@@ -153,7 +181,7 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
         }
 
 
-        if (discard.size() == 3){
+        else if (discard.size() == 3){
             // final.push_back(ct); // this hsouldnt be here but it make up and left work
             return final; 
             //break;
@@ -211,6 +239,7 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
     return final;
 }
 
+
 void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
     vector<CanvasTriangle> canvasTriangles; 
     // for each triangle we need to get the canvas triangle first
@@ -221,16 +250,19 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
         modelToCanvasTri(window, t[i], ct, cam);
         canvasTriangles.push_back(ct);
 
-        drawStrokedTriangle(window, canvasTriangles.back());
+        vector<CanvasTriangle> cts = clipping(window, ct);
+        for (int j = 0; j < cts.size(); j++){
+            drawStrokedTriangle(window, cts[j]);
+        }
     }
 }
 
 // each triangle has a colour name ppm
-void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels){
+void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels, vector<Material> material, int kind){
     vector<CanvasTriangle> canvasTriangles; 
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
-
         CanvasTriangle ct; 
+
         modelToCanvasTri(window, t[i], ct, cam);
         canvasTriangles.push_back(ct);
 
@@ -239,11 +271,43 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
 
 
         for (int j = 0; j < cts.size(); j++){
-            if (ct.vertices[0].texturePoint.x == -1){
+            // sort vertices
+            for (int i = 0; i < 3; i++){
+                if (cts[j].vertices[2].y < cts[j].vertices[0].y){
+                    swap(cts[j].vertices[2], cts[j].vertices[0]);
+                }
+                if (cts[j].vertices[1].y < cts[j].vertices[0].y){
+                    swap(cts[j].vertices[0], cts[j].vertices[1]);
+                }
+                if (cts[j].vertices[2].y < cts[j].vertices[1].y){
+                    swap(cts[j].vertices[1], cts[j].vertices[2]);
+                }
+            }
+            // calculate normal of triangle mesh and poitns
+
+            // need to make them all vec3
+            //cts[j].normal = cross((cts[j].vertices[2] - cts[j].vertices[0]), (cts[j].vertices[1] - cts[j].vertices[0])); // surfac normal
+            // vec3 v = vec3(cts.vertices[j].x, cts.vertices[j].y, cts.vertices[j].depth);
+            // cts[j].vertices[0].normal = normalize(cam.cameraPos - v);
+            // cts[j].vertices[0].normal = ;
+            // cts[j].vertices[0].normal = ;
+
+            drawFilledTriangle(window, ct.colour, cts[j]);
+            if (kind == 1){ // fill triangles
                 drawFilledTriangle(window, ct.colour, cts[j]);
-            } else {
+            } else if (kind == 2){ // texture
                 fillTextureTriangle(window, pixels, cts[j]);
-            }  
+            } else if (kind == 3) { // gouraud
+
+                
+                drawFilledTriangle(window, ct.colour, cts[j]);
+
+            }
+            // if (ct.vertices[0].texturePoint.x == -1){
+            //     drawFilledTriangle(window, ct.colour, cts[j]);
+            // } else {
+            //     fillTextureTriangle(window, pixels, cts[j]);
+            // }  
         }
     }
 

@@ -1,8 +1,9 @@
 #include "Camera.h"
 
 Camera::Camera(int height, int width){
-    //cameraPos = vec3(0, 1, -6);
-    cameraPos = vec3(0, 2, -FOCAL); //(0, 0, -FOCAL)
+    cameraPos = vec3(0, 1, -6); // old (0,0,-FOCAL)
+    // cameraPos = vec3(0, 2, -FOCAL); // normal cornell
+    //cameraPos = vec3(0, 1, -FOCAL);  // sphere cornell
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
     //cameraRot = mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
     cameraRot = mat3(cos(0), 0, sin(0), 0, 1, 0, -sin(0), 0, cos(0));
@@ -72,6 +73,7 @@ void Camera::lookAt(glm::vec3 from){
 }
 
 // referrenced from http://www.lighthouse3d.com/tutorials/view-frustum-culling/geometric-approach-extracting-the-planes/
+// https://www.cubic.org/docs/3dclip.htm
 void Camera::setupFrus(int height, int width){
 
     float ratio = width / height;

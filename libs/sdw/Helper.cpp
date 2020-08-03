@@ -73,6 +73,8 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     float intervalsDepth = (b.depth - a.depth) / (noOfVals);
     vect.push_back(a);
 
+    uint32_t a_colour = bitpackingColour(a.c);
+
     for (int i = 1; i < noOfVals; i++) {
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i) ;
         float q = (p.x - a.x) / (b.x - a.x);
@@ -83,6 +85,10 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         texPointCorrected(a, b, p);
         //p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
         //p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
+
+        // INTERPOLATE COLOUR AS WELL
+        
+
 
         vect.push_back(p);
     }
@@ -119,7 +125,7 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
 }
 
 
-// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depthgit
+// Modified https://inst.eecs.berkeley.edu/~cs150/fa10/Lab/CP3/LineDrawing.pdf adding depth
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
     uint32_t colour = bitpackingColour(c);
     
@@ -166,6 +172,119 @@ void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
     }
 }
 
+void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
+    uint32_t colour = bitpackingColour(c);
+    
+    int dx = p2.x - p1.x;
+    if (dx == 0){
+        drawLine(window, p1, p2, c);
+    } else {
+        // wu line
+        bool steep = abs(p2.y - p1.y) > abs(p2.x - p1.x);
+
+        if (steep){
+            swap(p1.x, p1.y);
+            swap(p2.x, p2.y);
+        }
+
+        if (p2.x < p1.x){
+            swap(p1,p2);
+        }
+
+        int dx = p2.x - p1.x;
+        int dy = p2.y - p1.y;
+        float gradient = (float)dy/dx;
+
+        int xend = round(p1.x);
+        float yend = (float) (p1.y + gradient * (xend - p1.x));
+        float xgap = (float) (1 - (abs(p1.x + 0.5) - floor(abs(p1.x + 0.5))));
+
+        int xpxl1 = xend;
+        int ypxl1 = floor(yend);
+
+        float alpha;
+        uint32_t newColour;
+
+        if (steep) {
+            alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(ypxl1, xpxl1, p1.depth, newColour);
+
+            alpha = floor(yend) * xgap;
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(ypxl1+1, xpxl1, p1.depth, newColour);
+            //plot(ypxl1, xpxl1, rfpart(yend) * xgap, rgb);
+            //plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap, rgb);
+        } else {
+            alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+            
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(xpxl1, ypxl1, p1.depth, newColour);
+
+            alpha = floor(yend) * xgap;
+            newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+            window.setPixelColour(xpxl1, ypxl1+1, p1.depth, newColour);
+            //plot(xpxl1, ypxl1, rfpart(yend) * xgap, rgb);
+            //plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap, rgb);
+        }
+
+        double intery = yend + gradient;
+        xend = round(p2.x);
+        yend = p2.y + gradient * (xend - p2.x);
+        xgap = 1 - (abs(p2.x + 0.5) - floor(abs(p2.x + 0.5)));
+        int xpxl2 = xend;
+        int ypxl2 = floor(yend);
+
+        alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
+        newColour = (((uint32_t) floor(255*alpha))<< 24)| colour;
+
+        if (steep) {
+            window.setPixelColour(ypxl2, xpxl2, p2.depth, newColour);
+            window.setPixelColour(ypxl2 + 1, xpxl2, p2.depth, newColour);
+            //plot(ypxl2, xpxl2, rfpart(yend) * xgap, rgb);
+            //plot(ypxl2 + 1, xpxl2, fpart(yend) * xgap, rgb);
+        } else {
+            window.setPixelColour(xpxl2, ypxl2, p2.depth, newColour);
+            window.setPixelColour(xpxl2, ypxl2+1, p2.depth, newColour);
+            //plot(xpxl2, ypxl2, rfpart(yend) * xgap, rgb);
+            //plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap, rgb);
+        }
+
+        float dStep = (p2.depth - p1.depth) / dx;
+        float d = p1.depth;
+        // draw line 
+        for (int x = xpxl1 + 1; x <= xpxl2; x ++) {
+            
+            if (steep) {
+                alpha = (1 - (abs(intery) - floor(abs(intery))));
+                newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+                window.setPixelColour(floor(intery), x, d, newColour);
+
+                alpha = abs(intery) - floor(abs(intery));
+                newColour = (((uint32_t) floor(255*alpha))<< 24)| colour;
+                window.setPixelColour(floor(intery) + 1, x, d, newColour);
+                //plot(ipart(intery), x, rfpart(intery), rgb);
+                //plot(ipart(intery) + 1, x, fpart(intery), rgb);
+            } else {
+                alpha = (1 - (abs(intery) - floor(abs(intery))));
+                newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
+                window.setPixelColour(x, floor(intery), d, newColour);
+                //cout << "a1: " << ((uint32_t) floor(255*alpha)) << endl;
+
+                alpha = (abs(intery) - floor(abs(intery)));
+                newColour = (((uint32_t) floor(255*alpha)) << 24)| (colour & 0x00ffffff);
+                window.setPixelColour(x, floor(intery)+1, d, newColour);
+                //plot(x, ipart(intery), rfpart(intery), rgb);
+                //plot(x, ipart(intery) + 1, fpart(intery), rgb);
+                //cout << "a2: " << ((uint32_t) floor(255*alpha)) << endl;
+            }
+            d += dStep;
+            intery = intery + gradient;
+        }
+
+    }
+}
+
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
   uint32_t colour = bitpackingColour(t.colour);
 
@@ -182,9 +301,9 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
         }
     }
 
-    drawLineB(window, t.vertices[1], t.vertices[0], t.colour);
-    drawLineB(window, t.vertices[2], t.vertices[0], t.colour);
-    drawLineB(window, t.vertices[1], t.vertices[2], t.colour);
+    drawLineWu(window, t.vertices[1], t.vertices[0], t.colour);
+    drawLineWu(window, t.vertices[2], t.vertices[0], t.colour);
+    drawLineWu(window, t.vertices[1], t.vertices[2], t.colour);
 }
 
 
@@ -194,34 +313,17 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
-        drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
+        //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
+        drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
 
     }
 }
 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle){
-    // CanvasTriangle triangle = CanvasTriangle(CanvasPoint(rand()%200, rand()%150), 
-    //                                          CanvasPoint(rand()%200, rand()%150),
-    //                                          CanvasPoint(rand()%200, rand()%150),
-    //                                          c );
-    // sort vertices, [0] is at the topm [1] middle [2] bottom
-    for (int i = 0; i < 3; i++){
-        if (triangle.vertices[2].y < triangle.vertices[0].y){
-            swap(triangle.vertices[2], triangle.vertices[0]);
-        }
-        if (triangle.vertices[1].y < triangle.vertices[0].y){
-            swap(triangle.vertices[0], triangle.vertices[1]);
-        }
-        if (triangle.vertices[2].y < triangle.vertices[1].y){
-            swap(triangle.vertices[1], triangle.vertices[2]);
-        }
-    }
-
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
                                         triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
-
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){
@@ -248,8 +350,11 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
     int steps;
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
+
         steps = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
         vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[a], steps+1);
+
+        
         // drawLine(lineTopLeft[a], lineTopRight, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
 
         for (int c = 0; c < steps; c++){
@@ -427,7 +532,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
     while (getline(file, line)){
         tokens = split(line, ' ');
 
-        if (tokens[0] == "o"){
+        if ((tokens[0] == "o") || (tokens[1] == "Object")){
             objectName = tokens[1];
 
         }
@@ -477,6 +582,118 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
     return triangles;
 }
 
+// This function reads obj files by reading all vertices and normals then creates the ModelTriangles
+vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm, float rescale){
+
+    string line;
+    string *tokens;
+    string objectName;
+    vector<vec3> Vs;
+    vector<vec3> VNs;
+    vector<TexturePoint> VTs;
+    Material material;
+    vector<ModelTriangle> triangles;
+
+    ifstream file;
+    file.open(filename);
+
+    while (getline(file, line)){
+        //cout << line << endl;
+        tokens = split(line, ' ');
+
+        if ((tokens[0] == "#") || (tokens[0] == "g")){
+            continue;
+
+        } else if (tokens[1] == "Object"){
+            objectName = tokens[2];
+
+        } else if (tokens[0] == "usemtl") {
+            // Colour
+            for (std::vector<int>::size_type i = 0; i != mtls.size(); i++){
+                // calculate colour using the whole lot 
+                if(mtls[i].name == tokens[1]){
+                    // do calculations for new vertex colour with lighting
+
+                    // int r=0;
+                    // int g=0;
+                    // int b=0;
+                    material = mtls[i];
+                }
+            }
+        }  else if (tokens[0] == "v"){
+            glm::vec3 vec = vec3(stof(tokens[2])*rescale, stof(tokens[3])*rescale, stof(tokens[4])*-rescale);
+            //if (objectName == "rightwall") cout << vec.z << endl;
+            Vs.push_back(vec);
+        } else if (tokens[0] == "vn"){
+            glm::vec3 vec = vec3(stof(tokens[1])*rescale, stof(tokens[2])*rescale, stof(tokens[3])*-rescale);
+            VNs.push_back(vec);
+        } else if (tokens[0] == "vt"){
+            TexturePoint tp = TexturePoint(stof(tokens[1])*(ppm.width-1), stof(tokens[2])*(ppm.height-1));
+            VTs.push_back(tp);
+        }
+        else if (tokens[0] == "f"){
+            ModelTriangle t;
+            std::size_t found = tokens[1].find("//");
+            // v and vn
+            if (found != std::string::npos){
+                int a = stoi(split(tokens[1],'//')[0]) - 1;
+                int b = stoi(split(tokens[2],'//')[0]) - 1;
+                int c = stoi(split(tokens[3],'//')[0]) - 1;
+
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t.mat.name = material.name;
+                t.mat.ambient = material.ambient;
+                t.mat.diffuse = material.diffuse;
+                t.mat.highlight = material.highlight;
+                t.mat.illum = material.illum;
+                t.mat.specular = material.specular;
+
+                string *face1 = split(tokens[1],'/');
+                string *face2 = split(tokens[2],'/');
+                string *face3 = split(tokens[3],'/');
+
+                t.normals[0] = VNs[stoi(face1[2])-1];
+                t.normals[1] = VNs[stoi(face2[2])-1];
+                t.normals[2] = VNs[stoi(face3[2])-1];
+            } else {
+                // get vertices
+                int a = stoi(split(tokens[1],'/')[0]) - 1;
+                int b = stoi(split(tokens[2],'/')[0]) - 1;
+                int c = stoi(split(tokens[3],'/')[0]) - 1;
+
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t.mat.name = material.name;
+                t.mat.ambient = material.ambient;
+                t.mat.diffuse = material.diffuse;
+                t.mat.highlight = material.highlight;
+                t.mat.illum = material.illum;
+                t.mat.specular = material.specular;
+
+                // there is a texture value e.g. f 1/1 2/2 3/3
+                // or 1/1/1
+                if (tokens[1].back() != '/'){
+                    // face1[0] is the vertex, face[1] is the texture point
+                    string *face1 = split(tokens[1],'/');
+                    string *face2 = split(tokens[2],'/');
+                    string *face3 = split(tokens[3],'/');
+                    
+                    t.normals[0] = VNs[stoi(face1[1])-1];
+                    t.normals[1] = VNs[stoi(face2[1])-1];
+                    t.normals[2] = VNs[stoi(face3[1])-1];
+
+                    t.texturePoints[0] = VTs[stoi(face1[2])-1];
+                    t.texturePoints[1] = VTs[stoi(face2[2])-1];
+                    t.texturePoints[2] = VTs[stoi(face3[2])-1];
+                } 
+            }
+            
+            triangles.push_back(t);         
+        }   
+
+    }
+    return triangles;
+}
+
 
 vector<Colour> readMTL(string filename){
     ifstream file;
@@ -488,8 +705,8 @@ vector<Colour> readMTL(string filename){
 
     vector<Colour> colours;
 
-    while (!file.eof()){
-        getline(file, line);
+    while (getline(file, line)){
+        //getline(file, line);
         tokens = split(line, ' ');
 
         if (tokens[0] == "newmtl"){
@@ -501,8 +718,82 @@ vector<Colour> readMTL(string filename){
         else if (tokens[0] == "map_Kd"){
             // tokens[1] should be the texture file name
             colours.push_back(Colour(tokens[1], 0, 0, 0));
-        } 
+        } else continue;
     }
     file.close();
     return colours;
+}
+
+vector<Material> readMTLAlt(string filename){
+    ifstream file;
+    file.open(filename);
+
+    string line;
+    string *tokens;
+    string name;
+
+    vector<Material> final;
+    
+    vector<Colour> colours;
+    Material mat;
+
+    while (getline(file, line)){
+        //getline(file, line);
+        
+        tokens = split(line, ' ');
+
+        if (tokens[0] == "newmtl"){
+            final.push_back(mat);
+            mat.name = tokens[1];
+        } 
+        else if (tokens[0] == "Ka"){
+            mat.ambient = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+        }
+        else if (tokens[0] == "Kd"){
+            mat.diffuse = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+        }
+        else if (tokens[0] == "Ks"){
+            mat.specular = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
+            
+        }
+        else if (tokens[0] == "Ns"){
+            mat.highlight = stof(tokens[1]);
+        }
+        else if (tokens[0] == "illum"){
+            mat.illum = stof(tokens[1]);
+        }
+        else if (tokens[0] == "map_Kd"){
+            // tokens[1] should be the texture file name
+            colours.push_back(Colour(tokens[1], 0, 0, 0));
+        }     
+    }
+    file.close();
+    return final;
+
+}
+
+// once rasterising is done at a higher resolution this should work 
+void SSAA(DrawingWindow window){
+    uint32_t p, sp;
+    uint32_t r,g,b=0;
+    int samples= 3*3;
+
+    for (int y = 1; y < window.height-1; y++) {
+        for (int x = 1; x < window.width-1; x++) {
+            r,g,b=0;
+            // get colour from the area that would contribute to final pixel
+            for (int suby = -1; suby < 2; suby++) {
+                for (int subx = -1; subx < 2; subx++) {
+                    sp = window.getPixelColour(x + subx, y + suby);
+                    r += (sp & 0x00ff0000);
+                    g += (sp & 0x0000ff00);
+                    b += (sp & 0x000000ff);
+                }
+            }
+            // avg it out 
+            p = 0xff000000 | ((r/samples)& 0x00ff0000) | ((g/samples)& 0x0000ff00) | ((b/samples)& 0x000000ff);
+            window.setPixelColour(x,y,p);
+        }
+    }
+
 }

@@ -73,6 +73,8 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     float intervalsDepth = (b.depth - a.depth) / (noOfVals);
     vect.push_back(a);
 
+    uint32_t a_colour = bitpackingColour(a.c);
+
     for (int i = 1; i < noOfVals; i++) {
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i) ;
         float q = (p.x - a.x) / (b.x - a.x);
@@ -85,6 +87,8 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         //p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 
         // INTERPOLATE COLOUR AS WELL
+        
+
 
         vect.push_back(p);
     }

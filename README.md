@@ -23,7 +23,7 @@
 * Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
 - [x] Basic culling/clipping (far-plane, near-plan, back-face) [Need perfecting]
-* _Basic (image plane) anti-aliasing_
+- [x] _Basic (image plane) anti-aliasing_ [wu line 2D]
 
 ### (70s) some of...
 * Phong Shading

@@ -34,23 +34,34 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
     return vertex2D;
 }
 
+// our little vertex shader?
 void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam){
     // calculate new colour for each vertex
     vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
     vec3 amb = mt.mat.ambient * Ia;
     
-    //vec3 diff = mt.mat.diffuse * lightPower * dot(mt.normals, (lightPos - mt.vertices));
 
     // get new colours with lighting info before fillign in triangles
     //Colour newC;
     //v0.c = newC;
-
+    vec3 diff = mt.mat.diffuse * lightPower * dot(mt.normals[0], (lightPos - mt.vertices[0]));
+    vec3 illum = amb + diff;
+    // vec3 spec = mt.mat.specular * lightPower * ()
     CanvasPoint v0 = vertex3Dto2D(window, mt.vertices[0], cam);
+    v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+
+
+    diff = mt.mat.diffuse * lightPower * dot(mt.normals[1], (lightPos - mt.vertices[1]));
+    illum = amb + diff;
     CanvasPoint v1 = vertex3Dto2D(window, mt.vertices[1], cam);
+    v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+
+    diff = mt.mat.diffuse * lightPower * dot(mt.normals[2], (lightPos - mt.vertices[2]));
+    illum = amb + diff;
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
-    v0.c = mt.colour;
-    v1.c = mt.colour;
-    v2.c = mt.colour;
+    v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+
+
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
 
     // each canvas point has a tp
@@ -250,9 +261,6 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
 void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector<vector<uint32_t>> pixels, vector<Material> material, int kind){
     vector<CanvasTriangle> canvasTriangles; 
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
-        
-            
-
         CanvasTriangle ct; 
 
         modelToCanvasTri(window, t[i], ct, cam);

@@ -532,7 +532,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
     while (getline(file, line)){
         tokens = split(line, ' ');
 
-        if ((tokens[0] == "o") || (tokens[1] == "Object")){
+        if ((tokens[0] == "o")){ // || (tokens[1] == "Object")){
             objectName = tokens[1];
 
         }

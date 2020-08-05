@@ -7,7 +7,7 @@
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 
 // creating a camera
-Camera mycam = Camera();
+Camera mycam = Camera(HEIGHT, WIDTH);
 
 int main(int argc, char* argv[]){
     SDL_Event event;
@@ -34,13 +34,14 @@ int main(int argc, char* argv[]){
         vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
         vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c);
         //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam);
+        // rasterise(window, object, mycam);
 
         // savePPM(window, "hello.ppm");
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
         //raytracer stuff
-        drawFilledTriangleRay(window, object, mycam);
+        // drawFilledTriangleRay(window, object, mycam);
+        raytracingLighting(window, object, mycam);
 
         window.renderFrame();
     }
@@ -76,6 +77,26 @@ void handleEvent(SDL_Event event)
     else if (event.key.keysym.sym == SDLK_q){
         cout << "BACKWARD" << endl;
         mycam.camBackward();
+    }
+        else if (event.key.keysym.sym == SDLK_w){
+        cout << "ROTATE UP" << endl;
+        mycam.camOrientation(vec3(0.01, 0, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_s){
+        cout << "ROTATE down" << endl;
+        mycam.camOrientation(vec3(-0.01, 0, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_a){
+        cout << "ROTATE LEFT" << endl;
+        mycam.camOrientation(vec3(0, 0.01, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_d){
+        cout << "ROTATE RIGHT" << endl;
+        mycam.camOrientation(vec3(0, -0.01, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_l){
+        cout << "LOOK AT" << endl;
+        mycam.lookAt(vec3(0, 0, 0));
     } 
     else if(event.key.keysym.sym == SDLK_u){
         // drawRandomTriangle();

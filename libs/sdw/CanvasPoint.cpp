@@ -25,10 +25,10 @@ CanvasPoint::CanvasPoint(float xPos, float yPos, float pointDepth){
 
 CanvasPoint::CanvasPoint(float xPos, float yPos, float pointDepth, float pointBrightness){
     x = xPos;
-      y = yPos;
-      depth = pointDepth;
-      brightness = pointBrightness;
-      texturePoint = TexturePoint(-1,-1);
+    y = yPos;
+    depth = pointDepth;
+    brightness = pointBrightness;
+    texturePoint = TexturePoint(-1,-1);
 }
 
 

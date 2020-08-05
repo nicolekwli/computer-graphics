@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+// 7.5f for cornell box
 #define FOCAL 7.5f
 //#define FOCAL_LENGTH HEIGHT/FOCAL
 #define CAMERA_VELOCITY 0.4f
@@ -30,10 +31,13 @@ class Camera {
         vec3 cameraRig;
         float focalLength;
         float yaw; //yaw angle controls cam rotation arounf y-axis
+        float nearDist;
+        float farDist;
+        float fov;
+        // frustum f;
 
         //member functions
-        Camera(); //constructor
-
+        Camera(int height, int width);
 
         void camUp();
         void camDown();
@@ -41,5 +45,7 @@ class Camera {
         void camRight();
         void camForward();
         void camBackward();
-        void translate(float xpos, float ypos, float zpos);
+        void camOrientation(vec3 rot);
+        void lookAt(glm::vec3 from);
+        // void setupFrus(int height, int width);
 };

@@ -4,13 +4,14 @@
 bool getClosestIntersection(vector<ModelTriangle> triangles, Camera cam, vec3 rayDirection){
     RayTriangleIntersection closest;
     float prevDist = 0; //a high value?
+    bool found = false;
 
     // loop through each triangle
     for(int i=0; i<(int)triangles.size(); i++){
         // calc. the ray
         vec3 e0 = triangles[i].vertices[1] - triangles[i].vertices[0];
         vec3 e1 = triangles[i].vertices[2] - triangles[i].vertices[0];
-        vec3 SPVector = startPos - triangles[i].vertices[0];
+        vec3 SPVector = cam.cameraPos - triangles[i].vertices[0];
         mat3 DEMatrix(-rayDirection, e0, e1);
         vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
 
@@ -30,7 +31,7 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, Camera cam, vec3 ra
 
         if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f && u + v <= 1) {
             if (possibleSolution.x < prevDist && possibleSolution.x > 0.0f) {
-                closest = RayTriangleIntersection(startPos + (possibleSolution.x * rayDirection) , possibleSolution.x, triangles[i]);
+                closest = RayTriangleIntersection(cam.cameraPos + (possibleSolution.x * rayDirection) , possibleSolution.x, triangles[i]);
                 found = true;
                 prevDist = possibleSolution.x;
             }
@@ -146,7 +147,7 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
                 float diffuseB = diffuseLighting(closest);
                 float ambientB = ambientLighting(diffuseB);
                 float totalB = diffuseB + ambientB;
-                uint32_t finalColour = convertColour(Colour(255,255,255), totalB);
+                uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, totalB);
                 window.setPixelColour(x, y, finalColour);
             }
             else { //else black

@@ -35,33 +35,38 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 }
 
 // our little vertex shader?
-void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam){
-    // calculate new colour for each vertex
-    vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
-    vec3 amb = mt.mat.ambient * Ia;
-    
+void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam, bool isShade){
 
-    // get new colours with lighting info before fillign in triangles
-    //Colour newC;
-    //v0.c = newC;
-    vec3 diff = mt.mat.diffuse * lightPower * dot(mt.normals[0], (lightPos - mt.vertices[0]));
-    vec3 illum = amb + diff;
-    // vec3 spec = mt.mat.specular * lightPower * ()
     CanvasPoint v0 = vertex3Dto2D(window, mt.vertices[0], cam);
-    v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
-
-
-    diff = mt.mat.diffuse * lightPower * dot(mt.normals[1], (lightPos - mt.vertices[1]));
-    illum = amb + diff;
     CanvasPoint v1 = vertex3Dto2D(window, mt.vertices[1], cam);
-    v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
-
-    diff = mt.mat.diffuse * lightPower * dot(mt.normals[2], (lightPos - mt.vertices[2]));
-    illum = amb + diff;
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
-    v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+    
+    if (isShade){
+        // calculate new colour for each vertex
+        vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
+        vec3 amb = mt.mat.ambient * Ia;
+        // get new colours with lighting info before fillign in triangles
+        vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f);
+        vec3 illum = amb + diff;
+        // vec3 spec = mt.mat.specular * lightPower * ()
+        
+        v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        
+        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f);
+        illum = amb + diff;
+        v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        
 
-
+        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f);
+        illum = amb + diff;
+        v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+    } else {
+        v0.c = mt.colour;
+        v1.c = mt.colour;
+        v2.c = mt.colour;
+    }
+    
+    //cout << v2.c << endl;
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
 
     // each canvas point has a tp
@@ -247,7 +252,7 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
  
-        modelToCanvasTri(window, t[i], ct, cam);
+        modelToCanvasTri(window, t[i], ct, cam, false);
         canvasTriangles.push_back(ct);
 
         vector<CanvasTriangle> cts = clipping(window, ct);
@@ -263,7 +268,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
 
-        modelToCanvasTri(window, t[i], ct, cam);
+        modelToCanvasTri(window, t[i], ct, cam, false);
         canvasTriangles.push_back(ct);
 
         //vector<CanvasTriangle> cts = clipping(window, ct);
@@ -292,15 +297,16 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
             // cts[j].vertices[0].normal = ;
             // cts[j].vertices[0].normal = ;
 
-            drawFilledTriangle(window, ct.colour, cts[j]);
+            //drawFilledTriangle(window, ct.colour, cts[j]);
             if (kind == 1){ // fill triangles
-                drawFilledTriangle(window, ct.colour, cts[j]);
+                //cout << ct.colour << endl;
+                drawFilledTriangle(window, ct.colour, cts[j], false);
             } else if (kind == 2){ // texture
                 fillTextureTriangle(window, pixels, cts[j]);
             } else if (kind == 3) { // gouraud
 
                 
-                drawFilledTriangle(window, ct.colour, cts[j]);
+                drawFilledTriangle(window, ct.colour, cts[j], true);
 
             }
             // if (ct.vertices[0].texturePoint.x == -1){

@@ -9,10 +9,13 @@ class Colour
     int red;
     int green;
     int blue;
+    int alpha;
 
     Colour();
 
     Colour(int r, int g, int b);
+
+    Colour(int r, int g, int b, int a);
 
     Colour(std::string n, int r, int g, int b);
 };

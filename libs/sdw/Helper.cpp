@@ -628,12 +628,8 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
             objectName = tokens[2];
 
         } else if (tokens[0] == "usemtl") {
-            //cout << tokens[1] << endl;
-            // Colour
             for (int i = 0; i < mtls.size(); i++){
-                cout << tokens[1];
                 if(mtls[i].name == tokens[1]){
-                    
                     material = mtls[i];
                 }
             }
@@ -656,7 +652,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                 int b = stoi(split(tokens[2],'//')[0]) - 1;
                 int c = stoi(split(tokens[3],'//')[0]) - 1;
 
-                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;
@@ -677,7 +673,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                 int b = stoi(split(tokens[2],'/')[0]) - 1;
                 int c = stoi(split(tokens[3],'/')[0]) - 1;
 
-                t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r*255, material.diffuse.g*255, material.diffuse.b*255));
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;

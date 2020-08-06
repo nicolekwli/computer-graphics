@@ -28,6 +28,9 @@ UTILS_OBJECT = libs/sdw/Utils.o
 HELPER_SOURCE = libs/sdw/Helper.cpp
 HELPER_OBJECT = libs/sdw/Helper.o
 
+RAYTRACER_SOURCE = libs/sdw/Raytracer.cpp
+RAYTRACER_OBJECT = libs/sdw/Raytracer.o
+
 CAMERA_SOURCE = libs/sdw/Camera.cpp
 CAMERA_OBJECT = libs/sdw/Camera.o
 

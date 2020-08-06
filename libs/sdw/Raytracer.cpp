@@ -1,10 +1,9 @@
 #include "Raytracer.h"
 
-// this doesnt work but could work (its too slow?)
-bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest){
-    float prevDist = 5000; //a high value? infinity?
-    rayDirection = glm::normalize(rayDirection);
-    bool found = false;
+
+bool getClosestIntersection(vector<ModelTriangle> triangles, Camera cam, vec3 rayDirection){
+    RayTriangleIntersection closest;
+    float prevDist = 0; //a high value?
 
     // loop through each triangle
     for(int i=0; i<(int)triangles.size(); i++){

@@ -51,6 +51,7 @@ int main(int argc, char* argv[]){
 void update() {
 }
 
+
 void handleEvent(SDL_Event event)
 {
   if(event.type == SDL_KEYDOWN) {

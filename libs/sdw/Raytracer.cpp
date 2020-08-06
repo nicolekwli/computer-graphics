@@ -119,8 +119,19 @@ uint32_t convertColour(Colour c, float brightness){
   return (255<<24) + (r<<16) + (g<<8) + b;
 }
 
+float ambientLighting(float brightness){
+// set a minimum threshold (floor) for the brightness multiplier
+// An IF statement will do the job - when the brightness of a pixel falls below a certain value (e.g. 0.2) just reset it to 0.2 !
+    float thresh = 0.2;
+    if (brightness < thresh){
+        return thresh;
+    }
+
+    return thresh;
+}
+
 // raytracing with lighting
-// diffuse lighting
+// diffuse and ambient
 void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
     RayTriangleIntersection closest;
 
@@ -133,8 +144,10 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
             //if there is intersection
             if (res){
                 uint32_t pixelColour = bitpackingColour(closest.intersectedTriangle.colour);
-                float brightness = diffuseLighting(closest);
-                uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, brightness);
+                float diffuseB = diffuseLighting(closest);
+                float ambientB = ambientLighting(diffuseB);
+                float totalB = diffuseB + ambientB;
+                uint32_t finalColour = convertColour(Colour(255,255,255), totalB);
                 window.setPixelColour(x, y, finalColour);
             }
             else { //else black

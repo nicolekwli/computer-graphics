@@ -92,16 +92,15 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         //uint32_t p_colour = (uint32_t)(a_colour*q + b_colour*(1-q));
         //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
         if (shade) {
-            p.c = a.c;  
+            //uint32_t p_colour = (uint32_t) p.depth * (a_colour / a.depth * (1-q) + b_colour / b.depth * q);
+            //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
+            p.c = b.c;  
+            //int red = (int) (p.depth * (a.c.red / a.depth * (1-q) + b.c.red / b.depth * q));
+            //int green = (int) (p.depth * (a.c.green / a.depth * (1-q) + b.c.green / b.depth * q));
+            // int blue = (int) (p.depth * (a.c.blue / a.depth * (1-q) + b.c.blue / b.depth * q));
+
+            //p.c = Colour(red,green,a.c.blue);     
         }
-         
-        // int red = (int) (p.depth * (a.c.red / a.depth * (1-q) + b.c.red / b.depth * q));
-        // int green = (int) (p.depth * (a.c.green / a.depth * (1-q) + b.c.green / b.depth * q));
-        // int blue = (int) (p.depth * (a.c.blue / a.depth * (1-q) + b.c.blue / b.depth * q));
-
-        // p.c = Colour(red,green,blue);     
-
-        // p_colour = (uint32_t)1 / p_colour;
 
 
         vect.push_back(p);

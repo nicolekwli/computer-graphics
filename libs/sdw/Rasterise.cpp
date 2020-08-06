@@ -1,7 +1,7 @@
 #include "Rasterise.h"
 
-vec3 lightPos(0, 0, -5.0);
-vec3 lightPower = 16.f * vec3(1, 1, 1);
+vec3 lightPos(6, 2, -6.0);
+vec3 lightPower = 14.5f * vec3(1, 1, 1);
 vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
 
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
@@ -45,19 +45,20 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         // calculate new colour for each vertex
         vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
         vec3 amb = mt.mat.ambient * Ia;
-        // get new colours with lighting info before fillign in triangles
-        vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f);
+        vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
         vec3 illum = amb + diff;
         // vec3 spec = mt.mat.specular * lightPower * ()
         
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        cout << mt.mat.name << endl;
+        cout << v0.c << endl;
         
-        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f);
+        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
         illum = amb + diff;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         
 
-        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f);
+        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
         illum = amb + diff;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
     } else {
@@ -268,7 +269,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
 
-        modelToCanvasTri(window, t[i], ct, cam, false);
+        modelToCanvasTri(window, t[i], ct, cam, true);
         canvasTriangles.push_back(ct);
 
         //vector<CanvasTriangle> cts = clipping(window, ct);

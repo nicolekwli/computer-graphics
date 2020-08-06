@@ -71,7 +71,8 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam, ppm.pixels, m, 1);
+        //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
+        rasterise(window, object, mycam, ppm.pixels, m, 3);  // shade
         //SSAA(window);
 
         window.renderFrame();

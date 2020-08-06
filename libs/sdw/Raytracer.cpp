@@ -1,5 +1,40 @@
 #include "Raytracer.h"
 
+// -------------------- HELPER FUNCS
+/*  // 0.0 <= u <= 1.0
+    // 0.0 <= v <= 1.0
+    // u + v <= 1.0
+*/
+bool checkConstraints(vec3 sol){
+    float u = sol.y;
+    float v = sol.z;
+    bool result = false;
+
+    if (0.0 <= u and u <= 1.0) {
+        result = true;
+    }
+    else if (0.0 <= v and v <= 1.0) {
+        result = true;
+    }
+    else if ((u + v) <= 1.0) {
+        result = true;
+    }
+
+    //or do 
+    // if ( (0.0 <= u and u <= 1.0) and (0.0 <= v and v <= 1.0) and ((u + v) <= 1.0) )
+    return result;
+}
+
+
+uint32_t convertColour(Colour c, float brightness){
+  int r   = std::min((int)(c.red   * brightness), 255);
+  int g = std::min((int)(c.green * brightness), 255);
+  int b  = std::min((int)(c.blue  * brightness), 255);
+  return (255<<24) + (r<<16) + (g<<8) + b;
+}
+
+
+// -------------------- OTHER FUNCIONS lol
 // this doesnt work but could work (its too slow?)
 bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest){
     float prevDist = 5000; //a high value? infinity?
@@ -94,9 +129,7 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
 
-            // cout<<" 2 ";
             bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
-            // bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closest);
 
             //if there is intersection
             if (res){
@@ -111,29 +144,46 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
     }
 }
 
+// the closer a surface is to the light, the brighter a pixel will be drawn on the image plane
+float diffuseLighting(RayTriangleIntersection intersection){
+    // vec3 lightPos = glm::vec3( 0, -0.5, -0.7 );
+    vec3 lightPos = vec3(0, 3, -FOCAL); // light is where the camera is 
+    vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
+    
+    vec3 dirLight = lightPos - intersection.intersectionPoint;
+    vec3 e01 = intersection.intersectedTriangle.vertices[1] - intersection.intersectedTriangle.vertices[0];
+    vec3 e02 = intersection.intersectedTriangle.vertices[2] - intersection.intersectedTriangle.vertices[0];
+    vec3 surfaceNormal = glm::cross(e01, e02);
+    surfaceNormal = glm::normalize(surfaceNormal);
+    float check = glm::dot(-surfaceNormal, dirLight);
+    float D = (lightColor.y * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
+
+    return D;
+}
 
 
-/*
-    // 0.0 <= u <= 1.0
-    // 0.0 <= v <= 1.0
-    // u + v <= 1.0
-*/
-bool checkConstraints(vec3 sol){
-    float u = sol.y;
-    float v = sol.z;
-    bool result = false;
+// raytracing with lighting
+// diffuse lighting
+void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
+    RayTriangleIntersection closest;
 
-    if (0.0 <= u and u <= 1.0) {
-        result = true;
+    for(int y=0; y<window.height; y++){
+        for(int x=0; x<window.width; x++){
+            glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
+
+            bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+
+            //if there is intersection
+            if (res){
+                uint32_t pixelColour = bitpackingColour(closest.intersectedTriangle.colour);
+                float brightness = diffuseLighting(closest);
+                uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, brightness);
+                window.setPixelColour(x, y, finalColour);
+            }
+            else { //else black
+                uint32_t pixelColour = bitpackingColour(Colour(0,0,0));
+                window.setPixelColour(x, y, pixelColour);
+            }
+        }
     }
-    else if (0.0 <= v and v <= 1.0) {
-        result = true;
-    }
-    else if ((u + v) <= 1.0) {
-        result = true;
-    }
-
-    //or do 
-    // if ( (0.0 <= u and u <= 1.0) and (0.0 <= v and v <= 1.0) and ((u + v) <= 1.0) )
-    return result;
 }

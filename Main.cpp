@@ -60,7 +60,8 @@ int main(int argc, char* argv[]){
         //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
         //raytracer stuff
-        //drawFilledTriangleRay(window, object, mycam);
+        // drawFilledTriangleRay(window, object, mycam);
+        raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
@@ -70,7 +71,7 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         //createWireframe(window, object, mycam);
-        rasterise(window, object, mycam, ppm.pixels, m, 1);
+        // rasterise(window, object, mycam, ppm.pixels, m, 1);
         //SSAA(window);
 
         window.renderFrame();

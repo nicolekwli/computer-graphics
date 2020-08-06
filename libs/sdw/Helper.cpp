@@ -624,10 +624,13 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
         if ((tokens[0] == "#") || (tokens[0] == "g")){
             continue;
 
-        } else if (tokens[1] == "Object"){
-            objectName = tokens[2];
-
-        } else if (tokens[0] == "usemtl") {
+        } 
+        // else if (tokens[1] == "Object"){ //not needed soOOO byebye segfault
+        //     objectName = tokens[2];
+        // }
+        else if (tokens[0] == "usemtl") {
+            //cout << tokens[1] << endl;
+            // Colour
             for (int i = 0; i < mtls.size(); i++){
                 if(mtls[i].name == tokens[1]){
                     material = mtls[i];

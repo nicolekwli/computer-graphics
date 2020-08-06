@@ -18,8 +18,8 @@ vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
 //vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
 
 
-vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
+vector<Material> m = readMTLAlt("assets/cornell-box-extra/CornellBox-Sphere.mtl");
+vector<ModelTriangle> object = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
 
 
 // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");

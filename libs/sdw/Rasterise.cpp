@@ -1,7 +1,7 @@
 #include "Rasterise.h"
 
-vec3 lightPos(6, 2, -6.0);
-vec3 lightPower = 14.5f * vec3(1, 1, 1);
+vec3 lightPos(0, 6, -6.0);
+vec3 lightPower = 34.5f * vec3(1, 1, 1);
 vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
 
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
@@ -46,19 +46,20 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
         vec3 amb = mt.mat.ambient * Ia;
         vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
+        //vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f);
         vec3 illum = amb + diff;
         // vec3 spec = mt.mat.specular * lightPower * ()
         
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
-        cout << mt.mat.name << endl;
-        cout << v0.c << endl;
         
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
+        //diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f);
         illum = amb + diff;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         
 
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
+        //diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f);
         illum = amb + diff;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
     } else {

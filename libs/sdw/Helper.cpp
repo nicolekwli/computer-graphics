@@ -72,11 +72,15 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     float intervalsTX = (b.texturePoint.x - a.texturePoint.x) / (noOfVals);
     float intervalsTY = (b.texturePoint.y - a.texturePoint.y) / (noOfVals);
     //float intervalsDepth = (b.depth - a.depth) / (noOfVals);
+    
     vect.push_back(a);
 
     uint32_t a_colour = bitpackingColour(a.c);
     uint32_t b_colour = bitpackingColour(b.c);
-
+    vec3 ac = vec3(a.c.red, a.c.green, a.c.blue);
+    vec3 bc = vec3(b.c.red, b.c.green, b.c.blue);
+    vec3 intervalsC = (bc - ac) / (noOfVals - 1.0f);
+    //cout << intervalsC << endl;
 
     for (int i = 1; i < noOfVals; i++) {
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i) ;
@@ -92,14 +96,22 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         //uint32_t p_colour = (uint32_t)(a_colour*q + b_colour*(1-q));
         //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
         if (shade) {
-            //uint32_t p_colour = (uint32_t) p.depth * (a_colour / a.depth * (1-q) + b_colour / b.depth * q);
+            //uint32_t p_colour = (uint32_t) p.depth * ((a_colour / a.depth * (1-q)) + (b_colour / b.depth * q));
+            //float p_colour = 1 / a_colour * (1-q) + 1 / b_colour * q;
+            //cout << q << endl;
+            if (a_colour = b_colour){
+            //vec3 pc = ac + intervalsC * (float)i;
+            //vec3 pc = ac + i/noOfVals * (bc - ac);
+            
+                p.c = a.c;
+            } else {
+                p.c = Colour(int(ac.r * (1-q) + bc.r * q), int (ac.g * (1-q) + bc.g * q), int(ac.b * (1-q) + bc.b * q));
+            }
             //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
-            p.c = b.c;  
-            //int red = (int) (p.depth * (a.c.red / a.depth * (1-q) + b.c.red / b.depth * q));
-            //int green = (int) (p.depth * (a.c.green / a.depth * (1-q) + b.c.green / b.depth * q));
-            // int blue = (int) (p.depth * (a.c.blue / a.depth * (1-q) + b.c.blue / b.depth * q));
-
-            //p.c = Colour(red,green,a.c.blue);     
+            //uint32_t p_colour = a_colour + intervalsC * i;
+            //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
+            //p.c = a.c;  
+        
         }
 
 
@@ -352,7 +364,9 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
     uint32_t colour = bitpackingColour(newP.c);
     uint32_t colour1 = bitpackingColour(triangle.vertices[0].c);
     uint32_t colour2 = bitpackingColour(triangle.vertices[2].c);
+
     colour = colour1 + ratio * (colour2 - colour1);
+    newP.c = triangle.vertices[0].c;
 
     //newP.c = Colour() (255<<24) + (int(red)<<16) + (int(green)<<8) + int(blue);
     // make sure newP has a smaller value x than vertice 1

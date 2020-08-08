@@ -47,7 +47,7 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, Camera cam, vec3 ra
 // pseudocode from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 bool getClosestInt(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest ){
     float prevDist = 1000; //a high value?
-    rayDirection = glm::normalize(rayDirection);
+    // rayDirection = glm::normalize(rayDirection);
 
     // loop through each triangle
     for(int i=0; i<(int)triangles.size(); i++){
@@ -138,6 +138,7 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
     for(int y=0; y<window.height; y++){
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
+            // rayDirection = glm::normalize(rayDirection);
 
             bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
 
@@ -179,6 +180,25 @@ float diffuseLighting(RayTriangleIntersection intersection){
 }
 
 
+float specularLighting(RayTriangleIntersection intersection){
+    // dot product b/w R and V
+    // return that value;
+
+    // glm::vec3 specular;
+    // float si = i.intersectedTriangle.colour.specularIndex;
+    // if (si != 0){
+    //     specular = powf(std::max(glm::dot(glm::normalize(reflected),glm::normalize(viewdir)),0.f),si) * glm::vec3(1);
+    // }
+    // else{
+    //     specular = glm::vec3(0);
+    // }
+    // // std::cout << specular << std::endl;
+    // found = true; //Diffuse
+    // lighting += specular  + diffuse;
+
+}
+
+
 /* constraints are:
     // 0.0 <= u <= 1.0
     // 0.0 <= v <= 1.0
@@ -189,10 +209,10 @@ bool checkConstraints(vec3 sol){
     float v = sol.z;
     bool result = false;
 
-    if (0.0 <= u and u <= 1.0) {
+    if (0.0 <= u && u <= 1.0) {
         result = true;
     }
-    else if (0.0 <= v and v <= 1.0) {
+    else if (0.0 <= v && v <= 1.0) {
         result = true;
     }
     else if ((u + v) <= 1.0) {

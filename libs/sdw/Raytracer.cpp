@@ -34,6 +34,21 @@ uint32_t convertColour(Colour c, float brightness){
 }
 
 
+// this seems dumb but ehh
+vector<ModelTriangle> makeNegative(vector<ModelTriangle> triangles){
+    vector<ModelTriangle> newT;
+    newT = triangles;
+    
+    for(int i=0; i<(int)triangles.size(); i++){
+        for(int j=0; j<3; j++){
+            float temp = -triangles[i].vertices[1].z;
+            newT[i].vertices[1].z = temp;
+        }
+    }
+    return newT;
+}
+
+
 // -------------------- OTHER FUNCIONS lol
 // this doesnt work but could work (its too slow?)
 bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest){
@@ -72,17 +87,22 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3
             }
         }
     }
-
     return found;
 }
 
 
-// this version doesnt crash and actually shows something
+// THIS WORKS!!!
 // moller - trombone algorithm
 // pseudocode from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 bool getClosestInt(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest ){
     float prevDist = 1000; //a high value?
     rayDirection = glm::normalize(rayDirection);
+    
+    // cout<< triangles[10].vertices[1].z <<endl;
+    // vector<ModelTriangle> final;
+    // final = makeNegative(triangles);
+    // makeNegative(triangles);
+    // cout<< final[10].vertices[1].z <<endl;
 
     // loop through each triangle
     for(int i=0; i<(int)triangles.size(); i++){
@@ -144,13 +164,14 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
     }
 }
 
+
 // the closer a surface is to the light, the brighter a pixel will be drawn on the image plane
 float diffuseLighting(RayTriangleIntersection intersection){
     // vec3 lightPos = glm::vec3( 0, -0.5, -0.7 );
     vec3 lightPos = vec3(0, 3, -FOCAL); // light is where the camera is 
     vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
     
-    vec3 dirLight = lightPos - intersection.intersectionPoint;
+    vec3 dirLight = intersection.intersectionPoint - lightPos; // lightPos - intersection.intersectionPoint??
     vec3 e01 = intersection.intersectedTriangle.vertices[1] - intersection.intersectedTriangle.vertices[0];
     vec3 e02 = intersection.intersectedTriangle.vertices[2] - intersection.intersectedTriangle.vertices[0];
     vec3 surfaceNormal = glm::cross(e01, e02);

@@ -1,7 +1,9 @@
 #include "Rasterise.h"
+#include <string.h>
 
-vec3 lightPos(0, 6, -6.0);
-vec3 lightPower = 34.5f * vec3(1, 1, 1);
+vec3 lightPos(0, 8, -6.0);
+vec3 lightPower = 88.5f * vec3(1, 1, 1);
+//vec3 dIntensity = vec3(2550.f, 1800.f, 1010.f);
 vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
 
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
@@ -42,24 +44,31 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
     
     if (isShade){
+        // cout << mt.mat.name << endl;
+        // cout << mt.mat.diffuse.x << endl;
+        // cout << mt.mat.diffuse.y << endl;
+        
         // calculate new colour for each vertex
-        vec3 Ia = vec3(0.25, 0.25, 0.25); // lets say this is the light intensity
+        vec3 Ia = vec3(0.55, 0.55, 0.55); // lets say this is the light intensity
+        float distance = pow((lightPos.x - mt.vertices[0].x),2) + pow((lightPos.y - mt.vertices[0].y),2) + pow((lightPos.z - mt.vertices[0].z),2);
+        distance = sqrt(distance);
         vec3 amb = mt.mat.ambient * Ia;
-        vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
-        //vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f);
+        vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f*distance*distance);
         vec3 illum = amb + diff;
         // vec3 spec = mt.mat.specular * lightPower * ()
         
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
-        
-        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
-        //diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f);
+
+        distance = pow((lightPos.x - mt.vertices[1].x),2) + pow((lightPos.y - mt.vertices[1].y),2) + pow((lightPos.z - mt.vertices[1].z),2);
+        distance = sqrt(distance);
+        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f) / (4.0f * 3.14f*distance*distance);
         illum = amb + diff;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         
 
-        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f * dot((lightPos - mt.vertices[0]), (lightPos - mt.vertices[0])));
-        //diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f);
+        distance = pow((lightPos.x - mt.vertices[2].x),2) + pow((lightPos.y - mt.vertices[2].y),2) + pow((lightPos.z - mt.vertices[2].z),2);
+        distance = sqrt(distance);
+        diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f*distance*distance);
         illum = amb + diff;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
     } else {

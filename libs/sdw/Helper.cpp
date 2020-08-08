@@ -647,6 +647,11 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
             for (int i = 0; i < mtls.size(); i++){
                 if(mtls[i].name == tokens[1]){
                     material = mtls[i];
+                    cout << tokens[1] << endl;
+                    cout << material.name << endl;
+                    cout << material.diffuse.x << endl;
+                    cout << material.diffuse.y << endl;
+                    
                 }
             }
         }  else if (tokens[0] == "v"){
@@ -776,6 +781,7 @@ vector<Material> readMTLAlt(string filename){
             mat.ambient = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Kd"){
+            cout << tokens[1] << endl;
             mat.diffuse = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Ks"){

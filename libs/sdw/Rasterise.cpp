@@ -1,8 +1,8 @@
 #include "Rasterise.h"
 #include <string.h>
 
-vec3 lightPos(0, 8, -6.0);
-vec3 lightPower = 88.5f * vec3(1, 1, 1);
+vec3 lightPos(5, 12, -6.0);
+vec3 lightPower = 58.5f * vec3(1, 1, 1);
 //vec3 dIntensity = vec3(2550.f, 1800.f, 1010.f);
 vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
 

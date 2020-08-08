@@ -167,8 +167,8 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
 
 // the closer a surface is to the light, the brighter a pixel will be drawn on the image plane
 float diffuseLighting(RayTriangleIntersection intersection){
-    // vec3 lightPos = glm::vec3( 0, -0.5, -0.7 );
-    vec3 lightPos = vec3(0, 3, -FOCAL); // light is where the camera is 
+    vec3 lightPos = glm::vec3( 0, -0.5, -0.7 );
+    // vec3 lightPos = vec3(0, 3, -FOCAL); // light is where the camera is 
     vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
     
     vec3 dirLight = intersection.intersectionPoint - lightPos; // lightPos - intersection.intersectionPoint??
@@ -177,14 +177,25 @@ float diffuseLighting(RayTriangleIntersection intersection){
     vec3 surfaceNormal = glm::cross(e01, e02);
     surfaceNormal = glm::normalize(surfaceNormal);
     float check = glm::dot(-surfaceNormal, dirLight);
-    float D = (lightColor.y * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
+    float D = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
 
     return D;
 }
 
 
+// set a minimum threshold (floor) for the brightness multiplier
+// An IF statement will do the job - when the brightness of a pixel falls below a certain value (e.g. 0.2) just reset it to 0.2 !
+float ambientLighting(float brightness){
+   float thresh = 0.2;
+    if (brightness < thresh){
+        return thresh;
+    }
+    return thresh;
+}
+
+
 // raytracing with lighting
-// diffuse lighting
+// diffuse and ambient lighting
 void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
     RayTriangleIntersection closest;
 
@@ -197,8 +208,10 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
             //if there is intersection
             if (res){
                 uint32_t pixelColour = bitpackingColour(closest.intersectedTriangle.colour);
-                float brightness = diffuseLighting(closest);
-                uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, brightness);
+                float diffuseB = diffuseLighting(closest);
+                float ambientB = ambientLighting(diffuseB);
+                float totalB = diffuseB + ambientB;
+                uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, totalB);
                 window.setPixelColour(x, y, finalColour);
             }
             else { //else black

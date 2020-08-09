@@ -7,6 +7,7 @@
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm;
+int frame_count = 000;
 
 // normal reading files
 vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
@@ -30,9 +31,11 @@ int main(int argc, char* argv[]){
         createWireframe(window, object, mycam);
         
         // saving each frame as PMM
-        // savePPM(window, "file1");
+        //might want to save in a folder?
+        savePPM(window, "wireframe-"+to_string(frame_count)+".ppm");
 
-        window.renderFrame();        
+        window.renderFrame();
+        frame_count++;
     }
 }
 

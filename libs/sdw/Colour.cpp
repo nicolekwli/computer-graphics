@@ -13,6 +13,15 @@ Colour::Colour(int r, int g, int b)
     blue = b;
 }
 
+Colour::Colour(int r, int g, int b, int a)
+{
+    name = "";
+    red = r;
+    green = g;
+    blue = b;
+    alpha = a;
+}
+
 Colour::Colour(std::string n, int r, int g, int b)
 {
     name = n;

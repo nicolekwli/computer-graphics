@@ -15,10 +15,13 @@ Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm;
 
 vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+//vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
+
 
 vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-// vector<ModelTriangle> object = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", c, ppm, 1);
+
+vector<ModelTriangle> object = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
+
 
 // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
 // vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
@@ -57,7 +60,6 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         // savePPM(window, "hello.ppm");
-        //vector<vector<uint32_t>>pixels = readPPM(window,"hello.ppm");
 
         //raytracer stuff
         // drawFilledTriangleRay(window, object, mycam);
@@ -71,7 +73,8 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         //createWireframe(window, object, mycam);
-        // rasterise(window, object, mycam, ppm.pixels, m, 1);
+        //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
+        rasterise(window, object, mycam, ppm.pixels, m, 3);  // shade
         //SSAA(window);
 
         window.renderFrame();

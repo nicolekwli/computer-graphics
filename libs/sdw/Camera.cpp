@@ -1,9 +1,13 @@
 #include "Camera.h"
 
 Camera::Camera(int height, int width){
+<<<<<<< HEAD
     cameraPos = vec3(0, 1, -6); // old (0,0,-FOCAL)
+=======
+    //cameraPos = vec3(0, 1, -6);
+>>>>>>> shading
     // cameraPos = vec3(0, 2, -FOCAL); // normal cornell
-    //cameraPos = vec3(0, 1, -FOCAL);  // sphere cornell
+    cameraPos = vec3(0, 1, -FOCAL);  // sphere cornell
     //cameraRot = mat3(-1, 0, 0, 0, 1, 0, 0, 0, -1);
     //cameraRot = mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
     cameraRot = mat3(cos(0), 0, sin(0), 0, 1, 0, -sin(0), 0, cos(0));

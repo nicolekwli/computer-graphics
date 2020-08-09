@@ -1,5 +1,6 @@
 #include "Helper.h"
 
+bool shade;
 // ----- Functions -----
 uint32_t bitpackingColour(Colour c){
   uint32_t converted;
@@ -70,10 +71,16 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
     float intervalsTX = (b.texturePoint.x - a.texturePoint.x) / (noOfVals);
     float intervalsTY = (b.texturePoint.y - a.texturePoint.y) / (noOfVals);
-    float intervalsDepth = (b.depth - a.depth) / (noOfVals);
+    //float intervalsDepth = (b.depth - a.depth) / (noOfVals);
+    
     vect.push_back(a);
 
     uint32_t a_colour = bitpackingColour(a.c);
+    uint32_t b_colour = bitpackingColour(b.c);
+    vec3 ac = vec3(a.c.red, a.c.green, a.c.blue);
+    vec3 bc = vec3(b.c.red, b.c.green, b.c.blue);
+    vec3 intervalsC = (bc - ac) / (noOfVals - 1.0f);
+    //cout << intervalsC << endl;
 
     for (int i = 1; i < noOfVals; i++) {
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i) ;
@@ -83,11 +90,29 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
 
         texPointCorrected(a, b, p);
-        //p.texturePoint.x = a.texturePoint.x + intervalsTX * i;
-        //p.texturePoint.y = a.texturePoint.y + intervalsTY * i;
 
         // INTERPOLATE COLOUR AS WELL
+        //uint32_t p_colour = (uint32_t) p.depth * (a_colour / a.depth * (1-q) + b_colour / b.depth * q);
+        //uint32_t p_colour = (uint32_t)(a_colour*q + b_colour*(1-q));
+        //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
+        if (shade) {
+            //uint32_t p_colour = (uint32_t) p.depth * ((a_colour / a.depth * (1-q)) + (b_colour / b.depth * q));
+            //float p_colour = 1 / a_colour * (1-q) + 1 / b_colour * q;
+            //cout << q << endl;
+            if (a_colour = b_colour){
+            //vec3 pc = ac + intervalsC * (float)i;
+            //vec3 pc = ac + i/noOfVals * (bc - ac);
+            
+                p.c = a.c;
+            } else {
+                p.c = Colour(int(ac.r * (1-q) + bc.r * q), int (ac.g * (1-q) + bc.g * q), int(ac.b * (1-q) + bc.b * q));
+            }
+            //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
+            //uint32_t p_colour = a_colour + intervalsC * i;
+            //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
+            //p.c = a.c;  
         
+        }
 
 
         vect.push_back(p);
@@ -307,24 +332,43 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
 }
 
 
-void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c) {
+void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade) {
     uint32_t colour = bitpackingColour(c);
 
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
-        drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
+        //drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
+        if (isShade){
+            vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
+            for (int i=0; i<line.size(); i++){
+                colour = bitpackingColour(line[i].c);
+                window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
+            }
+        } else {
+            //cout << "here" << endl;
+            drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
+        }
+        
 
     }
 }
 
-void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle){
+void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, bool isShade){
+    shade = isShade;
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
                                         triangle.vertices[0].depth + ratio * (triangle.vertices[2].depth - triangle.vertices[0].depth));
+    uint32_t colour = bitpackingColour(newP.c);
+    uint32_t colour1 = bitpackingColour(triangle.vertices[0].c);
+    uint32_t colour2 = bitpackingColour(triangle.vertices[2].c);
 
+    colour = colour1 + ratio * (colour2 - colour1);
+    newP.c = triangle.vertices[0].c;
+
+    //newP.c = Colour() (255<<24) + (int(red)<<16) + (int(green)<<8) + int(blue);
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){
         swap(newP, triangle.vertices[1]);
@@ -335,12 +379,12 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle)
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
-    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour);
+    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour, isShade);
 
     // Bottom triangle
     vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
-    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour); 
+    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour, isShade); 
 }
 
 
@@ -463,15 +507,6 @@ PPM readPPM(DrawingWindow window, string filename){
         pixels.push_back(pixel);
     }
 
-    //display to a window
-    // for(int y=height; y>0 ;y--) {
-    //     for(int x=width; x>0 ;x--) {
-    //         //cout << pixels[y][x] << endl;
-    //       window.setPixelColour(x, y, pixels[x][y]);
-    //       //pixels.pop_back();
-    //     }
-    // }
-
     file.close();
 
     PPM ppm = PPM(width, height, pixels);
@@ -493,7 +528,6 @@ void savePPM(DrawingWindow window, string filename){
 
 
     for (int x = 0; x < window.height ; x++) {
-
         for (int y = 0; y < window.width ; y++){
             uint32_t p = window.getPixelColour(y,x);
             Colour c = Colour((p & 0x00ff0000) >> 16, (p & 0x0000ff00) >> 8, p & 0x000000ff);
@@ -598,31 +632,30 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
     file.open(filename);
 
     while (getline(file, line)){
-        //cout << line << endl;
         tokens = split(line, ' ');
 
         if ((tokens[0] == "#") || (tokens[0] == "g")){
             continue;
 
-        } else if (tokens[1] == "Object"){
-            objectName = tokens[2];
-
-        } else if (tokens[0] == "usemtl") {
+        } 
+        // else if (tokens[1] == "Object"){ //not needed soOOO byebye segfault
+        //     objectName = tokens[2];
+        // }
+        else if (tokens[0] == "usemtl") {
+            //cout << tokens[1] << endl;
             // Colour
-            for (std::vector<int>::size_type i = 0; i != mtls.size(); i++){
-                // calculate colour using the whole lot 
+            for (int i = 0; i < mtls.size(); i++){
                 if(mtls[i].name == tokens[1]){
-                    // do calculations for new vertex colour with lighting
-
-                    // int r=0;
-                    // int g=0;
-                    // int b=0;
                     material = mtls[i];
+                    cout << tokens[1] << endl;
+                    cout << material.name << endl;
+                    cout << material.diffuse.x << endl;
+                    cout << material.diffuse.y << endl;
+                    
                 }
             }
         }  else if (tokens[0] == "v"){
             glm::vec3 vec = vec3(stof(tokens[2])*rescale, stof(tokens[3])*rescale, stof(tokens[4])*-rescale);
-            //if (objectName == "rightwall") cout << vec.z << endl;
             Vs.push_back(vec);
         } else if (tokens[0] == "vn"){
             glm::vec3 vec = vec3(stof(tokens[1])*rescale, stof(tokens[2])*rescale, stof(tokens[3])*-rescale);
@@ -640,7 +673,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                 int b = stoi(split(tokens[2],'//')[0]) - 1;
                 int c = stoi(split(tokens[3],'//')[0]) - 1;
 
-                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;
@@ -661,7 +694,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                 int b = stoi(split(tokens[2],'/')[0]) - 1;
                 int c = stoi(split(tokens[3],'/')[0]) - 1;
 
-                t = ModelTriangle(Vs[a], Vs[b], Vs[c]);
+                t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;
@@ -738,8 +771,6 @@ vector<Material> readMTLAlt(string filename){
     Material mat;
 
     while (getline(file, line)){
-        //getline(file, line);
-        
         tokens = split(line, ' ');
 
         if (tokens[0] == "newmtl"){
@@ -750,11 +781,11 @@ vector<Material> readMTLAlt(string filename){
             mat.ambient = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Kd"){
+            cout << tokens[1] << endl;
             mat.diffuse = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Ks"){
             mat.specular = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
-            
         }
         else if (tokens[0] == "Ns"){
             mat.highlight = stof(tokens[1]);
@@ -769,7 +800,6 @@ vector<Material> readMTLAlt(string filename){
     }
     file.close();
     return final;
-
 }
 
 // once rasterising is done at a higher resolution this should work 

@@ -54,6 +54,8 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         distance = sqrt(distance);
         vec3 amb = mt.mat.ambient * Ia;
         vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f*distance*distance);
+        vec3 R = normalize(2.0f * mt.normals[0] * dot((lightPos - mt.vertices[0]), mt.normals[0]) - (lightPos - mt.vertices[0]));
+        vec3 spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[0])),mt.mat.illum);
         vec3 illum = amb + diff;
         // vec3 spec = mt.mat.specular * lightPower * ()
         

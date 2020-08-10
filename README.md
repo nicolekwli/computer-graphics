@@ -12,15 +12,15 @@
 - [x] Changing camera orientation (via orientation matrix)
 - [x] LookAt
 * _Some form of generative geometry_
-- [ ] Ambient lighting
-- [ ] Diffuse lighting (proximity and angle-of-incidence)
+- [x] Ambient lighting
+- [x] Diffuse lighting (proximity and angle-of-incidence)
 
 
 ### (60s) some of...
 * Hard Shadow
-* Gouraud shading
+- [x] Gouraud shading
 - [x] Naive (non-perspective corrected) texture mapping
-* Simple animation (e.g. fly-through)
+- [x] Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
 - [x] Basic culling/clipping (far-plane, near-plan, back-face) [Need perfecting]
 - [x] _Basic (image plane) anti-aliasing_ [wu line 2D]

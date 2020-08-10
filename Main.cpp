@@ -63,7 +63,7 @@ int main(int argc, char* argv[]){
 
         //raytracer stuff
         // drawFilledTriangleRay(window, object, mycam);
-        raytracingLighting(window, object, mycam);
+        //raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);

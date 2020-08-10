@@ -776,7 +776,6 @@ vector<Material> readMTLAlt(string filename){
             mat.ambient = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Kd"){
-            cout << tokens[1] << endl;
             mat.diffuse = vec3(int(255 * stof(tokens[1])), int(255 * stof(tokens[2])), int(255 * stof(tokens[3])));
         }
         else if (tokens[0] == "Ks"){

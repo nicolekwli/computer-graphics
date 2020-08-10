@@ -2,7 +2,7 @@
 #include <string.h>
 
 vec3 lightPos(5, 12, -6.0);
-vec3 lightPower = 58.5f * vec3(1, 1, 1);
+vec3 lightPower = 62.5f * vec3(1, 1, 1);
 //vec3 dIntensity = vec3(2550.f, 1800.f, 1010.f);
 vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
 
@@ -44,9 +44,6 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
     
     if (isShade){
-        // cout << mt.mat.name << endl;
-        // cout << mt.mat.diffuse.x << endl;
-        // cout << mt.mat.diffuse.y << endl;
         
         // calculate new colour for each vertex
         vec3 Ia = vec3(0.55, 0.55, 0.55); // lets say this is the light intensity
@@ -54,25 +51,34 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         distance = sqrt(distance);
         vec3 amb = mt.mat.ambient * Ia;
         vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f*distance*distance);
-        vec3 R = normalize(2.0f * mt.normals[0] * dot((lightPos - mt.vertices[0]), mt.normals[0]) - (lightPos - mt.vertices[0]));
-        vec3 spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[0])),mt.mat.illum);
-        vec3 illum = amb + diff;
-        // vec3 spec = mt.mat.specular * lightPower * ()
+        
+        vec3 tolight = normalize(lightPos - mt.vertices[0]);
+        vec3 R = normalize(2.0f * mt.normals[0] * dot(tolight, mt.normals[0]) - tolight);
+        vec3 spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[0])),mt.mat.highlight);
+        vec3 illum = amb + diff + spec;
         
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
 
         distance = pow((lightPos.x - mt.vertices[1].x),2) + pow((lightPos.y - mt.vertices[1].y),2) + pow((lightPos.z - mt.vertices[1].z),2);
         distance = sqrt(distance);
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f) / (4.0f * 3.14f*distance*distance);
-        illum = amb + diff;
+
+        tolight = normalize(lightPos - mt.vertices[1]);
+        R = normalize(2.0f * mt.normals[1] * dot(tolight, mt.normals[1]) - tolight);
+        spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[1])), mt.mat.highlight);
+        illum = amb + diff + spec;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         
 
         distance = pow((lightPos.x - mt.vertices[2].x),2) + pow((lightPos.y - mt.vertices[2].y),2) + pow((lightPos.z - mt.vertices[2].z),2);
         distance = sqrt(distance);
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f*distance*distance);
-        illum = amb + diff;
+
+        R = normalize(2.0f * mt.normals[2] * dot((lightPos - mt.vertices[2]), mt.normals[2]) - (lightPos - mt.vertices[2]));
+        spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[2])), mt.mat.highlight);
+        illum = amb + diff + spec;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        
     } else {
         v0.c = mt.colour;
         v1.c = mt.colour;

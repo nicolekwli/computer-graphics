@@ -14,4 +14,11 @@ using namespace std;
 using namespace glm;
 
 void update();
+void draw();
 void handleEvent(SDL_Event event);
+
+void cornellboxAnimate();
+void logoFlyThrough();
+void wipeScreen();
+void logoOrbit();
+void clearScreen();

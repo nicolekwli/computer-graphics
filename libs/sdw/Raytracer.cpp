@@ -149,7 +149,8 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
 
-            bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+            // bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+            bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closest);
 
             //if there is intersection
             if (res){
@@ -203,7 +204,8 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
 
-            bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+            // bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+            bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closest);
 
             //if there is intersection
             if (res){

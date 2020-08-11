@@ -44,19 +44,19 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
     
     if (isShade){
-        
         // calculate new colour for each vertex
         vec3 Ia = vec3(0.55, 0.55, 0.55); // lets say this is the light intensity
+
         float distance = pow((lightPos.x - mt.vertices[0].x),2) + pow((lightPos.y - mt.vertices[0].y),2) + pow((lightPos.z - mt.vertices[0].z),2);
         distance = sqrt(distance);
         vec3 amb = mt.mat.ambient * Ia;
         vec3 diff = mt.mat.diffuse * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
         
         vec3 tolight = normalize(lightPos - mt.vertices[0]);
-        vec3 R = normalize(2.0f * mt.normals[0] * dot(tolight, mt.normals[0]) - tolight);
-        vec3 spec = mt.mat.specular * powf(dot(R,  normalize(cam.cameraPos- mt.vertices[0])), mt.mat.highlight) * vec3(1.0f);
+        vec3 R = normalize(2.0f * mt.normals[0] * dot(tolight, mt.normals[0]) - tolight); // this is right
+        vec3 V = normalize(cam.cameraPos- mt.vertices[0]); // ??
+        vec3 spec = mt.mat.specular * powf(dot(R, V), mt.mat.highlight) * vec3(1.0f);
         vec3 illum = amb + diff + spec;
-        
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
 
         distance = pow((lightPos.x - mt.vertices[1].x),2) + pow((lightPos.y - mt.vertices[1].y),2) + pow((lightPos.z - mt.vertices[1].z),2);
@@ -85,7 +85,6 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         v2.c = mt.colour;
     }
     
-    //cout << v2.c << endl;
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
 
     // each canvas point has a tp
@@ -146,9 +145,6 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
             ct.vertices[1] = p;
             ct.vertices[0] = newP1;
             ct.vertices[2] = newP2;
-
-            //final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
-            //return final;
         }
 
         else if (keep.size() == 2){
@@ -187,13 +183,7 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
         vector<vec3> discard;
         for (int j=0; j<3; j++){
             vec3 v = vec3(ct.vertices[j].x, ct.vertices[j].y, ct.vertices[j].depth);
-            //distance = dotproduct (point, plane.normal) - plane.distance;
-            // (currentp - p) * n
             distance = dot(c.f.sides[i].normal, (v-c.f.sides[i].point));
-            // or (currentp * n) - d
-                // d = p*n
-            //distance = dot(c.f.sides[i].normal, v);
-            //distance = dot(v, c.f.sides[i].normal);
 
             if (distance >= 0){
                 keep.push_back(v);
@@ -228,9 +218,6 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
             ct.vertices[0] = p;
             ct.vertices[1] = newP1;
             ct.vertices[2] = newP2;
-
-            // final.push_back(CanvasTriangle(p, newP1, newP2, ct.colour));
-            // return final;
         }
 
         else if ((keep.size() == 2) && (discard.size() == 1)){
@@ -246,9 +233,6 @@ vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriang
 
             CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
             CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
-
-            //final.push_back(CanvasTriangle(p1, p2, newP1, ct.colour));
-            //final.push_back(CanvasTriangle(p2, newP1, newP2, ct.colour));
 
             vector<CanvasTriangle> clipped1 = clipping(window, CanvasTriangle(p1, p2, newP1, ct.colour));
             vector<CanvasTriangle> clipped2 = clipping(window, CanvasTriangle(p2, newP1, newP2, ct.colour));
@@ -323,8 +307,6 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
             } else if (kind == 2){ // texture
                 fillTextureTriangle(window, pixels, cts[j]);
             } else if (kind == 3) { // gouraud
-
-                
                 drawFilledTriangle(window, ct.colour, cts[j], true);
 
             }

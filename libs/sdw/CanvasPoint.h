@@ -2,6 +2,7 @@
 
 #include "TexturePoint.h"
 #include "Colour.h"
+#include "Material.h"
 #include <iostream>
 #include <glm/glm.hpp>
 
@@ -18,6 +19,8 @@ class CanvasPoint
     TexturePoint texturePoint;
     vec3 normal;
     Colour c;
+    Material mat;
+
 
     CanvasPoint();
 

@@ -5,6 +5,7 @@
 #include "ModelTriangle.h"
 #include "DrawingWindow.h"
 #include "TexturePoint.h"
+#include "Material.h"
 #include "Colour.h"
 #include "Utils.h"
 #include "Ppm.h"
@@ -22,14 +23,14 @@ using namespace glm;
 using std::vector;
 using glm::vec3;
 
-struct Material{
-    string name;
-    vec3 diffuse; //kd -diffuse
-    vec3 ambient; //ka
-    vec3 specular; //ks
-    float highlight; //ns
-    float illum;
-};
+// struct Material{
+//     string name;
+//     vec3 diffuse; //kd -diffuse
+//     vec3 ambient; //ka
+//     vec3 specular; //ks
+//     float highlight; //ns
+//     float illum;
+// };
 
 uint32_t bitpackingColour(Colour c);
 
@@ -47,8 +48,8 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawLineB(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c);
 void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t);
-void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade); 
-void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, bool isShade);
+void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade, int kind); 
+void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind);
 void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels);
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t);
 

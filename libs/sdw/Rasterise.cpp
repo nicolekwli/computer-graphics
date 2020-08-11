@@ -58,6 +58,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         vec3 spec = mt.mat.specular * powf(dot(R, V), mt.mat.highlight) * vec3(1.0f);
         vec3 illum = amb + diff + spec;
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        v0.mat = mt.mat;
 
         distance = pow((lightPos.x - mt.vertices[1].x),2) + pow((lightPos.y - mt.vertices[1].y),2) + pow((lightPos.z - mt.vertices[1].z),2);
         distance = sqrt(distance);
@@ -68,6 +69,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         spec = mt.mat.specular * powf(dot(R,  normalize(cam.cameraPos- mt.vertices[1])), mt.mat.highlight) * vec3(1.0f);
         illum = amb + diff + spec;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        v1.mat = mt.mat;
         
 
         distance = pow((lightPos.x - mt.vertices[2].x),2) + pow((lightPos.y - mt.vertices[2].y),2) + pow((lightPos.z - mt.vertices[2].z),2);
@@ -78,6 +80,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         spec = mt.mat.specular * powf(dot(R,  normalize(cam.cameraPos - mt.vertices[2])), mt.mat.highlight) * vec3(1.0f);
         illum = amb + diff + spec;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
+        v2.mat = mt.mat;
         
     } else {
         v0.c = mt.colour;
@@ -160,7 +163,6 @@ vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
 
             CanvasPoint p1 = CanvasPoint(keep[0].x, keep[0].y, keep[0].z);
             CanvasPoint p2 = CanvasPoint(keep[1].x, keep[1].y, keep[1].z);
-
 
             vector<CanvasTriangle> clipped1 = clipping(window, CanvasTriangle(p1, p2, newP1, ct.colour));
             vector<CanvasTriangle> clipped2 = clipping(window, CanvasTriangle(p2, newP1, newP2, ct.colour));
@@ -271,12 +273,11 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
 
-        modelToCanvasTri(window, t[i], ct, cam, true);
+        modelToCanvasTri(window, t[i], ct, cam, true); // change to true for gouraud, sorry this was set up badly, keep false for phong
         canvasTriangles.push_back(ct);
 
         //vector<CanvasTriangle> cts = clipping(window, ct);
         vector<CanvasTriangle> cts = clippingFrus(window, cam, ct);
-
 
         for (int j = 0; j < cts.size(); j++){
             // sort vertices
@@ -291,32 +292,18 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
                     swap(cts[j].vertices[1], cts[j].vertices[2]);
                 }
             }
-            // calculate normal of triangle mesh and poitns
-
-            // need to make them all vec3
-            //cts[j].normal = cross((cts[j].vertices[2] - cts[j].vertices[0]), (cts[j].vertices[1] - cts[j].vertices[0])); // surfac normal
-            // vec3 v = vec3(cts.vertices[j].x, cts.vertices[j].y, cts.vertices[j].depth);
-            // cts[j].vertices[0].normal = normalize(cam.cameraPos - v);
-            // cts[j].vertices[0].normal = ;
-            // cts[j].vertices[0].normal = ;
 
             //drawFilledTriangle(window, ct.colour, cts[j]);
             if (kind == 1){ // fill triangles
-                //cout << ct.colour << endl;
-                drawFilledTriangle(window, ct.colour, cts[j], false);
+                drawFilledTriangle(window, ct.colour, cts[j], 1);
             } else if (kind == 2){ // texture
                 fillTextureTriangle(window, pixels, cts[j]);
             } else if (kind == 3) { // gouraud
-                drawFilledTriangle(window, ct.colour, cts[j], true);
+                drawFilledTriangle(window, ct.colour, cts[j], 3);
 
+            } else if (kind == 4) { // phong
+                drawFilledTriangle(window, ct.colour, cts[j], 4);
             }
-            // if (ct.vertices[0].texturePoint.x == -1){
-            //     drawFilledTriangle(window, ct.colour, cts[j]);
-            // } else {
-            //     fillTextureTriangle(window, pixels, cts[j]);
-            // }  
         }
-    }
-
-        
+    }    
 }

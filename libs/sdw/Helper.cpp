@@ -1,6 +1,6 @@
 #include "Helper.h"
 
-bool shade;
+bool shade = false;
 // ----- Functions -----
 uint32_t bitpackingColour(Colour c){
   uint32_t converted;
@@ -71,7 +71,6 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
     float intervalsTX = (b.texturePoint.x - a.texturePoint.x) / (noOfVals);
     float intervalsTY = (b.texturePoint.y - a.texturePoint.y) / (noOfVals);
-    //float intervalsDepth = (b.depth - a.depth) / (noOfVals);
     
     vect.push_back(a);
 
@@ -80,7 +79,6 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
     vec3 ac = vec3(a.c.red, a.c.green, a.c.blue);
     vec3 bc = vec3(b.c.red, b.c.green, b.c.blue);
     vec3 intervalsC = (bc - ac) / (noOfVals - 1.0f);
-    //cout << intervalsC << endl;
 
     for (int i = 1; i < noOfVals; i++) {
         p = CanvasPoint(a.x + intervalsX * i, a.y + intervalsY * i) ;
@@ -88,33 +86,16 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         p.depth = 1 / a.depth * (1-q) + 1 / b.depth * q;
         p.depth = 1/ p.depth;
 
-
         texPointCorrected(a, b, p);
 
         // INTERPOLATE COLOUR AS WELL
-        //uint32_t p_colour = (uint32_t) p.depth * (a_colour / a.depth * (1-q) + b_colour / b.depth * q);
-        //uint32_t p_colour = (uint32_t)(a_colour*q + b_colour*(1-q));
-        //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
         if (shade) {
-            //uint32_t p_colour = (uint32_t) p.depth * ((a_colour / a.depth * (1-q)) + (b_colour / b.depth * q));
-            //float p_colour = 1 / a_colour * (1-q) + 1 / b_colour * q;
-            //cout << q << endl;
             if (a_colour = b_colour){
-            //vec3 pc = ac + intervalsC * (float)i;
-            //vec3 pc = ac + i/noOfVals * (bc - ac);
-            
                 p.c = a.c;
             } else {
                 p.c = Colour(int(ac.r * (1-q) + bc.r * q), int (ac.g * (1-q) + bc.g * q), int(ac.b * (1-q) + bc.b * q));
             }
-            //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
-            //uint32_t p_colour = a_colour + intervalsC * i;
-            //p.c = Colour( (p_colour & 0x00ff0000) >> 16,  (p_colour & 0x0000ff00) >> 8, p_colour & 0x000000ff); 
-            //p.c = a.c;  
-        
         }
-
-
         vect.push_back(p);
     }
     vect.push_back(b);
@@ -238,8 +219,6 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
             alpha = floor(yend) * xgap;
             newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
             window.setPixelColour(ypxl1+1, xpxl1, p1.depth, newColour);
-            //plot(ypxl1, xpxl1, rfpart(yend) * xgap, rgb);
-            //plot(ypxl1 + 1, xpxl1, fpart(yend) * xgap, rgb);
         } else {
             alpha = (1 - (abs(yend) - floor(abs(yend)))) * xgap;
             
@@ -249,8 +228,6 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
             alpha = floor(yend) * xgap;
             newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
             window.setPixelColour(xpxl1, ypxl1+1, p1.depth, newColour);
-            //plot(xpxl1, ypxl1, rfpart(yend) * xgap, rgb);
-            //plot(xpxl1, ypxl1 + 1, fpart(yend) * xgap, rgb);
         }
 
         double intery = yend + gradient;
@@ -332,7 +309,7 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
 }
 
 
-void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade) {
+void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade, int kind) {
     uint32_t colour = bitpackingColour(c);
 
     // make sure we fill according to the longer line so it fills
@@ -340,14 +317,19 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
         //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
         //drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
-        if (isShade){
-            vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
-            for (int i=0; i<line.size(); i++){
-                colour = bitpackingColour(line[i].c);
-                window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
+        if (isShade){ 
+            if (kind == 3){ // gouraud
+                vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
+                for (int i=0; i<line.size(); i++){
+                    colour = bitpackingColour(line[i].c);
+                    window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
+                }
+            } else if (kind == 4){ // phong
+                // itnerpolate normal
+                // calculate colour
             }
+            
         } else {
-            //cout << "here" << endl;
             drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
         }
         
@@ -355,8 +337,11 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
     }
 }
 
-void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, bool isShade){
-    shade = isShade;
+void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind){
+    if ((kind == 3) || (kind == 4)){
+        shade = true;
+    }
+    
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
                                         triangle.vertices[0].y + ratio * (triangle.vertices[2].y - triangle.vertices[0].y),
@@ -368,7 +353,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
     colour = colour1 + ratio * (colour2 - colour1);
     newP.c = triangle.vertices[0].c;
 
-    //newP.c = Colour() (255<<24) + (int(red)<<16) + (int(green)<<8) + int(blue);
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){
         swap(newP, triangle.vertices[1]);
@@ -379,12 +363,12 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
-    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour, isShade);
+    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour, shade, kind);
 
     // Bottom triangle
     vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
-    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour, isShade); 
+    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour, shade, kind); 
 }
 
 
@@ -519,7 +503,6 @@ void savePPM(DrawingWindow window, string filename){
     file.open(filename, ios::out | ios::binary);
     if (!file) {
         cerr << "Cannot open file" << endl;
-        //return false;
     }
     file << "P6" << endl;
     file << window.width << "\n";
@@ -540,7 +523,6 @@ void savePPM(DrawingWindow window, string filename){
 
     if (file.fail()) {
         cerr << "Could not write data" << endl;
-        //return false;
     }
 
     file.close();

@@ -50,11 +50,11 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         float distance = pow((lightPos.x - mt.vertices[0].x),2) + pow((lightPos.y - mt.vertices[0].y),2) + pow((lightPos.z - mt.vertices[0].z),2);
         distance = sqrt(distance);
         vec3 amb = mt.mat.ambient * Ia;
-        vec3 diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) / (4.0f * 3.14f*distance*distance);
+        vec3 diff = mt.mat.diffuse * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
         
         vec3 tolight = normalize(lightPos - mt.vertices[0]);
         vec3 R = normalize(2.0f * mt.normals[0] * dot(tolight, mt.normals[0]) - tolight);
-        vec3 spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[0])),mt.mat.highlight);
+        vec3 spec = mt.mat.specular * powf(dot(R,  normalize(cam.cameraPos- mt.vertices[0])), mt.mat.highlight) * vec3(1.0f);
         vec3 illum = amb + diff + spec;
         
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
@@ -65,7 +65,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
 
         tolight = normalize(lightPos - mt.vertices[1]);
         R = normalize(2.0f * mt.normals[1] * dot(tolight, mt.normals[1]) - tolight);
-        spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[1])), mt.mat.highlight);
+        spec = mt.mat.specular * powf(dot(R,  normalize(cam.cameraPos- mt.vertices[1])), mt.mat.highlight) * vec3(1.0f);
         illum = amb + diff + spec;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         
@@ -75,7 +75,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f*distance*distance);
 
         R = normalize(2.0f * mt.normals[2] * dot((lightPos - mt.vertices[2]), mt.normals[2]) - (lightPos - mt.vertices[2]));
-        spec = mt.mat.specular * lightPower * powf(dot(R,  normalize(mt.vertices[2])), mt.mat.highlight);
+        spec = mt.mat.specular * powf(dot(R,  normalize(cam.cameraPos - mt.vertices[2])), mt.mat.highlight) * vec3(1.0f);
         illum = amb + diff + spec;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         

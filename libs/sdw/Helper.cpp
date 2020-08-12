@@ -1,6 +1,7 @@
 #include "Helper.h"
 
 bool shade = false;
+vec3 camP;
 // ----- Functions -----
 uint32_t bitpackingColour(Colour c){
   uint32_t converted;
@@ -43,21 +44,7 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals){
     return vect;
 }
 
-// vector<Colour> interpolation(Colour from, Colour to, int noOfVals){
-//     uint32_t colourFrom = bitpackingColour(from);
-//     uint32_t colourTo  = bitpackingColour(to);
-//     vector<Colour> vect;
-//     uint32_t intervals;
 
-//     intervals = (to - from) / (noOfVals - 1.0f);
-//     vect.push_back(from);
-    
-//     for (int i = 1; i < noOfVals; i++) {
-//         vect.push_back(from + intervals*(float)i);
-//     }
-
-//     return vect;
-// }
 
 // a = from, b = to
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
@@ -90,12 +77,18 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
 
         // INTERPOLATE COLOUR AS WELL
         if (shade) {
-            if (a_colour = b_colour){
+            if (a_colour == b_colour){
                 p.c = a.c;
             } else {
                 p.c = Colour(int(ac.r * (1-q) + bc.r * q), int (ac.g * (1-q) + bc.g * q), int(ac.b * (1-q) + bc.b * q));
             }
         }
+
+        // INTERPOLATE NORMAL
+        p.normal = a.normal * (1-q) + b.normal * q;
+
+        p.mat = a.mat;
+
         vect.push_back(p);
     }
     vect.push_back(b);
@@ -243,13 +236,9 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
         if (steep) {
             window.setPixelColour(ypxl2, xpxl2, p2.depth, newColour);
             window.setPixelColour(ypxl2 + 1, xpxl2, p2.depth, newColour);
-            //plot(ypxl2, xpxl2, rfpart(yend) * xgap, rgb);
-            //plot(ypxl2 + 1, xpxl2, fpart(yend) * xgap, rgb);
         } else {
             window.setPixelColour(xpxl2, ypxl2, p2.depth, newColour);
             window.setPixelColour(xpxl2, ypxl2+1, p2.depth, newColour);
-            //plot(xpxl2, ypxl2, rfpart(yend) * xgap, rgb);
-            //plot(xpxl2, ypxl2 + 1, fpart(yend) * xgap, rgb);
         }
 
         float dStep = (p2.depth - p1.depth) / dx;
@@ -265,25 +254,18 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
                 alpha = abs(intery) - floor(abs(intery));
                 newColour = (((uint32_t) floor(255*alpha))<< 24)| colour;
                 window.setPixelColour(floor(intery) + 1, x, d, newColour);
-                //plot(ipart(intery), x, rfpart(intery), rgb);
-                //plot(ipart(intery) + 1, x, fpart(intery), rgb);
             } else {
                 alpha = (1 - (abs(intery) - floor(abs(intery))));
                 newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
                 window.setPixelColour(x, floor(intery), d, newColour);
-                //cout << "a1: " << ((uint32_t) floor(255*alpha)) << endl;
 
                 alpha = (abs(intery) - floor(abs(intery)));
                 newColour = (((uint32_t) floor(255*alpha)) << 24)| (colour & 0x00ffffff);
                 window.setPixelColour(x, floor(intery)+1, d, newColour);
-                //plot(x, ipart(intery), rfpart(intery), rgb);
-                //plot(x, ipart(intery) + 1, fpart(intery), rgb);
-                //cout << "a2: " << ((uint32_t) floor(255*alpha)) << endl;
             }
             d += dStep;
             intery = intery + gradient;
         }
-
     }
 }
 
@@ -326,18 +308,40 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
                 }
             } else if (kind == 4){ // phong
                 // itnerpolate normal
+                vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
                 // calculate colour
+                for (int i=0; i<line.size(); i++){
+                    // do illumination model 
+                    vec3 lightPos(5, 12, -6.0);
+                    vec3 Ia = vec3(0.55, 0.55, 0.55);
+                    vec3 lightPower = 62.5f * vec3(1, 1, 1);
+
+                    float distance = pow((lightPos.x - line[i].x),2) + pow((lightPos.y - line[i].y),2) + pow((lightPos.z - line[i].depth),2);
+                    distance = sqrt(distance);
+
+                    vec3 amb = line[i].mat.ambient * Ia;
+                    vec3 pos = vec3(line[i].x, line[i].y, line[i].depth);
+                    vec3 diff = line[i].mat.diffuse * glm::max(dot(line[i].normal, (lightPos - pos)), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
+
+                    vec3 tolight = normalize(lightPos - pos);
+                    vec3 R = normalize(2.0f * line[i].normal * dot(tolight, line[i].normal) - tolight); // this is right
+                    vec3 V = normalize(camP- pos); // ??
+                    vec3 spec = line[i].mat.specular * powf(dot(R, V), line[i].mat.highlight) * vec3(1.0f);
+                    vec3 illum = amb + diff + spec;
+                    // setPixelColour
+                    colour = bitpackingColour(Colour((int)illum.r, (int)illum.g, (int)illum.b));
+                    window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
+                }
             }
             
         } else {
             drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
         }
-        
-
     }
 }
 
-void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind){
+void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind, vec3 cameraPos){
+    camP = cameraPos;
     if ((kind == 3) || (kind == 4)){
         shade = true;
     }

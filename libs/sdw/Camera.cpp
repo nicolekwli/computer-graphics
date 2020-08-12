@@ -1,5 +1,9 @@
 #include "Camera.h"
 
+Camera::Camera(){
+
+}
+
 Camera::Camera(int height, int width){
     //cameraPos = vec3(0, 1, -6);
     // cameraPos = vec3(0, 2, -FOCAL); // normal cornell

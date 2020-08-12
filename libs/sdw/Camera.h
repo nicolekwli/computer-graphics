@@ -51,6 +51,7 @@ class Camera {
         frustum f;
 
         //member functions
+        Camera();
         Camera(int height, int width); //constructor
 
 

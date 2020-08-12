@@ -59,6 +59,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         vec3 illum = amb + diff + spec;
         v0.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         v0.mat = mt.mat;
+        v0.normal = mt.normals[0];
 
         distance = pow((lightPos.x - mt.vertices[1].x),2) + pow((lightPos.y - mt.vertices[1].y),2) + pow((lightPos.z - mt.vertices[1].z),2);
         distance = sqrt(distance);
@@ -70,6 +71,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         illum = amb + diff + spec;
         v1.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         v1.mat = mt.mat;
+        v1.normal = mt.normals[1];
         
 
         distance = pow((lightPos.x - mt.vertices[2].x),2) + pow((lightPos.y - mt.vertices[2].y),2) + pow((lightPos.z - mt.vertices[2].z),2);
@@ -81,6 +83,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         illum = amb + diff + spec;
         v2.c = Colour((int)illum.r, (int)illum.g, (int)illum.b);
         v2.mat = mt.mat;
+        v2.normal = mt.normals[2];
         
     } else {
         v0.c = mt.colour;
@@ -295,14 +298,14 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
 
             //drawFilledTriangle(window, ct.colour, cts[j]);
             if (kind == 1){ // fill triangles
-                drawFilledTriangle(window, ct.colour, cts[j], 1);
+                drawFilledTriangle(window, ct.colour, cts[j], 1, cam.cameraPos);
             } else if (kind == 2){ // texture
                 fillTextureTriangle(window, pixels, cts[j]);
             } else if (kind == 3) { // gouraud
-                drawFilledTriangle(window, ct.colour, cts[j], 3);
+                drawFilledTriangle(window, ct.colour, cts[j], 3, cam.cameraPos);
 
             } else if (kind == 4) { // phong
-                drawFilledTriangle(window, ct.colour, cts[j], 4);
+                drawFilledTriangle(window, ct.colour, cts[j], 4, cam.cameraPos);
             }
         }
     }    

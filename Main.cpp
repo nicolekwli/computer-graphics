@@ -19,8 +19,8 @@ vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
 vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
 
 // cornell box sphere w material
-// vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-// vector<ModelTriangle> object = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
+vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+vector<ModelTriangle> object1 = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
 
 // hackspace logo
 // vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]){
 
         //raytracer stuff
         // drawFilledTriangleRay(window, object, mycam);
-        raytracingLighting(window, object, mycam);
+        //raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
@@ -75,8 +75,8 @@ int main(int argc, char* argv[]){
         // rasterizer (new)
         //createWireframe(window, object, mycam);
         //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
-        //rasterise(window, object, mycam, ppm.pixels, m, 3);  // shade gouraud
-        rasterise(window, object, mycam, ppm.pixels, m, 4);  // shade phong
+        rasterise(window, object1, mycam, ppm.pixels, m, 3);  // shade gouraud
+        //rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
         //SSAA(window);
 
         window.renderFrame();

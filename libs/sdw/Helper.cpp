@@ -1,6 +1,6 @@
 #include "Helper.h"
 
-bool shade = false;
+int shade;
 vec3 camP;
 // ----- Functions -----
 uint32_t bitpackingColour(Colour c){
@@ -76,19 +76,17 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         texPointCorrected(a, b, p);
 
         // INTERPOLATE COLOUR AS WELL
-        if (shade) {
+        if (shade == 3 ) {
             if (a_colour == b_colour){
                 p.c = a.c;
             } else {
                 p.c = Colour(int(ac.r * (1-q) + bc.r * q), int (ac.g * (1-q) + bc.g * q), int(ac.b * (1-q) + bc.b * q));
             }
+        } else if (shade == 4){
+            // INTERPOLATE NORMAL
+            p.normal = a.normal * (1-q) + b.normal * q;
+            p.mat = a.mat;
         }
-
-        // INTERPOLATE NORMAL
-        p.normal = a.normal * (1-q) + b.normal * q;
-
-        p.mat = a.mat;
-
         vect.push_back(p);
     }
     vect.push_back(b);
@@ -100,12 +98,10 @@ void texPointCorrected(CanvasPoint a, CanvasPoint b, CanvasPoint &newP){
     float longD = sqrt(pow((b.x - a.x), 2) + pow((b.y - a.y), 2));
     float q = shortD / longD;
     float z = 1 / ((1 / a.depth * (1-q))  + (1 / b.depth * q));
-    //float z = a.depth * (1-q) + (b.depth * q);
     float texX = abs(((a.texturePoint.x * (1 - q) / a.depth) + (b.texturePoint.x * q / b.depth))*newP.depth);
     float texY = abs(((a.texturePoint.y * (1 - q) / a.depth) + (b.texturePoint.y * q / b.depth)) *newP.depth);
     newP.texturePoint.x = texX;
     newP.texturePoint.y = texY;
-
 }
 
 
@@ -245,7 +241,6 @@ void drawLineWu(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
         float d = p1.depth;
         // draw line 
         for (int x = xpxl1 + 1; x <= xpxl2; x ++) {
-            
             if (steep) {
                 alpha = (1 - (abs(intery) - floor(abs(intery))));
                 newColour = (((uint32_t) floor(255*alpha)) << 24)| colour;
@@ -313,8 +308,8 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
                 for (int i=0; i<line.size(); i++){
                     // do illumination model 
                     vec3 lightPos(5, 12, -6.0);
-                    vec3 Ia = vec3(0.55, 0.55, 0.55);
                     vec3 lightPower = 62.5f * vec3(1, 1, 1);
+                    vec3 Ia = vec3(0.55, 0.55, 0.55);
 
                     float distance = pow((lightPos.x - line[i].x),2) + pow((lightPos.y - line[i].y),2) + pow((lightPos.z - line[i].depth),2);
                     distance = sqrt(distance);
@@ -342,9 +337,8 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind, vec3 cameraPos){
     camP = cameraPos;
-    if ((kind == 3) || (kind == 4)){
-        shade = true;
-    }
+
+    shade = kind;
     
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
@@ -356,6 +350,8 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
 
     colour = colour1 + ratio * (colour2 - colour1);
     newP.c = triangle.vertices[0].c;
+
+    newP.normal = triangle.vertices[0].normal + ratio * (triangle.vertices[2].normal - triangle.vertices[0].normal);
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){

@@ -52,11 +52,11 @@ vector<ModelTriangle> makeNegative(vector<ModelTriangle> triangles){
 // -------------------- OTHER FUNCIONS lol
 // this doesnt work but could work (its too slow?)
 bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest){
-    float prevDist = 5000; //a high value? infinity?
-    rayDirection = glm::normalize(rayDirection);
+    float prevDist = 1000; //a high value? infinity?
     bool found = false;
 
     // loop through each triangle
+    #pragma omp parallel for
     for(int i=0; i<(int)triangles.size(); i++){
         // calc. the ray
         vec3 e0 = triangles[i].vertices[1] - triangles[i].vertices[0];
@@ -94,7 +94,7 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3
 // THIS WORKS!!!
 // moller - trombone algorithm
 // pseudocode from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
-bool getClosestInt(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest ){
+bool closestIntersectionMT(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest ){
     float prevDist = 1000; //a high value?
     rayDirection = glm::normalize(rayDirection);
     
@@ -128,7 +128,7 @@ bool getClosestInt(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirec
     
         float t = glm::dot(e02, qvec) * inverse; 
 
-        if (t < prevDist && t > 0 ){ //&& triangles[i] != self ????
+        if (t < prevDist && t > 0 ){
             prevDist = t;
             closest = RayTriangleIntersection(startPos + t * rayDirection, prevDist, triangles[i]);
             return true;
@@ -145,11 +145,12 @@ bool getClosestInt(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirec
 void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
     RayTriangleIntersection closest;
 
+    #pragma omp parallel for
     for(int y=0; y<window.height; y++){
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
 
-            // bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+            // bool res = closestIntersectionMT(triangles, cam.cameraPos, rayDirection, closest);
             bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closest);
 
             //if there is intersection
@@ -168,11 +169,11 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
 
 // the closer a surface is to the light, the brighter a pixel will be drawn on the image plane
 float diffuseLighting(RayTriangleIntersection intersection){
-    vec3 lightPos = glm::vec3( 0, -0.5, -0.7 );
-    // vec3 lightPos = vec3(0, 3, -FOCAL); // light is where the camera is 
+    vec3 lightPos = glm::vec3( -0.25, 4, 0 ); // (0, -0.5, -0.7)
+    // vec3 lightPos = vec3(0, 3, -5); // light is where the camera is 
     vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
     
-    vec3 dirLight = intersection.intersectionPoint - lightPos; // lightPos - intersection.intersectionPoint??
+    vec3 dirLight = lightPos - intersection.intersectionPoint; //intersection.intersectionPoint - lightPos;
     vec3 e01 = intersection.intersectedTriangle.vertices[1] - intersection.intersectedTriangle.vertices[0];
     vec3 e02 = intersection.intersectedTriangle.vertices[2] - intersection.intersectedTriangle.vertices[0];
     vec3 surfaceNormal = glm::cross(e01, e02);
@@ -200,11 +201,13 @@ float ambientLighting(float brightness){
 void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
     RayTriangleIntersection closest;
 
+    #pragma omp parallel for
     for(int y=0; y<window.height; y++){
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
+            // rayDirection = glm::normalize(rayDirection);
 
-            // bool res = getClosestInt(triangles, cam.cameraPos, rayDirection, closest);
+            // bool res = closestIntersectionMT(triangles, cam.cameraPos, rayDirection, closest);
             bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closest);
 
             //if there is intersection

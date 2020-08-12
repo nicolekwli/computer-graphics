@@ -24,9 +24,7 @@ using namespace glm;
 using std::vector;
 using glm::vec3;
 
-
 uint32_t bitpackingColour(Colour c);
-
 
 // ----- Interpolation -----
 // Maybe this should return an int for convenience
@@ -46,9 +44,6 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
 void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels);
 void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, CanvasTriangle t);
 
-// ----- Drawing Helpers -----
-
-
 // ----- Parsing -----
 PPM readPPM(DrawingWindow window, string filename);
 void savePPM(DrawingWindow window, string filename);
@@ -59,4 +54,5 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
 vector<Colour> readMTL(string filename);
 vector<Material> readMTLAlt(string filename);
 
+// anti aliasing
 void SSAA(DrawingWindow window);

@@ -47,6 +47,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         // calculate new colour for each vertex
         vec3 Ia = vec3(0.55, 0.55, 0.55); // lets say this is the light intensity
 
+        // v0 colour
         float distance = pow((lightPos.x - mt.vertices[0].x),2) + pow((lightPos.y - mt.vertices[0].y),2) + pow((lightPos.z - mt.vertices[0].z),2);
         distance = sqrt(distance);
         vec3 amb = mt.mat.ambient * Ia;
@@ -61,6 +62,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         v0.mat = mt.mat;
         v0.normal = mt.normals[0];
 
+        // v1 colour
         distance = pow((lightPos.x - mt.vertices[1].x),2) + pow((lightPos.y - mt.vertices[1].y),2) + pow((lightPos.z - mt.vertices[1].z),2);
         distance = sqrt(distance);
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[1], (lightPos - mt.vertices[1])), 0.0f) / (4.0f * 3.14f*distance*distance);
@@ -73,7 +75,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         v1.mat = mt.mat;
         v1.normal = mt.normals[1];
         
-
+        // v2 colour
         distance = pow((lightPos.x - mt.vertices[2].x),2) + pow((lightPos.y - mt.vertices[2].y),2) + pow((lightPos.z - mt.vertices[2].z),2);
         distance = sqrt(distance);
         diff = mt.mat.diffuse * lightPower * glm::max(dot(mt.normals[2], (lightPos - mt.vertices[2])), 0.0f) / (4.0f * 3.14f*distance*distance);

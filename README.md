@@ -26,9 +26,9 @@
 - [x] _Basic (image plane) anti-aliasing_ [wu line 2D]
 
 ### (70s) some of...
-* Phong Shading
+- [x] Phong Shading [not perfect]
 * Fairly “interesting” materials (e.g. mirrors)
-* Super Sampling Anti-Aliasing
+- [x] Super Sampling Anti-Aliasing [attempted]
 - [x] Perspective corrected texture mapping
 * “Fancy” animation
 * Soft shadow

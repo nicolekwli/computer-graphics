@@ -44,8 +44,6 @@ vector<vec3> interpolation(vec3 from, vec3 to, int noOfVals){
     return vect;
 }
 
-
-
 // a = from, b = to
 vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals ){
     vector<CanvasPoint> vect;
@@ -113,7 +111,6 @@ void drawLine(DrawingWindow window, CanvasPoint p1, CanvasPoint p2, Colour c){
   vector<CanvasPoint> line = interpolation(p2, p1, steps);
 
   for (int i=0; i<(int)steps+1; i++){
-    // interpolate to get cllours 
     window.setPixelColour((int)line[i].x, (int)line[i].y, line[i].depth, colour);
     //window.setPixelColour((int)line[i].x, (int)line[i].y, colour);
   }
@@ -289,7 +286,6 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
 void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade, int kind) {
     uint32_t colour = bitpackingColour(c);
 
-    // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
@@ -337,7 +333,6 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind, vec3 cameraPos){
     camP = cameraPos;
-
     shade = kind;
     
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
@@ -373,17 +368,13 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
 }
 
 
-
 // to/ from
 void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, vector<vector<uint32_t>> pixels) {
     int steps;
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
-
         steps = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
         vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[a], steps+1);
-
-        
         // drawLine(lineTopLeft[a], lineTopRight, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
 
         for (int c = 0; c < steps; c++){
@@ -424,8 +415,6 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     newP.depth = 1 / t.vertices[0].depth * (1-q) + 1 / t.vertices[2].depth * q;
     newP.depth = 1/ newP.depth;
 
-    // DOUBLE CHECK FUNCTION
-
     // get texture points
     texPointCorrected(t.vertices[0], t.vertices[2], newP);
     
@@ -438,7 +427,7 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
         swap(newP, t.vertices[1]);
     }
 
-    // // Fill top triangle
+    // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(t.vertices[0], newP, abs(t.vertices[0].y - t.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(t.vertices[0], t.vertices[1], abs(t.vertices[0].y - t.vertices[1].y)+1);
     fillTexture(window, lineTopLeft, lineTopRight, pixels);
@@ -447,8 +436,6 @@ void fillTextureTriangle(DrawingWindow window, vector<vector<uint32_t>> pixels, 
     vector<CanvasPoint> lineBottomRight = interpolation(t.vertices[2], t.vertices[1], abs(t.vertices[2].y - t.vertices[1].y)+1);
     fillTexture(window,lineBottomLeft, lineBottomRight, pixels); 
 }
-
-// ----- Drawing Helpers -----
 
 // ----- Parsing -----
 PPM readPPM(DrawingWindow window, string filename){
@@ -509,7 +496,6 @@ void savePPM(DrawingWindow window, string filename){
     file << window.width << "\n";
     file << window.height << "\n";
     file << "255" << "\n";
-
 
     for (int x = 0; x < window.height ; x++) {
         for (int y = 0; y < window.width ; y++){
@@ -573,6 +559,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
             verTexture.push_back(tp);
         }
 
+        // sorry not the best way to do this
         else if (tokens[0] == "f"){
             // get vertices
             int a = stoi(split(tokens[1],'/')[0]) - 1;
@@ -600,6 +587,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
 }
 
 // This function reads obj files by reading all vertices and normals then creates the ModelTriangles
+// Used for cornell-boxes-extra
 vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm, float rescale){
 
     string line;
@@ -673,6 +661,7 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                 int c = stoi(split(tokens[3],'/')[0]) - 1;
 
                 t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
+                // t.mat = material // should do the same
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;
@@ -697,10 +686,8 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                     t.texturePoints[2] = VTs[stoi(face3[2])-1];
                 } 
             }
-            
             triangles.push_back(t);         
         }   
-
     }
     return triangles;
 }
@@ -735,6 +722,7 @@ vector<Colour> readMTL(string filename){
     return colours;
 }
 
+// Used for cornell-box-extras
 vector<Material> readMTLAlt(string filename){
     ifstream file;
     file.open(filename);
@@ -779,11 +767,13 @@ vector<Material> readMTLAlt(string filename){
     return final;
 }
 
-// once rasterising is done at a higher resolution this should work 
+// once rasterising is done at a higher resolution this should work fingers crossed
 void SSAA(DrawingWindow window){
-    uint32_t p, sp;
-    uint32_t r,g,b=0;
-    int samples= 3*3;
+    uint32_t p, sp; // pixel, subpixel
+    uint32_t r = 0;
+    uint32_t g = 0;
+    uint32_t b = 0;
+    int samples= 3*3; // the number making up one pixel
 
     for (int y = 1; y < window.height-1; y++) {
         for (int x = 1; x < window.width-1; x++) {

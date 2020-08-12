@@ -87,8 +87,14 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         
     } else {
         v0.c = mt.colour;
+        v0.mat = mt.mat;
+        v0.normal = mt.normals[0];
         v1.c = mt.colour;
+        v1.mat = mt.mat;
+        v1.normal = mt.normals[1];
         v2.c = mt.colour;
+        v2.mat = mt.mat;
+        v2.normal = mt.normals[2];
     }
     
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
@@ -276,7 +282,7 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
 
-        modelToCanvasTri(window, t[i], ct, cam, true); // change to true for gouraud, sorry this was set up badly, keep false for phong
+        modelToCanvasTri(window, t[i], ct, cam, false); // change to true for gouraud, sorry this was set up badly, keep false for phong
         canvasTriangles.push_back(ct);
 
         //vector<CanvasTriangle> cts = clipping(window, ct);

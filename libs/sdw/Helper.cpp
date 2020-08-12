@@ -85,7 +85,7 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         } else if (shade == 4){
             // INTERPOLATE NORMAL
             p.normal = a.normal * (1-q) + b.normal * q;
-            p.mat = a.mat;
+            p.mat = b.mat;
         }
         vect.push_back(p);
     }
@@ -352,6 +352,7 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
     newP.c = triangle.vertices[0].c;
 
     newP.normal = triangle.vertices[0].normal + ratio * (triangle.vertices[2].normal - triangle.vertices[0].normal);
+    newP.mat = triangle.vertices[0].mat;
 
     // make sure newP has a smaller value x than vertice 1
     if (newP.x > triangle.vertices[1].x){

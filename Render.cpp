@@ -12,11 +12,13 @@ using namespace std::chrono;
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm;
-int frame_count = 000;
+int frame_count = 0;
 int render_type = 1; //1 - wireframe, 2 - rasterizer, 3 - raytracer
+int step = 0;
 
 // normal reading files
-vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl");
+vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl"); //can prob get rid  of this?
+vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornell-box/cornell-box.mtl");
 vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj", cornell_mtl, ppm, 1);
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
 vector<ModelTriangle> logo = readOBJ("assets/hackspaceLogo/logo.obj", logo_mtl, ppm, 0.005);
@@ -31,7 +33,10 @@ int main(int argc, char* argv[]){
 
     while(true){
         if(window.pollForInputEvents(&event)) handleEvent(event);
-        // update();
+
+        // update the screen in steps
+        update();
+
         window.clearPixels();
         window.clearDepth();
 
@@ -43,21 +48,60 @@ int main(int argc, char* argv[]){
 
         window.renderFrame();
         //frame_count++;
-        if (frame_count > 20) break;
+        // if (frame_count > 20) break;
     }
 }
 
 // Function for performing animation (shifting artifacts or moving the camera)
 void update(){
-    //could do the thing r did?? eeee
+    switch(::step){
+        case 0:
+            // this is stuff from cornell animation func
+            for (int i=0; i<=10; i++) {
+                mycam.camForward();
+                frame_count++;
+                // savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            ::step++;
+            break;
+        case 1:
+            // cornell box yeeted out
+            for (int i=0; i<=25; i++) {
+                mycam.camRight();
+                frame_count++;
+                // savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            break;
+        // case 2:
+            // logo yeeted in ??
+            // break;
+        case 2:
+            exit(0); //stop updating, stop the code, stop everything
+            break;
+    }
 }
 
 //currently just does stuff for wireframe
+// need to change camera variables for each tho
 void draw(){
     ppm = readPPM(window, "assets/texture.ppm");
-    cornellboxAnimate();
-    // clearScreen();
-    // logoFlyThrough();
+
+    switch(render_type){
+        case 1: // wireframe
+            createWireframe(window, cornellbox, mycam);
+            // cornellboxAnimate();
+            // clearScreen();
+            // logoFlyThrough();
+            break;
+        case 2: // rasterizer
+            rasterise(window, cornellbox, mycam, ppm.pixels, cornell_mtl_alt, 1);
+            break;
+        case 3: // raytracer
+            raytracingLighting(window, cornellbox, mycam);
+            break;
+        default: //wireframe is default
+            break;
+    }
 }
 
 // zooms into cornell box and cornell box flies out of screen
@@ -68,27 +112,6 @@ void cornellboxAnimate(){
         frame_count++;
         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
     }
-
-    // for (int i=0; i<=10; i++) {
-    //     mycam.camLeft();
-    //     frame_count++;
-    //     savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-    // }
-
-    // for (int i=0; i<=10; i++) {
-    //     mycam.camRight();
-    //     frame_count++;
-    //     savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-    // }
-        
-    // for (int i=0; i<=5; i++){
-    //     // mycam.camRight();
-    //     mycam.camOrientation(vec3(0, 0.01, 0));
-    // }
-    // for (int i=0; i<=5; i++){
-    //     // mycam.camLeft();
-    //     mycam.camOrientation(vec3(0, -0.01, 0));
-    // }
 }
 
 void logoFlyThrough(){
@@ -112,65 +135,6 @@ void clearScreen(){
     }
 }
 
-// use this later on when need to switch between the types
-// in draw function?
-void renderType(int type){
-    switch(type){
-        case 1: // wireframe
-            break;
-        case 2: // rasterizer
-            break;
-        case 3: // raytracer
-            break;
-        default: //wireframe is default
-            break;
-    }
-}
-
-
-//  triggered by code rather than keyboard buttons
-// call like -> for (...) { handleEvent("cam_left"); } ???
-// void handleEvent(string event){
-//     if(event == "cam_left"){
-//         mycam.camLeft();
-//         frame_count++;
-//         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-//     }
-//     else if(event == "cam_right"){
-//         mycam.camRight();
-//         frame_count++;
-//         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-//     }
-//     else if(event == "cam_up"){
-//         mycam.camUp();
-//     } 
-//     else if(event == "cam_down"){
-//         mycam.camDown();
-//     }
-//     else if (event == "cam_forward"){
-//         mycam.camForward();
-//         frame_count++;
-//         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-//     } 
-//     else if (event == "cam_backward"){
-//         mycam.camBackward();
-//     } 
-//     // else if (event.key.keysym.sym == SDLK_w){
-//     //     mycam.camOrientation(vec3(0.01, 0, 0));
-//     // } 
-//     // else if (event.key.keysym.sym == SDLK_s){
-//     //     mycam.camOrientation(vec3(-0.01, 0, 0));
-//     // } 
-//     // else if (event.key.keysym.sym == SDLK_a){
-//     //     mycam.camOrientation(vec3(0, 0.01, 0));
-//     // } 
-//     // else if (event.key.keysym.sym == SDLK_d){
-//     //     mycam.camOrientation(vec3(0, -0.01, 0));
-//     // } 
-//     // else if (event.key.keysym.sym == SDLK_l){
-//     //     mycam.lookAt(vec3(0, 0, 0));
-//     // } 
-// }
 
 void handleEvent(SDL_Event event)
 {

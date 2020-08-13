@@ -1,4 +1,4 @@
-PROJECT_NAME = Render
+PROJECT_NAME = ${FILE}
 
 # Define the names of key files
 SOURCE_FILE = $(PROJECT_NAME).cpp

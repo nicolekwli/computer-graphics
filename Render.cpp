@@ -1,4 +1,9 @@
 #include "Render.h"
+#include <chrono>
+#include <thread>
+
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono;
 
 #define WIDTH 640
 #define HEIGHT 480
@@ -20,12 +25,12 @@ vector<ModelTriangle> logo = readOBJ("assets/hackspaceLogo/logo.obj", logo_mtl, 
 // vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
 // vector<ModelTriangle> object = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
 
-
+// Compile to mp4 using ffmpeg -f image2 -i %d.ppm video.mp4
 int main(int argc, char* argv[]){
     SDL_Event event;
 
     while(true){
-        // if(window.pollForInputEvents(&event)) handleEvent(event);
+        if(window.pollForInputEvents(&event)) handleEvent(event);
         // update();
         window.clearPixels();
         window.clearDepth();
@@ -37,7 +42,8 @@ int main(int argc, char* argv[]){
         // savePPM(window, "wireframe-"+to_string(frame_count)+".ppm");
 
         window.renderFrame();
-        frame_count++;
+        //frame_count++;
+        if (frame_count > 20) break;
     }
 }
 
@@ -57,8 +63,24 @@ void draw(){
 // zooms into cornell box and cornell box flies out of screen
 void cornellboxAnimate(){
     createWireframe(window, cornellbox, mycam);
-    for (int i=0; i<=3; i++) mycam.camForward();
-    for (int i=0; i<=2; i++) mycam.camBackward();
+    for (int i=0; i<=20; i++) {
+        mycam.camForward();
+        frame_count++;
+        savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+    }
+
+    // for (int i=0; i<=10; i++) {
+    //     mycam.camLeft();
+    //     frame_count++;
+    //     savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+    // }
+
+    // for (int i=0; i<=10; i++) {
+    //     mycam.camRight();
+    //     frame_count++;
+    //     savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+    // }
+        
     // for (int i=0; i<=5; i++){
     //     // mycam.camRight();
     //     mycam.camOrientation(vec3(0, 0.01, 0));
@@ -108,38 +130,121 @@ void renderType(int type){
 
 //  triggered by code rather than keyboard buttons
 // call like -> for (...) { handleEvent("cam_left"); } ???
-void handleEvent(string event){
-    if(event == "cam_left"){
+// void handleEvent(string event){
+//     if(event == "cam_left"){
+//         mycam.camLeft();
+//         frame_count++;
+//         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+//     }
+//     else if(event == "cam_right"){
+//         mycam.camRight();
+//         frame_count++;
+//         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+//     }
+//     else if(event == "cam_up"){
+//         mycam.camUp();
+//     } 
+//     else if(event == "cam_down"){
+//         mycam.camDown();
+//     }
+//     else if (event == "cam_forward"){
+//         mycam.camForward();
+//         frame_count++;
+//         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+//     } 
+//     else if (event == "cam_backward"){
+//         mycam.camBackward();
+//     } 
+//     // else if (event.key.keysym.sym == SDLK_w){
+//     //     mycam.camOrientation(vec3(0.01, 0, 0));
+//     // } 
+//     // else if (event.key.keysym.sym == SDLK_s){
+//     //     mycam.camOrientation(vec3(-0.01, 0, 0));
+//     // } 
+//     // else if (event.key.keysym.sym == SDLK_a){
+//     //     mycam.camOrientation(vec3(0, 0.01, 0));
+//     // } 
+//     // else if (event.key.keysym.sym == SDLK_d){
+//     //     mycam.camOrientation(vec3(0, -0.01, 0));
+//     // } 
+//     // else if (event.key.keysym.sym == SDLK_l){
+//     //     mycam.lookAt(vec3(0, 0, 0));
+//     // } 
+// }
+
+void handleEvent(SDL_Event event)
+{
+  if(event.type == SDL_KEYDOWN) {
+    if(event.key.keysym.sym == SDLK_LEFT){
+        cout << "LEFT" << endl;
         mycam.camLeft();
+        frame_count++;
+        savePPM(window, "renders/wireframe/"+to_string(frame_count)+".ppm");
     }
-    else if(event == "cam_right"){
+    else if(event.key.keysym.sym == SDLK_RIGHT){
+        cout << "RIGHT" << endl;
         mycam.camRight();
+        frame_count++;
+        savePPM(window, "renders/wireframe/"+to_string(frame_count)+".ppm");
     }
-    else if(event == "cam_up"){
+    else if(event.key.keysym.sym == SDLK_UP){
+        cout << "UP" << endl;
         mycam.camUp();
+        frame_count++;
+        savePPM(window, "renders/wireframe/"+to_string(frame_count)+".ppm");
     } 
-    else if(event == "cam_down"){
+    else if(event.key.keysym.sym == SDLK_DOWN){
+        cout << "DOWN" << endl;
         mycam.camDown();
+        frame_count++;
+        savePPM(window, "renders/wireframe/"+to_string(frame_count)+".ppm");
     }
-    else if (event == "cam_forward"){
+    else if (event.key.keysym.sym == SDLK_e){
+        cout << "FORWARD" << endl;
         mycam.camForward();
+        frame_count++;
+        savePPM(window, "renders/wireframe/"+to_string(frame_count)+".ppm");
+        // some sampel code for fly through
+        // if (mycam.cameraPos.z < -9.3){
+        //   mycam.camForward();
+        // }
     } 
-    else if (event == "cam_backward"){
+    else if (event.key.keysym.sym == SDLK_q){
+        cout << "BACKWARD" << endl;
         mycam.camBackward();
     } 
-    // else if (event.key.keysym.sym == SDLK_w){
-    //     mycam.camOrientation(vec3(0.01, 0, 0));
-    // } 
-    // else if (event.key.keysym.sym == SDLK_s){
-    //     mycam.camOrientation(vec3(-0.01, 0, 0));
-    // } 
-    // else if (event.key.keysym.sym == SDLK_a){
-    //     mycam.camOrientation(vec3(0, 0.01, 0));
-    // } 
-    // else if (event.key.keysym.sym == SDLK_d){
-    //     mycam.camOrientation(vec3(0, -0.01, 0));
-    // } 
-    // else if (event.key.keysym.sym == SDLK_l){
-    //     mycam.lookAt(vec3(0, 0, 0));
-    // } 
+    else if (event.key.keysym.sym == SDLK_w){
+        cout << "ROTATE UP" << endl;
+        mycam.camOrientation(vec3(0.01, 0, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_s){
+        cout << "ROTATE down" << endl;
+        mycam.camOrientation(vec3(-0.01, 0, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_a){
+        cout << "ROTATE LEFT" << endl;
+        mycam.camOrientation(vec3(0, 0.01, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_d){
+        cout << "ROTATE RIGHT" << endl;
+        mycam.camOrientation(vec3(0, -0.01, 0));
+    } 
+    else if (event.key.keysym.sym == SDLK_l){
+        cout << "LOOK AT" << endl;
+        mycam.lookAt(vec3(0, 0, 0));
+    } 
+    else if(event.key.keysym.sym == SDLK_u){
+        // drawRandomTriangle();
+        CanvasTriangle t = CanvasTriangle(CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150), CanvasPoint(rand()%300, rand()%150));
+        drawStrokedTriangle(window, t);
+        cout << "U" << endl;
+    }
+    else if (event.key.keysym.sym == SDLK_f){
+        //drawFilledTriangle((window), Colour(rand()%255, rand()%255, rand()%255));
+    }    
+    else if(event.key.keysym.sym == SDLK_f){
+     // drawRandomFilledTriangle();
+    } 
+  }
+  else if(event.type == SDL_MOUSEBUTTONDOWN) cout << "MOUSE CLICKED" << endl;
 }

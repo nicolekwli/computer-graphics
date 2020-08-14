@@ -20,7 +20,7 @@ using std::vector;
 using glm::vec3;
 
 CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam);
-void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam, bool isShade);
+void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam, int kind);
 vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct);
 vector<CanvasTriangle> clippingFrus(DrawingWindow window, Camera c, CanvasTriangle ct);
 void createWireframe(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);

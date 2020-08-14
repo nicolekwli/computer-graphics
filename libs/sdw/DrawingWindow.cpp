@@ -69,7 +69,7 @@ bool DrawingWindow::pollForInputEvents(SDL_Event *event)
 void DrawingWindow::setPixelColour(int x, int y, uint32_t colour)
 {
   if((x<0) || (x>=width) || (y<0) || (y>=height)) {
-    std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
+    // std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
   }
   else {
     pixelBuffer[(y*width)+x] = colour; // if depth > current depth -> also setdepth, setpixel
@@ -79,7 +79,7 @@ void DrawingWindow::setPixelColour(int x, int y, uint32_t colour)
 void DrawingWindow::setPixelColour(int x, int y, float depth, uint32_t colour)
 {
   if((x<0) || (x>=width) || (y<0) || (y>=height)) {
-    std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
+    // std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
   }
   else {
     if(depth > depthBuffer[(y*width)+x]){
@@ -94,7 +94,7 @@ void DrawingWindow::setPixelColour(int x, int y, float depth, uint32_t colour)
 uint32_t DrawingWindow::getPixelColour(int x, int y)
 {
   if((x<0) || (x>=width) || (y<0) || (y>=height)) {
-    std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
+    // std::cout << x << "," <<  y << " not on visible screen area" << std::endl;
     return -1;
   }
   else return pixelBuffer[(y*width)+x];

@@ -37,13 +37,13 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 }
 
 // our little vertex shader?
-void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam, bool isShade){
+void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct, Camera cam, int kind){
 
     CanvasPoint v0 = vertex3Dto2D(window, mt.vertices[0], cam);
     CanvasPoint v1 = vertex3Dto2D(window, mt.vertices[1], cam);
     CanvasPoint v2 = vertex3Dto2D(window, mt.vertices[2], cam);
     
-    if (isShade){
+    if (kind == 3){
         // calculate new colour for each vertex
         vec3 Ia = vec3(0.55, 0.55, 0.55); // lets say this is the light intensity
 
@@ -87,7 +87,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         v2.mat = mt.mat;
         v2.normal = mt.normals[2];
         
-    } else {
+    } else if (kind == 4) {
         v0.c = mt.colour;
         v0.mat = mt.mat;
         v0.normal = mt.normals[0];
@@ -97,7 +97,7 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         v2.c = mt.colour;
         v2.mat = mt.mat;
         v2.normal = mt.normals[2];
-    }
+    } 
     
     ct = CanvasTriangle(v0, v1, v2, mt.colour);
 
@@ -284,7 +284,8 @@ void rasterise(DrawingWindow window, vector<ModelTriangle> t, Camera cam, vector
     for (std::vector<int>::size_type i = 0; i != t.size(); i++){
         CanvasTriangle ct; 
 
-        modelToCanvasTri(window, t[i], ct, cam, false); // change to true for gouraud, sorry this was set up badly, keep false for phong
+        //if (kind ==3)modelToCanvasTri(window, t[i], ct, cam, true); // change to true for gouraud, sorry this was set up badly, keep false for phong
+        modelToCanvasTri(window, t[i], ct, cam, kind); // change to true for gouraud, sorry this was set up badly, keep false for phong
         canvasTriangles.push_back(ct);
 
         //vector<CanvasTriangle> cts = clipping(window, ct);

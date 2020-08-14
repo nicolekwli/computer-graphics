@@ -23,9 +23,7 @@ vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, 
 vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
 vector<ModelTriangle> object1 = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
 
-// hackspace logo
-// vector<Colour> c = readMTL("assets/hackspaceLogo/materials.mtl");
-// vector<ModelTriangle> object = readOBJ("assets/hackspaceLogo/logo.obj", c, ppm, 0.005);
+
 
 int main(int argc, char* argv[]){
     SDL_Event event;
@@ -53,6 +51,9 @@ int main(int argc, char* argv[]){
 
         //pixels = readPPM(window,"assets/texture.ppm");  
         ppm = readPPM(window,"assets/texture.ppm"); 
+        // hackspace logo
+        vector<Colour> l = readMTL("assets/hackspaceLogo/materials.mtl");
+        vector<ModelTriangle> logo = readOBJ("assets/hackspaceLogo/logo.obj", l, ppm, 0.005);
         //ppm = readPPM(window,"assets/texture1.ppm"); 
         //fillTextureTriangle(window, ppm.pixels, t);
 
@@ -64,7 +65,7 @@ int main(int argc, char* argv[]){
 
         //raytracer stuff
         // drawFilledTriangleRay(window, object, mycam);
-        raytracingLighting(window, object, mycam);
+        // raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
@@ -76,8 +77,9 @@ int main(int argc, char* argv[]){
         // rasterizer (new)
         //createWireframe(window, object, mycam);
         //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
+        rasterise(window, logo, mycam, ppm.pixels, m, 2);
         //rasterise(window, object1, mycam, ppm.pixels, m, 3);  // shade gouraud
-        // rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
+        //rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
         //SSAA(window);
 
         window.renderFrame();

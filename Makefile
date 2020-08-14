@@ -44,7 +44,7 @@ MATERIAL_SOURCE = libs/sdw/Material.cpp
 MATERIAL_OBJECT = libs/sdw/Material.o
 
 # Build settings
-COMPILER = g++
+COMPILER = g++ #-fopenmp
 COMPILER_OPTIONS = -c -pipe -Wall -std=c++11
 DEBUG_OPTIONS = -ggdb -g3
 FUSSY_OPTIONS = -Werror -pedantic

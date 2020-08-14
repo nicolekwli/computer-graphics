@@ -18,8 +18,13 @@ int step = 0;
 
 // normal reading files
 vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl"); //can prob get rid  of this?
-vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornell-box/cornell-box.mtl");
+//vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box/cornell-box.mtl"); // one l is the edited mtl file, ll is the original
+vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+
 vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj", cornell_mtl, ppm, 1);
+vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05);
+
+
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
 vector<ModelTriangle> logo = readOBJ("assets/hackspaceLogo/logo.obj", logo_mtl, ppm, 0.005);
 
@@ -55,61 +60,97 @@ int main(int argc, char* argv[]){
 // Function for performing animation (shifting artifacts or moving the camera)
 void update(){
     switch(::step){
-        case 0:
-            // this is stuff from cornell animation func
-            //for (int i=0; i<=15; i++) {
+        case 0: // cornell box animation
             if (frame_count < 15){
                 mycam.camForward();
                 frame_count++;
-                // savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
             }
-            else ::step++;
-            break;
-        case 1:
-            // cornell box yeeted out
-            //for (int i=0; i<=15; i++) {
-            if (frame_count < 30){
+            else if (frame_count < 30){
                 mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
             }
-            else ::step++;
-            break;
 
-        case 2:
-            //for (int i=0; i<=25; i++) {
-            if (frame_count < 50){
+            else if (frame_count < 50){
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
             }
+            else if (frame_count < 60){
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 70){
+                mycam.camForward();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else {
+                render_type = 2;
+                mycam.cameraPos = vec3(0, 1, -2.5f);
+                ::step++;
+            }
+            break;
+
+        case 1:
+            frame_count++;
+            savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+
+            if (frame_count < 75){
+                mycam.camLeft();
+                frame_count++;
+                mycam.camForward();
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 85){
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else {
+                render_type = 3;
+                mycam.cameraPos = vec3(0, 1, -4.5f);
+                ::step++;
+            }
+            break;
+
+        case 2: // switch to logo
+            window.clearPixels();
+            frame_count++;
+            savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            ::step++;
+            break;
+
+        case 3: // logo animation
+            // for (int i=0; i<=5; i++) {
+            if (frame_count < 110){
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 115){
+                mycam.camOrientation(vec3(0, -0.01, 0));
+                mycam.camForward();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 125){
+                mycam.camOrientation(vec3(0, 0.01, 0));
+                mycam.camForward();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            
             else ::step++;
             break;
-        
-        // case 3:
-        //     for (int i=0; i<=10; i++) {
-        //         mycam.camRight();
-        //         frame_count++;
-        //         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-        //     }
-        //     ::step++;
-        //     break;
 
-        // case 4:
-        //     // this is stuff from cornell animation func
-        //     for (int i=0; i<=5; i++) {
-        //         mycam.camForward();
-        //         frame_count++;
-        //         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-        //     }
-        //     ::step++;
-        //     break;
-
-        case 3:
+        case 4:
             exit(0); //stop updating, stop the code, stop everything
             break;
     }
-    savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+    //savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
 
 }
 
@@ -125,10 +166,16 @@ void draw(){
             // clearScreen();
             // logoFlyThrough();
             break;
-        case 2: // rasterizer
+        case 2:
+            createWireframe(window, cornellbox_alt, mycam);
+            break;
+        case 3:
+            createWireframe(window, logo, mycam);
+            break;
+        case 4: // rasterizer
             rasterise(window, cornellbox, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
-        case 3: // raytracer
+        case 5: // raytracer
             raytracingLighting(window, cornellbox, mycam);
             break;
         default: //wireframe is default

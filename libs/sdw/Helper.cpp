@@ -1,7 +1,7 @@
 #include "Helper.h"
 
-int shade;
 vec3 camP;
+int shadeKind;
 // ----- Functions -----
 uint32_t bitpackingColour(Colour c){
   uint32_t converted;
@@ -72,15 +72,16 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         p.depth = 1/ p.depth;
 
         texPointCorrected(a, b, p);
-
+        
         // INTERPOLATE COLOUR AS WELL
-        if (shade == 3 ) {
+        if (shadeKind == 3 ) {
             if (a_colour == b_colour){
                 p.c = a.c;
             } else {
                 p.c = Colour(int(ac.r * (1-q) + bc.r * q), int (ac.g * (1-q) + bc.g * q), int(ac.b * (1-q) + bc.b * q));
             }
-        } else if (shade == 4){
+        } 
+        else if (shadeKind == 4){
             // INTERPOLATE NORMAL
             p.normal = a.normal * (1-q) + b.normal * q;
             p.mat = b.mat;
@@ -283,49 +284,50 @@ void drawStrokedTriangle(DrawingWindow window, CanvasTriangle t){
 }
 
 
-void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, bool isShade, int kind) {
+void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<CanvasPoint> lineTopRight, Colour c, int kind) {
     uint32_t colour = bitpackingColour(c);
 
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         //drawLine(window, lineTopLeft[a], lineTopRight[a], c);
         //drawLineB(window, lineTopLeft[a], lineTopRight[a], c);
         //drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
-        if (isShade){ 
-            if (kind == 3){ // gouraud
-                vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
-                for (int i=0; i<line.size(); i++){
-                    colour = bitpackingColour(line[i].c);
-                    window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
-                }
-            } else if (kind == 4){ // phong
-                // itnerpolate normal
-                vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
-                // calculate colour
-                for (int i=0; i<line.size(); i++){
-                    // do illumination model 
-                    vec3 lightPos(5, 12, -6.0);
-                    vec3 lightPower = 62.5f * vec3(1, 1, 1);
-                    vec3 Ia = vec3(0.55, 0.55, 0.55);
 
-                    float distance = pow((lightPos.x - line[i].x),2) + pow((lightPos.y - line[i].y),2) + pow((lightPos.z - line[i].depth),2);
-                    distance = sqrt(distance);
-
-                    vec3 amb = line[i].mat.ambient * Ia;
-                    vec3 pos = vec3(line[i].x, line[i].y, line[i].depth);
-                    vec3 diff = line[i].mat.diffuse * glm::max(dot(line[i].normal, (lightPos - pos)), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
-
-                    vec3 tolight = normalize(lightPos - pos);
-                    vec3 R = normalize(2.0f * line[i].normal * dot(tolight, line[i].normal) - tolight); // this is right
-                    vec3 V = normalize(camP- pos); // ??
-                    vec3 spec = line[i].mat.specular * powf(dot(R, V), line[i].mat.highlight) * vec3(1.0f);
-                    vec3 illum = amb + diff + spec;
-                    // setPixelColour
-                    colour = bitpackingColour(Colour((int)illum.r, (int)illum.g, (int)illum.b));
-                    window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
-                }
+        if (kind == 3){ // gouraud
+            vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
+            for (int i=0; i<line.size(); i++){
+                colour = bitpackingColour(line[i].c);
+                window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
             }
+        } 
+        else if (kind == 4){ // phong
+            // itnerpolate normal
+            vector<CanvasPoint> line = interpolation(lineTopLeft[a], lineTopRight[a], abs(lineTopLeft[a].x - lineTopRight[a].x));
+            // calculate colour
+            for (int i=0; i<line.size(); i++){
+                // do illumination model 
+                vec3 lightPos(5, 12, -6.0);
+                vec3 lightPower = 62.5f * vec3(1, 1, 1);
+                vec3 Ia = vec3(0.55, 0.55, 0.55);
+
+                float distance = pow((lightPos.x - line[i].x),2) + pow((lightPos.y - line[i].y),2) + pow((lightPos.z - line[i].depth),2);
+                distance = sqrt(distance);
+
+                vec3 amb = line[i].mat.ambient * Ia;
+                vec3 pos = vec3(line[i].x, line[i].y, line[i].depth);
+                vec3 diff = line[i].mat.diffuse * glm::max(dot(line[i].normal, (lightPos - pos)), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
+
+                vec3 tolight = normalize(lightPos - pos);
+                vec3 R = normalize(2.0f * line[i].normal * dot(tolight, line[i].normal) - tolight); // this is right
+                vec3 V = normalize(camP- pos); // ??
+                vec3 spec = line[i].mat.specular * powf(dot(R, V), line[i].mat.highlight) * vec3(1.0f);
+                vec3 illum = amb + diff + spec;
+                // setPixelColour
+                colour = bitpackingColour(Colour((int)illum.r, (int)illum.g, (int)illum.b));
+                window.setPixelColour(line[i].x, line[i].y, line[i].depth, colour);
+            }
+        }
             
-        } else {
+        else {
             drawLineWu(window, lineTopLeft[a], lineTopRight[a], c);
         }
     }
@@ -333,7 +335,7 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
 void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle, int kind, vec3 cameraPos){
     camP = cameraPos;
-    shade = kind;
+    shadeKind = kind;
     
     float ratio = (triangle.vertices[1].y - triangle.vertices[0].y) / (triangle.vertices[2].y - triangle.vertices[0].y);
     CanvasPoint newP = CanvasPoint(triangle.vertices[0].x + ratio * (triangle.vertices[2].x - triangle.vertices[0].x), 
@@ -359,12 +361,12 @@ void drawFilledTriangle(DrawingWindow window, Colour c, CanvasTriangle triangle,
     // Fill top triangle
     vector<CanvasPoint> lineTopLeft = interpolation(triangle.vertices[0], newP, abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineTopRight = interpolation(triangle.vertices[0], triangle.vertices[1], abs(triangle.vertices[0].y - triangle.vertices[1].y)+1);
-    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour, shade, kind);
+    fillTriangle(window, lineTopLeft, lineTopRight, triangle.colour, kind);
 
     // Bottom triangle
     vector<CanvasPoint> lineBottomLeft = interpolation(newP,triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
     vector<CanvasPoint> lineBottomRight = interpolation(triangle.vertices[1], triangle.vertices[2], abs(triangle.vertices[2].y - triangle.vertices[1].y)+1);
-    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour, shade, kind); 
+    fillTriangle(window,lineBottomLeft, lineBottomRight, triangle.colour, kind); 
 }
 
 
@@ -374,10 +376,15 @@ void fillTexture(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<C
     // make sure we fill according to the longer line so it fills
     for (float a = 0.0; a<lineTopLeft.size(); a++){
         steps = (int) abs(lineTopLeft[a].x - lineTopRight[a].x);
+        // cout << "steps" << endl;
+        // cout << steps << endl;
         vector<CanvasPoint> points = interpolation(lineTopLeft[a], lineTopRight[a], steps+1);
         // drawLine(lineTopLeft[a], lineTopRight, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
-
         for (int c = 0; c < steps; c++){
+            // cout << c << endl;
+            // cout << "size" << endl;
+            // cout << points.size() << endl;
+            // cout << points[c].texturePoint.y << endl;
             window.setPixelColour((int)points[c].x, (int)points[c].y, points[c].depth, pixels[points[c].texturePoint.y][points[c].texturePoint.x]);
         }
     }

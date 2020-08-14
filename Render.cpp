@@ -11,9 +11,10 @@ using namespace std::chrono;
 // setting up variables
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
-PPM ppm;
+PPM ppm = readPPM(window, "assets/texture.ppm");
 int frame_count = 0;
-int render_type = 1; //1 - wireframe, 2 - rasterizer, 3 - raytracer
+int render_type = 4; //1 - wireframe, 4 - rasterizer, 3 - raytracer
+string render = "rasterise";
 int step = 0;
 
 // normal reading files
@@ -64,31 +65,31 @@ void update(){
             if (frame_count < 15){
                 mycam.camForward();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 30){
                 mycam.camRight();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
 
             else if (frame_count < 50){
                 mycam.camLeft();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 60){
                 mycam.camRight();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 70){
                 mycam.camForward();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else {
-                render_type = 2;
+                render_type++;
                 mycam.cameraPos = vec3(0, 1, -2.5f);
                 ::step++;
             }
@@ -96,21 +97,20 @@ void update(){
 
         case 1:
             frame_count++;
-            savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
 
             if (frame_count < 75){
                 mycam.camLeft();
                 frame_count++;
-                mycam.camForward();
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 85){
                 mycam.camRight();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else {
-                render_type = 3;
+                render_type++;
                 mycam.cameraPos = vec3(0, 1, -4.5f);
                 ::step++;
             }
@@ -119,7 +119,7 @@ void update(){
         case 2: // switch to logo
             window.clearPixels();
             frame_count++;
-            savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             ::step++;
             break;
 
@@ -128,19 +128,19 @@ void update(){
             if (frame_count < 110){
                 mycam.camLeft();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 115){
                 mycam.camOrientation(vec3(0, -0.01, 0));
                 mycam.camForward();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 125){
                 mycam.camOrientation(vec3(0, 0.01, 0));
                 mycam.camForward();
                 frame_count++;
-                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             
             else ::step++;
@@ -157,7 +157,7 @@ void update(){
 //currently just does stuff for wireframe
 // need to change camera variables for each tho
 void draw(){
-    ppm = readPPM(window, "assets/texture.ppm");
+    
 
     switch(render_type){
         case 1: // wireframe
@@ -175,7 +175,13 @@ void draw(){
         case 4: // rasterizer
             rasterise(window, cornellbox, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
-        case 5: // raytracer
+        case 5: // rasterizer
+            rasterise(window, cornellbox_alt, mycam, ppm.pixels, cornell_mtl_alt, 3);
+            break;
+        case 6: // rasterizer
+            rasterise(window, logo, mycam, ppm.pixels, cornell_mtl_alt, 2);
+            break;
+        case 7: // raytracer
             raytracingLighting(window, cornellbox, mycam);
             break;
         default: //wireframe is default

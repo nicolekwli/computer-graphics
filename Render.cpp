@@ -57,28 +57,60 @@ void update(){
     switch(::step){
         case 0:
             // this is stuff from cornell animation func
-            for (int i=0; i<=10; i++) {
+            //for (int i=0; i<=15; i++) {
+            if (frame_count < 15){
                 mycam.camForward();
                 frame_count++;
                 // savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
             }
-            ::step++;
+            else ::step++;
             break;
         case 1:
             // cornell box yeeted out
-            for (int i=0; i<=25; i++) {
+            //for (int i=0; i<=15; i++) {
+            if (frame_count < 30){
                 mycam.camRight();
                 frame_count++;
-                // savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
             }
+            else ::step++;
             break;
-        // case 2:
-            // logo yeeted in ??
-            // break;
+
         case 2:
+            //for (int i=0; i<=25; i++) {
+            if (frame_count < 50){
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+            }
+            else ::step++;
+            break;
+        
+        // case 3:
+        //     for (int i=0; i<=10; i++) {
+        //         mycam.camRight();
+        //         frame_count++;
+        //         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+        //     }
+        //     ::step++;
+        //     break;
+
+        // case 4:
+        //     // this is stuff from cornell animation func
+        //     for (int i=0; i<=5; i++) {
+        //         mycam.camForward();
+        //         frame_count++;
+        //         savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+        //     }
+        //     ::step++;
+        //     break;
+
+        case 3:
             exit(0); //stop updating, stop the code, stop everything
             break;
     }
+    savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
+
 }
 
 //currently just does stuff for wireframe

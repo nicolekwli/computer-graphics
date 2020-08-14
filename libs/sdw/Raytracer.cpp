@@ -37,22 +37,6 @@ uint32_t convertColour(Colour c, float brightness){
   return (255<<24) + (r<<16) + (g<<8) + b;
 }
 
-
-// this seems dumb but ehh
-vector<ModelTriangle> makeNegative(vector<ModelTriangle> triangles){
-    vector<ModelTriangle> newT;
-    newT = triangles;
-    
-    for(int i=0; i<(int)triangles.size(); i++){
-        for(int j=0; j<3; j++){
-            float temp = -triangles[i].vertices[1].z;
-            newT[i].vertices[1].z = temp;
-        }
-    }
-    return newT;
-}
-
-
 // -------------------- OTHER FUNCIONS lol
 // this doesnt work but could work (its too slow?)
 bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest){
@@ -108,12 +92,6 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3
 bool closestIntersectionMT(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest ){
     float prevDist = 1000; //a high value?
     rayDirection = glm::normalize(rayDirection);
-    
-    // cout<< triangles[10].vertices[1].z <<endl;
-    // vector<ModelTriangle> final;
-    // final = makeNegative(triangles);
-    // makeNegative(triangles);
-    // cout<< final[10].vertices[1].z <<endl;
 
     // loop through each triangle
     for(int i=0; i<(int)triangles.size(); i++){

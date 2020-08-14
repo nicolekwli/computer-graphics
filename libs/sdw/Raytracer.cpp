@@ -208,6 +208,36 @@ float lighting(RayTriangleIntersection intersection, vec3 viewRay){
     //}
 }
 
+/*
+// how do i just make one surface be a mirror tho
+float mirror(){
+    //get reflected ray
+    // calculate closest intersection for the reflected ray
+
+    vec3 lightPos = glm::vec3( -0.25, 4, 1 ); // (0, -0.5, -0.7) light is in the light spot
+    vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
+    
+    vec3 dirLight = lightPos - intersection.intersectionPoint; //intersection.intersectionPoint - lightPos;
+    vec3 e01 = intersection.intersectedTriangle.vertices[1] - intersection.intersectedTriangle.vertices[0];
+    vec3 e02 = intersection.intersectedTriangle.vertices[2] - intersection.intersectedTriangle.vertices[0];
+    vec3 surfaceNormal = glm::cross(e01, e02);
+    surfaceNormal = glm::normalize(surfaceNormal);
+    float check = glm::dot(-surfaceNormal, dirLight); //not negative? yes negative
+    float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
+
+    vec3 reflected = (2.0f * check * surfaceNormal) - dirLight;
+    reflected = glm::normalize(reflected);
+
+    RayTriangleIntersection closestReflected;
+    bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closestReflected);
+    
+    //the colour of the floor will be the colour of closestReflected
+    uint32_t mirrorColour = convertColour(closestReflected.intersectedTriangle.colour, br);
+    window.setPixelColour(x, y, mirrorColour);
+}
+*/
+
+
 // set a minimum threshold (floor) for the brightness multiplier
 // An IF statement will do the job - when the brightness of a pixel falls below a certain value (e.g. 0.2) just reset it to 0.2 !
 float ambientLighting(float brightness){
@@ -234,6 +264,19 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
 
             //if there is intersection
             if (res){
+
+                /*
+                if (closest.intersectedTriangle.mat.name == "Green"){
+                    //then reflect again and find closest intersection colour?
+                    RayTriangleIntersection closestReflected;
+                    bool res = getClosestIntersection(triangles, cam.cameraPos, reflected, closestReflected);
+                    
+                    //the colour of the floor will be the colour of closestReflected
+                    uint32_t mirrorColour = convertColour(closestReflected.intersectedTriangle.colour, br);
+                    window.setPixelColour(x, y, mirrorColour);
+                }
+                */
+
                 // uint32_t pixelColour = bitpackingColour(closest.intersectedTriangle.colour);
                 // float diffuseB = diffuseLighting(closest, rayDirection, materials);
                 // float ambientB = ambientLighting(diffuseB);

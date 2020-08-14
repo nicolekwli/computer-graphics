@@ -25,5 +25,3 @@ using glm::vec3;
 
 void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> t, Camera cam);
 void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);
-// void getClosestIntersection(ModelTriangle t, Camera cam);
-// bool checkConstraints(vec3 sol);

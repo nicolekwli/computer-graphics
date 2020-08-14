@@ -16,6 +16,7 @@ PPM ppm;
 
 // normal file reading
 vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
+vector<Material> calt = readMTLAlt("assets/cornell-box/cornell-box.mtl");
 vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
 
 // cornell box sphere w material
@@ -63,7 +64,7 @@ int main(int argc, char* argv[]){
 
         //raytracer stuff
         // drawFilledTriangleRay(window, object, mycam);
-        //raytracingLighting(window, object, mycam);
+        raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);
@@ -76,7 +77,7 @@ int main(int argc, char* argv[]){
         //createWireframe(window, object, mycam);
         //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
         //rasterise(window, object1, mycam, ppm.pixels, m, 3);  // shade gouraud
-        rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
+        // rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
         //SSAA(window);
 
         window.renderFrame();

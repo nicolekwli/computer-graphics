@@ -1,10 +1,8 @@
 #include "Rasterise.h"
 #include <string.h>
 
-// vec3 lightPos(5, 12, -6.0); // gouraud
-vec3 lightPos(0, 8, -6.0);
-// vec3 lightPower = 62.5f * vec3(1, 1, 1); // gouraud
-vec3 lightPower = 22.5f * vec3(1, 1, 1);
+vec3 lightPos(5, 12, -6.0);
+vec3 lightPower = 62.5f * vec3(1, 1, 1);
 //vec3 dIntensity = vec3(2550.f, 1800.f, 1010.f);
 vec3 indirectLightPowerPerArea = 0.5f * vec3(1, 1, 1);
 
@@ -55,7 +53,6 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
         vec3 amb = mt.mat.ambient * Ia;
         vec3 diff = mt.mat.diffuse * glm::max(dot(mt.normals[0], (lightPos - mt.vertices[0])), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
         
-        // specular
         vec3 tolight = normalize(lightPos - mt.vertices[0]);
         vec3 R = normalize(2.0f * mt.normals[0] * dot(tolight, mt.normals[0]) - tolight); // this is right
         vec3 V = normalize(cam.cameraPos- mt.vertices[0]); // ??

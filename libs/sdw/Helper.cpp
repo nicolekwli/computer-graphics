@@ -83,7 +83,7 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         } 
         else if (shadeKind == 4){
             // INTERPOLATE NORMAL
-            p.normal = a.normal * (1-q) + b.normal * q;
+            p.normal = vec3(a.normal.x * (1-q) + b.normal.x * q, a.normal.y * (1-q) + b.normal.y * q, a.normal.z * (1-q) + b.normal.z * q);
             p.mat = b.mat;
         }
         vect.push_back(p);
@@ -305,14 +305,14 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
             // calculate colour
             for (int i=0; i<line.size(); i++){
                 // do illumination model 
-                vec3 lightPos(5, 12, -6.0);
-                vec3 lightPower = 62.5f * vec3(1, 1, 1);
+                vec3 lightPos(0, 7, -5.0);
+                vec3 lightPower = 65.5f * vec3(1, 1, 1);
                 vec3 Ia = vec3(0.55, 0.55, 0.55);
+                vec3 amb = line[i].mat.ambient * Ia;
 
                 float distance = pow((lightPos.x - line[i].x),2) + pow((lightPos.y - line[i].y),2) + pow((lightPos.z - line[i].depth),2);
                 distance = sqrt(distance);
 
-                vec3 amb = line[i].mat.ambient * Ia;
                 vec3 pos = vec3(line[i].x, line[i].y, line[i].depth);
                 vec3 diff = line[i].mat.diffuse * glm::max(dot(line[i].normal, (lightPos - pos)), 0.0f) * (lightPower / (4.0f * 3.14f*distance*distance));
 

@@ -26,6 +26,7 @@ class ModelTriangle
     TexturePoint texturePoints[3];
     Colour colour;
     Material mat;
+    string objname;
 
     ModelTriangle();
     ModelTriangle(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2);

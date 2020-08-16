@@ -574,6 +574,7 @@ vector<ModelTriangle> readOBJ(string filename, vector<Colour> colours, PPM ppm, 
             int c = stoi(split(tokens[3],'/')[0]) - 1;
 
             ModelTriangle t = ModelTriangle(ver[a], ver[b], ver[c], col);
+            t.objname = objectName;
             // there is a texture value e.g. f 1/1 2/2 3/3
             if (tokens[1].back() != '/'){
                 // face1[0] is the vertex, face[1] is the texture point
@@ -614,14 +615,12 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
 
         if ((tokens[0] == "#") || (tokens[0] == "g")){
             continue;
-
-        } 
-        // else if (tokens[1] == "Object"){ //not needed soOOO byebye segfault
-        //     objectName = tokens[2];
-        // }
+        }
+        else if ((tokens[0] == "o")){
+            objectName = tokens[1];
+        }
         else if (tokens[0] == "usemtl") {
-            //cout << tokens[1] << endl;
-            // Colour
+            // store material
             for (int i = 0; i < mtls.size(); i++){
                 if(mtls[i].name == tokens[1]){
                     material = mtls[i];
@@ -669,6 +668,8 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
 
                 t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
                 // t.mat = material // should do the same
+                t.objname = objectName;
+
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;

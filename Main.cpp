@@ -14,14 +14,17 @@ Camera mycam = Camera(HEIGHT, WIDTH);
 //vector<vector<uint32_t>> pixels;
 PPM ppm;
 
-// normal file reading
+// normal cornell box
 vector<Colour> c = readMTL("assets/cornell-box/cornell-box.mtl");
-vector<Material> calt = readMTLAlt("assets/cornell-box/cornell-box.mtl");
 vector<ModelTriangle> object = readOBJ("assets/cornell-box/cornell-box.obj", c, ppm, 1);
 
-// cornell box sphere w material
-vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-vector<ModelTriangle> object1 = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
+// material cornell box (for raytracing)
+vector<Material> c_alt_ray = readMTLAlt("assets/cornell-box/cornell-box-ray.mtl");
+vector<ModelTriangle> object_alt = readOBJAlt("assets/cornell-box/cornell-box-ray.obj", c_alt_ray, ppm, 1);
+
+// material cornell sphere 
+vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-GLossy-Floor.mtl");
+vector<ModelTriangle> object1 = readOBJAlt("assets/cornell-box-extra/CornellBox-Glossy-Floor.obj", m, ppm, 1);
 
 
 
@@ -64,7 +67,7 @@ int main(int argc, char* argv[]){
         // savePPM(window, "hello.ppm");
 
         //raytracer stuff
-        // drawFilledTriangleRay(window, object, mycam);
+        // drawFilledTriangleRay(window, object1, mycam);
         raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);

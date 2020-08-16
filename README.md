@@ -22,12 +22,12 @@
 - [x] Naive (non-perspective corrected) texture mapping
 - [x] Simple animation (e.g. fly-through)
 * _Some form of Physics (gravity, friction, bounce etc)_
-- [x] Basic culling/clipping (far-plane, near-plan, back-face) [Need perfecting]
+- [x] Basic culling/clipping (far-plane, near-plan, back-face)
 - [x] _Basic (image plane) anti-aliasing_ [wu line 2D]
 
 ### (70s) some of...
-- [x] Phong Shading [not perfect]
-* Fairly “interesting” materials (e.g. mirrors)
+- [x] Phong Shading
+- [x] Fairly “interesting” materials (e.g. mirrors)
 - [x] Super Sampling Anti-Aliasing [attempted]
 - [x] Perspective corrected texture mapping
 * “Fancy” animation

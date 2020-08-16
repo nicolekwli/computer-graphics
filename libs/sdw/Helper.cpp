@@ -83,7 +83,7 @@ vector<CanvasPoint> interpolation(CanvasPoint a, CanvasPoint b, float noOfVals )
         } 
         else if (shadeKind == 4){
             // INTERPOLATE NORMAL
-            p.normal = vec3(a.normal.x * (1-q) + b.normal.x * q, a.normal.y * (1-q) + b.normal.y * q, a.normal.z * (1-q) + b.normal.z * q);
+            p.normal = normalize(vec3(a.normal.x * (1-q) + b.normal.x * q, a.normal.y * (1-q) + b.normal.y * q, a.normal.z * (1-q) + b.normal.z * q));
             p.mat = b.mat;
         }
         vect.push_back(p);
@@ -305,8 +305,8 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
             // calculate colour
             for (int i=0; i<line.size(); i++){
                 // do illumination model 
-                vec3 lightPos(0, 7, -5.0);
-                vec3 lightPower = 65.5f * vec3(1, 1, 1);
+                vec3 lightPos(-1, 5, -3.0);
+                vec3 lightPower = 165.5f * vec3(1, 1, 1);
                 vec3 Ia = vec3(0.55, 0.55, 0.55);
                 vec3 amb = line[i].mat.ambient * Ia;
 
@@ -318,7 +318,7 @@ void fillTriangle(DrawingWindow window, vector<CanvasPoint> lineTopLeft, vector<
 
                 vec3 tolight = normalize(lightPos - pos);
                 vec3 R = normalize(2.0f * line[i].normal * dot(tolight, line[i].normal) - tolight); // this is right
-                vec3 V = normalize(camP- pos); // ??
+                vec3 V = normalize(camP- line[i].normal); // ??
                 vec3 spec = line[i].mat.specular * powf(dot(R, V), line[i].mat.highlight) * vec3(1.0f);
                 vec3 illum = amb + diff + spec;
                 // setPixelColour

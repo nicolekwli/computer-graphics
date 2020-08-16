@@ -67,7 +67,7 @@ int main(int argc, char* argv[]){
         // savePPM(window, "hello.ppm");
 
         //raytracer stuff
-        // drawFilledTriangleRay(window, object1, mycam);
+        // drawFilledTriangleRay(window, object, mycam);
         raytracingLighting(window, object, mycam);
 
         // //createWireframe(window, object, mycam);
@@ -78,11 +78,11 @@ int main(int argc, char* argv[]){
         // rasterise(window, object, mycam, ppm.pixels);
 
         // rasterizer (new)
-        //createWireframe(window, object, mycam);
+        //createWireframe(window, object1, mycam);
         //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
         // rasterise(window, logo, mycam, ppm.pixels, m, 2);
         //rasterise(window, object1, mycam, ppm.pixels, m, 3);  // shade gouraud
-        //rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
+        // rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
         //SSAA(window);
 
         window.renderFrame();

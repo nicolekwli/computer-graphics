@@ -70,8 +70,8 @@ int main(int argc, char* argv[]){
         // savePPM(window, "hello.ppm");
 
         //raytracer stuff
-        // drawFilledTriangleRay(window, logo_colour, mycam);
-        raytracingLighting(window, logo_colour, mycam);
+        // drawFilledTriangleRay(window, object_alt, mycam);
+        raytracingLighting(window, object_alt, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);

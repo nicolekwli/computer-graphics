@@ -748,7 +748,6 @@ vector<Material> readMTLAlt(string filename){
         tokens = split(line, ' ');
 
         if (tokens[0] == "newmtl"){
-            final.push_back(mat);
             mat.name = tokens[1];
         } 
         else if (tokens[0] == "Ka"){
@@ -770,6 +769,7 @@ vector<Material> readMTLAlt(string filename){
             // tokens[1] should be the texture file name
             colours.push_back(Colour(tokens[1], 0, 0, 0));
         }     
+        final.push_back(mat);
     }
     file.close();
     return final;

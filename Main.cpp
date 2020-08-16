@@ -23,9 +23,12 @@ vector<Material> c_alt_ray = readMTLAlt("assets/cornell-box/cornell-box-ray.mtl"
 vector<ModelTriangle> object_alt = readOBJAlt("assets/cornell-box/cornell-box-ray.obj", c_alt_ray, ppm, 1);
 
 // material cornell sphere 
-vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-GLossy-Floor.mtl");
-vector<ModelTriangle> object1 = readOBJAlt("assets/cornell-box-extra/CornellBox-Glossy-Floor.obj", m, ppm, 1);
+vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+vector<ModelTriangle> object1 = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
 
+// material hackspace logo (for rays, no texture) 
+vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials-flat-colour.mtl");
+vector<ModelTriangle> logo_colour = readOBJ("assets/hackspaceLogo/logo.obj", logo_mtl, ppm, 0.005);
 
 
 int main(int argc, char* argv[]){
@@ -67,8 +70,8 @@ int main(int argc, char* argv[]){
         // savePPM(window, "hello.ppm");
 
         //raytracer stuff
-        // drawFilledTriangleRay(window, object, mycam);
-        raytracingLighting(window, object, mycam);
+        // drawFilledTriangleRay(window, logo_colour, mycam);
+        raytracingLighting(window, logo_colour, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);

@@ -120,11 +120,12 @@ bool closestIntersectionMT(vector<ModelTriangle> triangles, vec3 startPos, vec3 
 // -casting a ray from the camera, through the current pixel and into the scene.
 // Your task is to determine if this ray intersects with a triangle from the model.
 void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
-    RayTriangleIntersection closest;
 
     #pragma omp parallel for
     for(int y=0; y<window.height; y++){
         for(int x=0; x<window.width; x++){
+            RayTriangleIntersection closest;
+
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
             rayDirection = glm::normalize(rayDirection);
 
@@ -191,6 +192,7 @@ float lighting(RayTriangleIntersection intersection, vec3 viewRay, vec3 &reflect
 }
 
 
+// for logo: no specular, no ambient, light pos: vec3 lightPos = vec3(0, 1, 3); ?
 uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3 rayDirection){
     RayTriangleIntersection closest;
 
@@ -222,7 +224,7 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
         // if (closest.intersectedTriangle.mat.illum == 3){
             // return findPixelColour(triangles, closest.intersectionPoint, reflected); //recursion!!!
             RayTriangleIntersection closestReflected;
-            bool ares = getClosestIntersection(triangles, closest.intersectionPoint-(0.01f*surfaceNormal) , reflected, closestReflected); //- (0.01f * surfaceNormal)
+            bool ares = getClosestIntersection(triangles, closest.intersectionPoint-(0.01f*surfaceNormal) , reflected, closestReflected); //- (0.01f * surfaceNormal) is for shadow acne
 
             if (ares){
                 //the colour of the floor will be the colour of closestReflected
@@ -236,7 +238,7 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
             Colour finalColour =  closest.intersectedTriangle.colour;
 
             // diffuse lighting
-            float check = glm::dot(-surfaceNormal, dirLight); //not negative? yes negative
+            float check = glm::dot(-surfaceNormal, dirLight);
             float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
             // ambient lighting
             float ambient = ambientLighting(diffuse);

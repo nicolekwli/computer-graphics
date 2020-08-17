@@ -13,17 +13,19 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm");
 int frame_count = 0;
-int render_type = 1; //1 - wireframe, 4 - rasterizer, 3 - raytracer
-string render = "wireframe";
+int render_type = 4; //1 - wireframe, 4-8 - rasterizer, 3 - raytracer
+string render = "rasterise";
 int step = 0;
 
 // normal reading files
 vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl"); //can prob get rid  of this?
 //vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box/cornell-box.mtl"); // one l is the edited mtl file, ll is the original
 vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+vector<Material> cornell_mtl_alt_grey = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere-Grey.mtl");
 
 vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj", cornell_mtl, ppm, 1);
-vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05);
+vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05); // this is black spheres
+vector<ModelTriangle> cornellbox_alt_grey = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt_grey, ppm, 1.05);
 
 
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
@@ -102,8 +104,10 @@ void update(){
             else {
                 render_type++;
                 mycam.cameraPos = vec3(-2, 1, -2.5f);
-                mycam.camOrientation(vec3(0.01, 0, 0));
+                if (render == "rasterise") mycam.cameraPos = vec3(-1.5, 1, -2.5f);
+                mycam.camOrientation(vec3(0.02, 0, 0));
                 mycam.camLeft();
+                
                 ::step++;
             }
             break;
@@ -118,11 +122,18 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 155){
+                if ((render == "rasterise") && (frame_count == 151)) render_type++; // to gouraud
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 175){
+            else if (frame_count < 160){
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 175){ 
+                if ((render == "rasterise") && (frame_count == 165)) render_type++; // to phong
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -218,8 +229,6 @@ void update(){
             exit(0); //stop updating, stop the code, stop everything
             break;
     }
-    //savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-
 }
 
 //currently just does stuff for wireframe
@@ -228,28 +237,37 @@ void draw(){
     
 
     switch(render_type){
-        case 1: // wireframe
+        case 1: // wireframe -- box
             createWireframe(window, cornellbox, mycam);
             // cornellboxAnimate();
             // clearScreen();
             // logoFlyThrough();
             break;
-        case 2:
+        case 2: // wireframe -- sphere
             createWireframe(window, cornellbox_alt, mycam);
             break;
-        case 3:
+        case 3: // wireframe -- logo
             createWireframe(window, logo, mycam);
             break;
-        case 4: // rasterizer
+        case 4: // rasterizer -- box fill
             rasterise(window, cornellbox, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
-        case 5: // rasterizer
-            rasterise(window, cornellbox_alt, mycam, ppm.pixels, cornell_mtl_alt, 3);
+        case 5: // rasterizer -- sphere fill
+            rasterise(window, cornellbox_alt_grey, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
-        case 6: // rasterizer
+        case 6: // rasterizer -- sphere gouraud
+            rasterise(window, cornellbox_alt_grey, mycam, ppm.pixels, cornell_mtl_alt, 3);
+            break;
+        case 7: // rasterizer -- sphere phong
+            rasterise(window, cornellbox_alt, mycam, ppm.pixels, cornell_mtl_alt, 4);
+            break;
+        case 8: // rasterizer -- logo texture
             rasterise(window, logo, mycam, ppm.pixels, cornell_mtl_alt, 2);
             break;
-        case 7: // raytracer
+        case 9: // raytracer
+            drawFilledTriangleRay(window, cornellbox, mycam);
+            break;
+        case 10: // raytracer
             raytracingLighting(window, cornellbox, mycam);
             break;
         default: //wireframe is default

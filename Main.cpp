@@ -64,14 +64,14 @@ int main(int argc, char* argv[]){
         //fillTextureTriangle(window, ppm.pixels, t);
 
         // rasterizer (old)
-        // //createWireframe(window, object, mycam);
-        // rasterise(window, object, mycam, ppm.pixels);
+        createWireframe(window, logo, mycam);
+        //rasterise(window, logo, mycam, ppm.pixels);
 
         // savePPM(window, "hello.ppm");
 
         //raytracer stuff
         // drawFilledTriangleRay(window, object_alt, mycam);
-        raytracingLighting(window, object_alt, mycam);
+        //raytracingLighting(window, object_alt, mycam);
 
         // //createWireframe(window, object, mycam);
         // rasterise(window, object, mycam, ppm.pixels);

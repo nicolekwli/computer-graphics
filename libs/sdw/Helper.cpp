@@ -646,6 +646,8 @@ vector<ModelTriangle> readOBJAlt(string filename, vector<Material> mtls, PPM ppm
                 int c = stoi(split(tokens[3],'//')[0]) - 1;
 
                 t = ModelTriangle(Vs[a], Vs[b], Vs[c], Colour(material.diffuse.r, material.diffuse.g, material.diffuse.b));
+                t.objname = objectName;
+
                 t.mat.name = material.name;
                 t.mat.ambient = material.ambient;
                 t.mat.diffuse = material.diffuse;

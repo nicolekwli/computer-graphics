@@ -190,7 +190,7 @@ float ambientLighting(float brightness){
 float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection intersection, vec3 viewRay){
     float kd = 1; //material.diffuse.x;
     float ks = 0.55; //material.specular.x; //0.95;
-    float ka = 1; //material.ambient.x;
+    float ka = 0.3; //material.ambient.x;
 
     // ( 0, 3, 2 ) for testing shadow
     vec3 lightPos = glm::vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
@@ -254,9 +254,9 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
 
         vec3 lightPos = glm::vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
         // vec3 lightPos = vec3(0, 1, -FOCAL); // light is where the camera is 
-        vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power of light
+        vec3 lightColor = 100.f * glm::vec3( 1, 1, 1 ); //this is the power of light
         vec3 dirLight = lightPos - closest.intersectionPoint; //intersection.intersectionPoint - lightPos;
-        dirLight = glm::normalize(dirLight);
+        // dirLight = glm::normalize(dirLight);
         
         vec3 e01 = closest.intersectedTriangle.vertices[1] - closest.intersectedTriangle.vertices[0];
         vec3 e02 = closest.intersectedTriangle.vertices[2] - closest.intersectedTriangle.vertices[0];
@@ -279,23 +279,27 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
                 //the colour of the floor will be the colour of closestReflected
                 return bitpackingColour(closestReflected.intersectedTriangle.colour);
             }
-            else{
-                return bitpackingColour(Colour(0,0,0)); //black
-            }
+            // else{
+            //     cout<<"here??"<<endl;
+            //     return bitpackingColour(Colour(0,0,0)); //black
+            // }
         }
         
             Colour finalColour =  closest.intersectedTriangle.colour;
 
             // diffuse lighting
-            float check = glm::dot(-surfaceNormal, dirLight);
+            float check = glm::dot(-surfaceNormal, glm::normalize(dirLight));
             float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
             // ambient lighting
             float ambient = ambientLighting(diffuse);
             // specular  lighting
             float N = 100.f; // larger N -> smaller spot //maybe this should be in file?
-            float specular = std::max(glm::dot(reflected, rayDirection), 0.f);
+            // float N = closest.intersectedTriangle.mat.highlight;
+            vec3 ref = (2.0f * check * surfaceNormal) - glm::normalize(dirLight);
+            ref = glm::normalize(ref);
+            float specular = std::max(glm::dot(ref, rayDirection), 0.f);
             // total light
-            float totalLight = (kd * diffuse) + (ks * powf(specular, N));
+            float totalLight = (kd * diffuse) + (ks * powf(specular, N)); //ambient
 
             return convertColour(finalColour, totalLight);
         

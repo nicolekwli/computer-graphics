@@ -74,6 +74,37 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3
     return found;
 }
 
+bool inShadow(vector<ModelTriangle> triangles, vec3 startPos, vec3 shadowRay, RayTriangleIntersection &cl, ModelTriangle &self){
+    float prevDist = 1000;
+    bool found = false;
+
+    // loop through each triangle
+    for(int i=0; i<(int)triangles.size(); i++){
+        // calc. the ray
+        vec3 e0 = triangles[i].vertices[1] - triangles[i].vertices[0];
+        vec3 e1 = triangles[i].vertices[2] - triangles[i].vertices[0];
+        vec3 SPVector = startPos - triangles[i].vertices[0];
+        mat3 DEMatrix(shadowRay, e0, e1);
+        vec3 possibleSolution = glm::inverse(DEMatrix) * SPVector;
+
+        float t = possibleSolution.x;
+        float u = possibleSolution.y;
+        float v = possibleSolution.z;
+
+        // check constraints
+        if (u >= 0.0f && u <= 1.0f && v >= 0.0f && v <= 1.0f && u + v <= 1) {
+            // if dist of current ray to triangle is shorter than prev then it is the closest
+            if (t < prevDist && t > 0.0f ) { //&& triangles[i] != closest.intersectedTriangle or //&& triangles[i] != self
+                cl = RayTriangleIntersection(startPos + (t * shadowRay), t, triangles[i]);
+                found = true;
+                prevDist = t;
+                // return true;
+            }
+        }
+    }
+    return found;
+}
+
 
 // THIS WORKS!!!??? not exactly
 // moller - trombone algorithm
@@ -152,15 +183,16 @@ float ambientLighting(float brightness){
     if (brightness < thresh){
         return thresh;
     }
-    return thresh;
+    return brightness;
 }
 
 // the closer a surface is to the light, the brighter a pixel will be drawn on the image plane
-float lighting(RayTriangleIntersection intersection, vec3 viewRay, vec3 &reflectedRay){
+float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection intersection, vec3 viewRay){
     float kd = 1; //material.diffuse.x;
     float ks = 0.55; //material.specular.x; //0.95;
     float ka = 1; //material.ambient.x;
 
+    // ( 0, 3, 2 ) for testing shadow
     vec3 lightPos = glm::vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
     // vec3 lightPos = vec3(0, 1, -FOCAL); // light is where the camera is 
     vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
@@ -171,6 +203,24 @@ float lighting(RayTriangleIntersection intersection, vec3 viewRay, vec3 &reflect
     vec3 surfaceNormal = glm::cross(e01, e02);
     surfaceNormal = glm::normalize(surfaceNormal);
     float check = glm::dot(-surfaceNormal, dirLight); //not negative? yes negative
+
+    /*
+    vec3 shadowRay = lightPos - intersection.intersectionPoint;
+    // shadowRay = glm::normalize(shadowRay);
+    RayTriangleIntersection cl;
+    // is closest.intersection in shadow of this light and is the intersection point closes than the light itself?
+    // bool shadow = ( inShadow(triangles, intersection.intersectionPoint+(0.01f*surfaceNormal), shadowRay, cl) ); //&& cl.distanceFromCamera < glm::length(dirLight)); // 
+    bool isShadow = inShadow(triangles, intersection.intersectionPoint, shadowRay, cl, intersection.intersectedTriangle);
+    // vec3 ray = cl.intersectionPoint - intersection.intersectionPoint;
+    // ray = glm::normalize(ray);
+
+    if (isShadow && cl.distanceFromCamera < glm::length(shadowRay) ){ //&& cl.intersectedTriangle.colour.name == "Red"
+    // if(shadow){
+        return 0.3; //black
+        // return bitpackingColour(cl.intersectedTriangle.colour);
+    }   
+    */
+
     float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
     // vec3 diff = (lightColor * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
 
@@ -179,14 +229,13 @@ float lighting(RayTriangleIntersection intersection, vec3 viewRay, vec3 &reflect
 
     // specular  lighting
     // math from wikipedia (https://en.wikipedia.org/wiki/Phong_reflection_model)
-    float N = 100.f; // larger N -> smaller spot
+    float N = 200.f; // larger N -> smaller spot
     vec3 reflected = (2.0f * check * surfaceNormal) - dirLight;
     reflected = glm::normalize(reflected);
-    reflectedRay = reflected; //passing reflected back
     float specular = std::max(glm::dot(reflected, viewRay), 0.f);
 
     // total light
-    float totalLight = (ka * ambient) + (kd * diffuse) + (ks * powf(specular, N));
+    float totalLight = (ka * ambient) + (ks * powf(specular, N)); // + (kd * diffuse) 
 
     return totalLight;
 }
@@ -268,6 +317,42 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
 
             uint32_t col = findPixelColour(triangles, cam.cameraPos, rayDirection);
             window.setPixelColour(x, y, col);
+        }
+    }
+}
+
+
+
+// raytracing for CORNELL BOX
+// with diffuse and ambient and specular lighting
+// with hard shadows
+void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
+
+    #pragma omp parallel for
+    for(int y=0; y<window.height; y++){
+        for(int x=0; x<window.width; x++){
+            RayTriangleIntersection closest;
+
+            glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
+            rayDirection = glm::normalize(rayDirection);
+
+            // bool res = closestIntersectionMT(triangles, cam.cameraPos, rayDirection, closest);
+            bool res = getClosestIntersection(triangles, cam.cameraPos, rayDirection, closest);
+
+            //if there is intersection
+            if (res){
+                // uint32_t pixelColour = bitpackingColour(closest.intersectedTriangle.colour);
+                // float diffuseB = diffuseLighting(closest, rayDirection, reflect);
+                // float ambientB = ambientLighting(diffuseB);
+                // float totalB = diffuseB + ambientB;
+                float br = lighting(triangles, closest, rayDirection);
+                uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, br);
+                window.setPixelColour(x, y, finalColour);
+            }
+            else { //else black
+                uint32_t pixelColour = bitpackingColour(Colour(0,0,0));
+                window.setPixelColour(x, y, pixelColour);
+            }
         }
     }
 }

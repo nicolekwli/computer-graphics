@@ -27,3 +27,6 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> t, Camera
 void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);
 
 uint32_t getPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3 rayDirection);
+
+
+void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);

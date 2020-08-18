@@ -187,13 +187,17 @@ float ambientLighting(float brightness){
 }
 
 // the closer a surface is to the light, the brighter a pixel will be drawn on the image plane
-float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection intersection, vec3 viewRay){
+float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection intersection, vec3 viewRay, bool isLogo){
     float kd = 1; //material.diffuse.x;
     float ks = 0.55; //material.specular.x; //0.95;
     float ka = 0.75; //material.ambient.x;
 
     // ( 0, 3, 2 ) for testing shadow
-    vec3 lightPos = glm::vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
+
+    vec3 lightPos = vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
+    if (isLogo){
+        lightPos = vec3(0, 1, -4.5f);
+    }
     // vec3 lightPos = vec3(0, 1, -FOCAL); // light is where the camera is 
     vec3 lightColor = 50.f * glm::vec3( 1, 1, 1 ); //this is the power ??
     
@@ -315,7 +319,6 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
 
     #pragma omp parallel for
     for(int y=0; y<window.height; y++){
-        cout<<y<<" ";
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
             rayDirection = glm::normalize(rayDirection);
@@ -324,6 +327,7 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
             window.setPixelColour(x, y, col);
         }
     }
+    cout<<"light ";
 }
 
 
@@ -331,7 +335,7 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
 // raytracing for CORNELL BOX
 // with diffuse and ambient and specular lighting
 // with hard shadows
-void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
+void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam, bool isLogo){
 
     #pragma omp parallel for
     for(int y=0; y<window.height; y++){
@@ -350,7 +354,7 @@ void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Ca
                 // float diffuseB = diffuseLighting(closest, rayDirection, reflect);
                 // float ambientB = ambientLighting(diffuseB);
                 // float totalB = diffuseB + ambientB;
-                float br = lighting(triangles, closest, rayDirection);
+                float br = lighting(triangles, closest, rayDirection, isLogo);
                 uint32_t finalColour = convertColour(closest.intersectedTriangle.colour, br);
                 window.setPixelColour(x, y, finalColour);
             }

@@ -235,7 +235,7 @@ float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection inters
     float specular = std::max(glm::dot(reflected, viewRay), 0.f);
 
     // total light
-    float totalLight = (ka * ambient) + (ks * powf(specular, N)); // + (kd * diffuse) 
+    float totalLight = (ka * ambient) + (kd * diffuse) + (ks * powf(specular, N)); // + (kd * diffuse) 
 
     return totalLight;
 }

@@ -69,6 +69,7 @@ int main(int argc, char* argv[]){
 
         // savePPM(window, "hello.ppm");
 
+        //...
         //raytracer stuff
         // drawFilledTriangleRay(window, object1, mycam);
         raytracingLighting(window, object1, mycam);

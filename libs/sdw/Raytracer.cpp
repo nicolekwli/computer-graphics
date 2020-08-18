@@ -190,7 +190,7 @@ float ambientLighting(float brightness){
 float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection intersection, vec3 viewRay){
     float kd = 1; //material.diffuse.x;
     float ks = 0.55; //material.specular.x; //0.95;
-    float ka = 0.3; //material.ambient.x;
+    float ka = 0.75; //material.ambient.x;
 
     // ( 0, 3, 2 ) for testing shadow
     vec3 lightPos = glm::vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
@@ -249,8 +249,8 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
 
     if (res){
         float kd = 1; //material.diffuse.x;
-        float ks = 1; //material.specular.x; //0.95;
-        float ka = 0.3; //material.ambient.x;
+        float ks = 0.55; //material.specular.x; //0.95;
+        float ka = 1; //material.ambient.x;
 
         vec3 lightPos = glm::vec3( -0.25, 5, 3 ); // (0, -0.5, -0.7) light is in the light spot
         // vec3 lightPos = vec3(0, 1, -FOCAL); // light is where the camera is 
@@ -288,18 +288,18 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
             Colour finalColour =  closest.intersectedTriangle.colour;
 
             // diffuse lighting
-            float check = glm::dot(-surfaceNormal, glm::normalize(dirLight));
+            float check = glm::dot(-surfaceNormal, dirLight);
             float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
             // ambient lighting
             float ambient = ambientLighting(diffuse);
             // specular  lighting
-            float N = 100.f; // larger N -> smaller spot //maybe this should be in file?
+            float N = 200.f; // larger N -> smaller spot //maybe this should be in file?
             // float N = closest.intersectedTriangle.mat.highlight;
-            vec3 ref = (2.0f * check * surfaceNormal) - glm::normalize(dirLight);
+            vec3 ref = (2.0f * check * surfaceNormal) - dirLight;
             ref = glm::normalize(ref);
             float specular = std::max(glm::dot(ref, rayDirection), 0.f);
             // total light
-            float totalLight = (kd * diffuse) + (ks * powf(specular, N)); //ambient
+            float totalLight = (ka * ambient) + (ks * powf(specular, N)); //ambient
 
             return convertColour(finalColour, totalLight);
         
@@ -315,6 +315,7 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
 
     #pragma omp parallel for
     for(int y=0; y<window.height; y++){
+        cout<<y<<" ";
         for(int x=0; x<window.width; x++){
             glm::vec3 rayDirection = vec3(x-window.width/2, window.height/2-y, cam.focalLength) * cam.cameraRot;
             rayDirection = glm::normalize(rayDirection);

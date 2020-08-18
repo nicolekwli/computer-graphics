@@ -13,8 +13,8 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm");
 int frame_count = 0;
-int render_type = 4; //1 - wireframe, 4 - rasterizer, 3 - raytracer
-string render = "rasterise";
+int render_type = 7; //1-3: wireframe, 4-6: rasterizer, 7-9: raytracer
+string render = "rays";
 int step = 0;
 
 // normal reading files
@@ -25,9 +25,13 @@ vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBo
 vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj", cornell_mtl, ppm, 1);
 vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05);
 
-
+// material hackspacelogo (raster and wireframe)
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
 vector<ModelTriangle> logo = readOBJ("assets/hackspaceLogo/logo.obj", logo_mtl, ppm, 0.005);
+
+// material hackspace logo (for rays, no texture) 
+vector<Colour> logo_colour_mtl = readMTL("assets/hackspaceLogo/materials-flat-colour.mtl");
+vector<ModelTriangle> logo_colour = readOBJ("assets/hackspaceLogo/logo.obj", logo_colour_mtl, ppm, 0.005);
 
 // material reading files
 // vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
@@ -95,7 +99,7 @@ void update(){
             }
             break;
 
-        case 1:
+        case 1: //i assume this is cornell sphere animation
             frame_count++;
             savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
 
@@ -114,6 +118,9 @@ void update(){
                 mycam.cameraPos = vec3(0, 1, -4.5f);
                 ::step++;
             }
+            render_type++;
+            mycam.cameraPos = vec3(0, 1, -4.5f);
+            ::step++;
             break;
 
         case 2: // switch to logo
@@ -154,8 +161,8 @@ void update(){
 
 }
 
-//currently just does stuff for wireframe
-// need to change camera variables for each tho
+
+
 void draw(){
     
 
@@ -181,42 +188,15 @@ void draw(){
         case 6: // rasterizer
             rasterise(window, logo, mycam, ppm.pixels, cornell_mtl_alt, 2);
             break;
-        case 7: // raytracer
-            raytracingLighting(window, cornellbox, mycam);
+        case 7: // raytracer cornell box
+            raytracingCornell(window, cornellbox, mycam);
             break;
+        // case 8: // raytracer cornell sphere
+        //     raytracingLighting(window, cornellbox_alt, mycam);
+        case 8: // raytracer logo
+            raytracingCornell(window, logo_colour, mycam);
         default: //wireframe is default
             break;
-    }
-}
-
-// zooms into cornell box and cornell box flies out of screen
-void cornellboxAnimate(){
-    createWireframe(window, cornellbox, mycam);
-    for (int i=0; i<=20; i++) {
-        mycam.camForward();
-        frame_count++;
-        savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-    }
-}
-
-void logoFlyThrough(){
-    // if (mycam.cameraPos.z < -9.3){
-    //     mycam.camForward();
-    // }
-    createWireframe(window, cornellbox, mycam);
-    for (int i=0; i<=6; i++) mycam.camRight();
-    for (int i=0; i<=5; i++) mycam.camForward();
-}
-
-void logoOrbit(){
-}
-
-// 'clears' screen by filling in pixels with black
-void clearScreen(){
-    for(int y=0; y<window.height; y++){
-        for(int x=0; x<window.width; x++){
-            window.setPixelColour(x, y, bitpackingColour(Colour(0,0,0)));
-        }
     }
 }
 

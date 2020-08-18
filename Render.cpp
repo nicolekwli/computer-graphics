@@ -13,7 +13,7 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm");
 int frame_count = 0;
-int render_type = 7; //1-3: wireframe, 4-6: rasterizer, 7-9: raytracer
+int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
 string render = "rays";
 int step = 0;
 
@@ -21,9 +21,11 @@ int step = 0;
 vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl"); //can prob get rid  of this?
 //vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box/cornell-box.mtl"); // one l is the edited mtl file, ll is the original
 vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+vector<Material> cornell_mtl_alt_grey = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere-Grey.mtl");
 
 vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj", cornell_mtl, ppm, 1);
-vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05);
+vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05); // this is black spheres
+vector<ModelTriangle> cornellbox_alt_grey = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt_grey, ppm, 1.05);
 
 // material hackspacelogo (raster and wireframe)
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
@@ -87,29 +89,56 @@ void update(){
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
+            else if (frame_count < 63){
+                mycam.camDown();
+                mycam.camForward();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
             else if (frame_count < 70){
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else {
-                render_type++;
-                mycam.cameraPos = vec3(0, 1, -2.5f);
-                ::step++;
-            }
-            break;
-
-        case 1: //i assume this is cornell sphere animation
-            frame_count++;
-            savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
-
-            if (frame_count < 75){
+            else if (frame_count < 110){
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 85){
+            else {
+                render_type++;
+                mycam.cameraPos = vec3(-2, 1, -2.5f);
+                if (render == "rasterise") mycam.cameraPos = vec3(-1.5, 1, -2.5f);
+                mycam.camOrientation(vec3(0.02, 0, 0));
+                mycam.camLeft();
+                
+                ::step++;
+            }
+            break;
+
+        case 1: // sphere
+            frame_count++;
+            savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+
+            if (frame_count < 150){
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 155){
+                if ((render == "rasterise") && (frame_count == 151)) render_type++; // to gouraud
+                mycam.camForward();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 160){
                 mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 175){ 
+                if ((render == "rasterise") && (frame_count == 165)) render_type++; // to phong
+                mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
@@ -132,20 +161,70 @@ void update(){
 
         case 3: // logo animation
             // for (int i=0; i<=5; i++) {
-            if (frame_count < 110){
+            if (frame_count < 185){
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 115){
+            else if (frame_count < 205){
                 mycam.camOrientation(vec3(0, -0.01, 0));
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 125){
+            else if (frame_count < 215){
                 mycam.camOrientation(vec3(0, 0.01, 0));
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 220){
+                mycam.camOrientation(vec3(0, -0.04, 0));
                 mycam.camForward();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 225){
+                mycam.camOrientation(vec3(0, -0.02, 0));
+                mycam.camForward();
+                mycam.camUp();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 235){
+                mycam.camOrientation(vec3(0, 0.03, 0));
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 245){
+                mycam.camOrientation(vec3(0, 0.04, 0));
+                mycam.camBackward();
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 260){
+                mycam.camBackward();
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 265){
+                mycam.camOrientation(vec3(0, 0.04, 0));
+                mycam.camBackward();
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 280){
+                mycam.camRight();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 290){
+                mycam.camBackward();
+                mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
@@ -157,8 +236,6 @@ void update(){
             exit(0); //stop updating, stop the code, stop everything
             break;
     }
-    //savePPM(window, "renders/wireframe/wireframe-"+to_string(frame_count)+".ppm");
-
 }
 
 
@@ -167,34 +244,47 @@ void draw(){
     
 
     switch(render_type){
-        case 1: // wireframe
+        case 1: // wireframe -- box
             createWireframe(window, cornellbox, mycam);
             // cornellboxAnimate();
             // clearScreen();
             // logoFlyThrough();
             break;
-        case 2:
+        case 2: // wireframe -- sphere
             createWireframe(window, cornellbox_alt, mycam);
             break;
-        case 3:
+        case 3: // wireframe -- logo
             createWireframe(window, logo, mycam);
             break;
-        case 4: // rasterizer
+        case 4: // rasterizer -- box fill
             rasterise(window, cornellbox, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
-        case 5: // rasterizer
-            rasterise(window, cornellbox_alt, mycam, ppm.pixels, cornell_mtl_alt, 3);
+        case 5: // rasterizer -- sphere fill
+            rasterise(window, cornellbox_alt_grey, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
-        case 6: // rasterizer
+        case 6: // rasterizer -- sphere gouraud
+            rasterise(window, cornellbox_alt_grey, mycam, ppm.pixels, cornell_mtl_alt, 3);
+            break;
+        case 7: // rasterizer -- sphere phong
+            rasterise(window, cornellbox_alt, mycam, ppm.pixels, cornell_mtl_alt, 4);
+            break;
+        case 8: // rasterizer -- logo texture
             rasterise(window, logo, mycam, ppm.pixels, cornell_mtl_alt, 2);
             break;
-        case 7: // raytracer cornell box
+        case 9:  // raytracer -- box 
+            drawFilledTriangleRay(window, cornellbox, mycam);
+            break;
+        case 10: // raytracer -- box w light
             raytracingCornell(window, cornellbox, mycam);
             break;
-        // case 8: // raytracer cornell sphere
+        case 11: // raytracer -- box w mirror
+            raytracingCornell(window, cornellbox, mycam);
+            break;
+        // case 12: // raytracer -- sphere
         //     raytracingLighting(window, cornellbox_alt, mycam);
-        case 8: // raytracer logo
+        case 12: // raytracer -- logo colour and light
             raytracingCornell(window, logo_colour, mycam);
+            break;
         default: //wireframe is default
             break;
     }

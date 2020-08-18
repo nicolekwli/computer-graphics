@@ -21,17 +21,17 @@ CanvasPoint vertex3Dto2D(DrawingWindow window, vec3 vertex3D, Camera cam) {
 
 
     // make sure they are within the screen
-    // if (vertex2D.x < 0){
-    //     vertex2D.x = 0;
-    // } else if (vertex2D.x > window.width-1) {
-    //     vertex2D.x = window.width-1;
-    // }
+    if (vertex2D.x < 0){
+        vertex2D.x = 0;
+    } else if (vertex2D.x > window.width-1) {
+        vertex2D.x = window.width-1;
+    }
 
-    // if (vertex2D.y < 0){
-    //     vertex2D.y = 0;
-    // } else if (vertex2D.y > window.height-1){
-    //     vertex2D.y = window.height-1;
-    // }
+    if (vertex2D.y < 0){
+        vertex2D.y = 0;
+    } else if (vertex2D.y > window.height-1){
+        vertex2D.y = window.height-1;
+    }
 
     return vertex2D;
 }
@@ -271,7 +271,7 @@ void createWireframe(DrawingWindow window, vector<ModelTriangle> t, Camera cam){
         modelToCanvasTri(window, t[i], ct, cam, false);
         canvasTriangles.push_back(ct);
 
-        vector<CanvasTriangle> cts = clipping(window, ct);
+        vector<CanvasTriangle> cts = clippingFrus(window, cam, ct);
         for (int j = 0; j < cts.size(); j++){
             drawStrokedTriangle(window, cts[j]);
         }

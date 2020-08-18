@@ -13,8 +13,8 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm"); // texture: bricks texture1: tiger print
 int frame_count = 0;
-int render_type = 4; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
-string render = "rasterise";
+int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
+string render = "rays";
 int step = 0;
 
 // normal reading files
@@ -274,7 +274,7 @@ void draw(){
             rasterise(window, cornellbox_alt_grey, mycam, ppm.pixels, cornell_mtl_alt, 3);
             break;
         case 7: // rasterizer -- sphere phong
-            rasterise(window, cornellbox_alt, mycam, ppm.pixels, cornell_mtl_alt, 4);
+            rasterise(window, cornellbox_alt_grey, mycam, ppm.pixels, cornell_mtl_alt, 4);
             break;
         case 8: // rasterizer -- logo texture
             rasterise(window, logo, mycam, ppm.pixels, cornell_mtl_alt, 2);
@@ -285,10 +285,10 @@ void draw(){
         case 10: // raytracer -- box w light
             raytracingCornell(window, cornellbox, mycam);
             break;
-        case 11: // raytracer -- box w mirror
-            raytracingCornell(window, cornellbox, mycam);
+        case 11: // raytracer -- sphere 
+            drawFilledTriangleRay(window, cornellbox, mycam);
             break;
-        case 12: // raytracer -- sphere
+        case 12: // raytracer -- sphere w mirror
             raytracingLighting(window, cornellbox_alt, mycam);
             break;
         case 13: // raytracer -- logo colour and light

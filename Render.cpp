@@ -25,11 +25,11 @@ vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj",
 // --- one l is the edited mtl file, ll is the original
 // cornell sphere original
 vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05); // this is black spheres
+vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05); // this is black spheres
 
 // cornell sphere edited mtl
 vector<Material> cornell_mtl_alt_grey = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere-Grey.mtl");
-vector<ModelTriangle> cornellbox_alt_grey = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt_grey, ppm, 1.05);
+vector<ModelTriangle> cornellbox_alt_grey = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt_grey, ppm, 1.05);
 
 // material hackspacelogo (raster and wireframe)
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
@@ -132,6 +132,7 @@ void update(){
             }
             else if (frame_count < 115){
                 if ((render == "rasterise") && (frame_count == 109)) render_type++; // to gouraud
+                if ((render == "rays") && (frame_count == 109)) render_type++;
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -143,6 +144,7 @@ void update(){
             }
             else if (frame_count < 130){ 
                 if ((render == "rasterise") && (frame_count == 121)) render_type++; // to phong
+                if ((render == "rays") && (frame_count == 121)) render_type++;
                 mycam.camBackward();
                 mycam.camLeft();
                 frame_count++;
@@ -291,22 +293,15 @@ void draw(){
             raytracingCornell(window, cornellbox, mycam);
             break;
         case 11: // raytracer -- sphere fill
-            drawFilledTriangleRay(window, cornellbox_alt, mycam);            
+            drawFilledTriangleRay(window, cornellbox_alt_grey, mycam);            
             break;
         case 12: // raytracer -- sphere light
-            raytracingCornell(window, cornellbox_alt, mycam);
+            raytracingCornell(window, cornellbox_alt_grey, mycam);
             break;
         case 13: // raytracer -- sphere mirror
-            raytracingLighting(window, cornellbox_alt, mycam);
+            raytracingLighting(window, cornellbox_alt_grey, mycam);
             break;
-<<<<<<< HEAD
         case 14: // raytracer -- logo colour and light
-=======
-        case 12: // raytracer -- sphere
-            raytracingLighting(window, cornellbox_alt, mycam);
-            break;
-        case 13: // raytracer -- logo colour and light
->>>>>>> 4a0d043927a3ba61c8ef5b3b6d57bc490f239b7e
             raytracingCornell(window, logo_colour, mycam);
             break;
         default: //wireframe is default

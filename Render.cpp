@@ -12,20 +12,24 @@ using namespace std::chrono;
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm"); // texture: bricks texture1: tiger print
-int frame_count = 0;
-int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
+int frame_count = 114;
+int render_type = 11; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
 string render = "rays";
 int step = 0;
 
-// normal reading files
-vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl"); //can prob get rid  of this?
-//vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box/cornell-box.mtl"); // one l is the edited mtl file, ll is the original
-vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-vector<Material> cornell_mtl_alt_grey = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere-Grey.mtl");
-
+// cornell box
+vector<Colour> cornell_mtl = readMTL("assets/cornell-box/cornell-box.mtl");
 vector<ModelTriangle> cornellbox = readOBJ("assets/cornell-box/cornell-box.obj", cornell_mtl, ppm, 1);
-vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05); // this is black spheres
-vector<ModelTriangle> cornellbox_alt_grey = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt_grey, ppm, 1.05);
+//vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box/cornell-box.mtl"); //do we need
+
+// --- one l is the edited mtl file, ll is the original
+// cornell sphere original
+vector<Material> cornell_mtl_alt = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
+vector<ModelTriangle> cornellbox_alt = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt, ppm, 1.05); // this is black spheres
+
+// cornell sphere edited mtl
+vector<Material> cornell_mtl_alt_grey = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere-Grey.mtl");
+vector<ModelTriangle> cornellbox_alt_grey = readOBJAlt("assets/cornel-box-extra/CornellBox-Sphere.obj", cornell_mtl_alt_grey, ppm, 1.05);
 
 // material hackspacelogo (raster and wireframe)
 vector<Colour> logo_mtl = readMTL("assets/hackspaceLogo/materials.mtl");
@@ -35,9 +39,7 @@ vector<ModelTriangle> logo = readOBJ("assets/hackspaceLogo/logo.obj", logo_mtl, 
 vector<Colour> logo_colour_mtl = readMTL("assets/hackspaceLogo/materials-flat-colour.mtl");
 vector<ModelTriangle> logo_colour = readOBJ("assets/hackspaceLogo/logo.obj", logo_colour_mtl, ppm, 0.005);
 
-// material reading files
-// vector<Material> m = readMTLAlt("assets/cornel-box-extra/CornellBox-Sphere.mtl");
-// vector<ModelTriangle> object = readOBJAlt("assets/cornell-box-extra/CornellBox-Sphere.obj", m, ppm, 1);
+
 
 // Compile to mp4 using: ffmpeg -f image2 -i %d.ppm -vcodec libx264 -pix_fmt yuv420p video.mp4
 int main(int argc, char* argv[]){
@@ -60,6 +62,7 @@ int main(int argc, char* argv[]){
     }
 }
 
+
 // Function for performing animation (shifting artifacts or moving the camera)
 void update(){
     switch(::step){
@@ -76,7 +79,6 @@ void update(){
             }
 
             else if (frame_count < 40){
-                if ((render == "rays") && (frame_count == 31)) render_type++; // to cornell box lighting
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -88,13 +90,13 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 58){
+                if ((render == "rays") && (frame_count == 51)) render_type++; // to cornell box lighting
                 mycam.camForward();
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 65){
-                if ((render == "rays") && (frame_count == 64)) render_type++; // to cornell box mirror
                 mycam.camForward();
                 mycam.camLeft();
                 frame_count++;
@@ -134,6 +136,7 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 120){
+                if ((render == "rays") && (frame_count == 116)) render_type++; // to sphere mirror
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -264,6 +267,7 @@ void draw(){
         case 3: // wireframe -- logo
             createWireframe(window, logo, mycam);
             break;
+
         case 4: // rasterizer -- box fill
             rasterise(window, cornellbox, mycam, ppm.pixels, cornell_mtl_alt, 1);
             break;
@@ -279,19 +283,23 @@ void draw(){
         case 8: // rasterizer -- logo texture
             rasterise(window, logo, mycam, ppm.pixels, cornell_mtl_alt, 2);
             break;
-        case 9:  // raytracer -- box 
+
+        case 9:  // raytracer -- box fill
             drawFilledTriangleRay(window, cornellbox, mycam);
             break;
         case 10: // raytracer -- box w light
             raytracingCornell(window, cornellbox, mycam);
             break;
-        case 11: // raytracer -- sphere 
-            drawFilledTriangleRay(window, cornellbox, mycam);
+         case 11:  // raytracer -- sphere fill
+            drawFilledTriangleRay(window, cornellbox_alt_grey, mycam);
             break;
-        case 12: // raytracer -- sphere w mirror
-            raytracingLighting(window, cornellbox_alt, mycam);
+        case 12: // raytracer -- sphere 
+            raytracingCornell(window, cornellbox_alt_grey, mycam);
             break;
-        case 13: // raytracer -- logo colour and light
+        case 13: // raytracer -- sphere w mirror
+            raytracingLighting(window, cornellbox_alt_grey, mycam);            
+            break;
+        case 14: // raytracer -- logo colour and light
             raytracingCornell(window, logo_colour, mycam);
             break;
         default: //wireframe is default

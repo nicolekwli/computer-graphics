@@ -13,8 +13,8 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm"); // texture: bricks texture1: tiger print
 int frame_count = 0;
-int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
-string render = "rays";
+int render_type = 4; //1-3: wireframe, 4-8: rasterizer, 9-12: raytracer
+string render = "rasterise";
 int step = 0;
 
 // normal reading files
@@ -69,46 +69,50 @@ void update(){
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 30){
+            else if (frame_count < 25){
                 mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
 
-            else if (frame_count < 50){
+            else if (frame_count < 40){
                 if ((render == "rays") && (frame_count == 31)) render_type++; // to cornell box lighting
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 60){
+            else if (frame_count < 50){
                 mycam.camRight();
+                mycam.camBackward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 63){
+            else if (frame_count < 58){
                 mycam.camForward();
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 70){
+            else if (frame_count < 65){
                 if ((render == "rays") && (frame_count == 64)) render_type++; // to cornell box mirror
                 mycam.camForward();
-                frame_count++;
-                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
-            }
-            else if (frame_count < 105){
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
+            else if (frame_count < 90){
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            
             else {
                 render_type++;
-                mycam.cameraPos = vec3(-2.5, 1, -2.5f);
+                mycam.cameraPos = vec3(-1.5, 1, -2.5f);
                 if (render == "rasterise") mycam.cameraPos = vec3(-1.5, 1, -2.5f);
                 mycam.camOrientation(vec3(0.02, 0, 0));
                 mycam.camLeft();
+                mycam.camBackward();
                 
                 ::step++;
             }
@@ -118,26 +122,30 @@ void update(){
             frame_count++;
             savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
 
-            if (frame_count < 145){
-                
+            if (frame_count < 108){
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 150){
-                if ((render == "rasterise") && (frame_count == 146)) render_type++; // to gouraud
+            else if (frame_count < 115){
+                if ((render == "rasterise") && (frame_count == 109)) render_type++; // to gouraud
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 155){
-                
-                mycam.camRight();
+            else if (frame_count < 120){
+                mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 170){ 
-                if ((render == "rasterise") && (frame_count == 156)) render_type++; // to phong
+            else if (frame_count < 130){ 
+                if ((render == "rasterise") && (frame_count == 121)) render_type++; // to phong
+                mycam.camBackward();
+                mycam.camLeft();
+                frame_count++;
+                savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            }
+            else if (frame_count < 140){ 
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -145,6 +153,7 @@ void update(){
             else {
                 render_type++;
                 mycam.cameraPos = vec3(0, 1, -4.5f);
+                mycam.camRight();
                 ::step++;
             }
             break;
@@ -153,75 +162,77 @@ void update(){
             window.clearPixels();
             frame_count++;
             savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
+            mycam.camRight();
             ::step++;
             break;
 
         case 3: // logo animation
-            // for (int i=0; i<=5; i++) {
-            if (frame_count < 180){
+            if (frame_count < 152){
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 200){
+            else if (frame_count < 160){
                 mycam.camOrientation(vec3(0, -0.01, 0));
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 210){
+            else if (frame_count < 170){
                 mycam.camOrientation(vec3(0, 0.01, 0));
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 215){
-                mycam.camOrientation(vec3(0, -0.04, 0));
+            else if (frame_count < 185){
+                mycam.camOrientation(vec3(0, -0.02, 0));
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 220){
+            else if (frame_count < 193){
                 mycam.camOrientation(vec3(0, -0.02, 0));
                 mycam.camForward();
                 mycam.camUp();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 230){
+            else if (frame_count < 200){
                 mycam.camOrientation(vec3(0, 0.03, 0));
                 mycam.camLeft();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 240){
+            else if (frame_count < 210){
+                mycam.camDown();
                 mycam.camOrientation(vec3(0, 0.04, 0));
                 mycam.camBackward();
                 mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 255){
+            else if (frame_count < 225){
                 mycam.camBackward();
                 mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 260){
+            else if (frame_count < 230){
                 mycam.camOrientation(vec3(0, 0.04, 0));
                 mycam.camBackward();
                 mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 275){
+            else if (frame_count < 245){
                 mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
-            else if (frame_count < 285){
-                mycam.camBackward();
-                mycam.camRight();
+            else if (frame_count < 265){
+                //mycam.camBackward();
+                //mycam.camRight();
+                mycam.lookAt(vec3(-4 + ( std::rand() % 3 ), -1 + ( std::rand() % 3 ), 0));
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
@@ -248,7 +259,7 @@ void draw(){
             // logoFlyThrough();
             break;
         case 2: // wireframe -- sphere
-            createWireframe(window, cornellbox_alt, mycam);
+            createWireframe(window, cornellbox_alt_grey, mycam);
             break;
         case 3: // wireframe -- logo
             createWireframe(window, logo, mycam);

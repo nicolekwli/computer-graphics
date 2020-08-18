@@ -64,7 +64,7 @@ int main(int argc, char* argv[]){
         //fillTextureTriangle(window, ppm.pixels, t);
 
         // rasterizer (old)
-        createWireframe(window, logo, mycam);
+        //createWireframe(window, logo, mycam);
         //rasterise(window, logo, mycam, ppm.pixels);
 
         // savePPM(window, "hello.ppm");
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]){
         //rasterise(window, object, mycam, ppm.pixels, m, 1); // fill
         // rasterise(window, logo, mycam, ppm.pixels, m, 2);
         //rasterise(window, object1, mycam, ppm.pixels, m, 3);  // shade gouraud
-        // rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
+        rasterise(window, object1, mycam, ppm.pixels, m, 4);  // shade phong
         //SSAA(window);
 
         window.renderFrame();

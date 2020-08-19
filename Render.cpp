@@ -12,13 +12,8 @@ using namespace std::chrono;
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm"); // texture: bricks texture1: tiger print
-<<<<<<< HEAD
-int frame_count = 0;
-int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
-=======
-int frame_count = 120;
-int render_type = 11; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
->>>>>>> c4d2fe0b91f3d013721b6c7e23226a513640fe67
+int frame_count = 140;
+int render_type = 12; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
 string render = "rays";
 int step = 0;
 
@@ -102,10 +97,7 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 65){
-<<<<<<< HEAD
-=======
                 // if ((render == "rays") && (frame_count == 64)) render_type++; // dont need this?!
->>>>>>> c4d2fe0b91f3d013721b6c7e23226a513640fe67
                 mycam.camForward();
                 mycam.camLeft();
                 frame_count++;
@@ -140,7 +132,7 @@ void update(){
             }
             else if (frame_count < 115){
                 if ((render == "rasterise") && (frame_count == 109)) render_type++; // to gouraud
-                if ((render == "rays") && (frame_count == 109)) render_type++; // to sphere w light
+                //if ((render == "rays") && (frame_count == 109)) render_type++; // to sphere w light
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -152,7 +144,7 @@ void update(){
             }
             else if (frame_count < 130){ 
                 if ((render == "rasterise") && (frame_count == 121)) render_type++; // to phong
-                if ((render == "rays") && (frame_count == 121)) render_type++; //to sphere w mirror
+                //if ((render == "rays") && (frame_count == 121)) render_type++; //to sphere w mirror
                 mycam.camBackward();
                 mycam.camLeft();
                 frame_count++;
@@ -218,7 +210,7 @@ void update(){
             }
             else if (frame_count < 210){
                 mycam.camDown();
-                mycam.camOrientation(vec3(0, 0.04, 0));
+                mycam.camOrientation(vec3(0, 0.03, 0));
                 mycam.camBackward();
                 mycam.camRight();
                 frame_count++;
@@ -231,9 +223,8 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 230){
-                mycam.camOrientation(vec3(0, 0.04, 0));
+                mycam.camOrientation(vec3(0, 0.03, 0));
                 mycam.camBackward();
-                mycam.camRight();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
@@ -245,7 +236,7 @@ void update(){
             else if (frame_count < 265){
                 //mycam.camBackward();
                 //mycam.camRight();
-                mycam.lookAt(vec3(-4 + ( std::rand() % 3 ), -1 + ( std::rand() % 3 ), 0));
+                mycam.lookAt(vec3(-3 + ( std::rand() % 3 ), -1 + ( std::rand() % 3 ), 0));
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }

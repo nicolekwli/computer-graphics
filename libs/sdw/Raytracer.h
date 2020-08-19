@@ -29,4 +29,4 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
 uint32_t getPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3 rayDirection);
 
 
-void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam);
+void raytracingCornell(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam, bool isLogo);

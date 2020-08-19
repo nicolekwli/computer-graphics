@@ -17,7 +17,7 @@
 
 
 ### (60s) some of...
-* Hard Shadow
+* Hard Shadow [attempted]
 - [x] Gouraud shading
 - [x] Naive (non-perspective corrected) texture mapping
 - [x] Simple animation (e.g. fly-through)
@@ -33,13 +33,13 @@
 * “Fancy” animation
 * Soft shadow
 * Bump maps
-* Bounding box clipping [?? man im confused which is which]
+* Bounding box clipping [did frustum]
 
 ### (80s) some of...
 * Environment maps
 * Complex “interesting” materials (e.g. glass)
 - [x] Line drawing optimisations (e.g. Bresenham)
-- [x] Advance clipping (frustum) [Need perfecting]
+- [x] Advance clipping (frustum)
 * Photon maps and caustics
 * “Intelligent” model simplification
 

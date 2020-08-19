@@ -13,8 +13,8 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm"); // texture: bricks texture1: tiger print
 int frame_count = 0;
-int render_type = 4; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
-string render = "rasterise";
+int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
+string render = "rays";
 int step = 0;
 
 // cornell box
@@ -97,7 +97,6 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 65){
-                if ((render == "rays") && (frame_count == 64)) render_type++; // to cornell box mirror
                 mycam.camForward();
                 mycam.camLeft();
                 frame_count++;

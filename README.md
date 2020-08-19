@@ -1,5 +1,9 @@
 # computer-graphics
 
+## To run:
+```make FILE="main/render"```
+
+
 ## Features:  
 ### (40s) all of...
 - [x] OBJ loading (geometry and materials)
@@ -17,7 +21,7 @@
 
 
 ### (60s) some of...
-* Hard Shadow [attempted]
+- [x] Hard Shadow [attempted]
 - [x] Gouraud shading
 - [x] Naive (non-perspective corrected) texture mapping
 - [x] Simple animation (e.g. fly-through)

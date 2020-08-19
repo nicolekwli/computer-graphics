@@ -13,8 +13,8 @@ DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture1.ppm"); // texture: bricks texture1: tiger print
 int frame_count = 0;
-int render_type = 4; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
-string render = "rasterise";
+int render_type = 1; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
+string render = "wireframe";
 int step = 0;
 
 // cornell box

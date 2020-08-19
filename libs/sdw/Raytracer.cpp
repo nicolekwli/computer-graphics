@@ -33,8 +33,8 @@ uint32_t convertColour(Colour c, float brightness){
   return (255<<24) + (r<<16) + (g<<8) + b;
 }
 
-// -------------------- OTHER FUNCIONS lol
-// this doesnt work but could work (its too slow?)
+// -------------------- OTHER FUNCIONS
+// this works (its too slow?)
 bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest){
     float prevDist = 1000; //a high value? infinity?
     bool found = false;
@@ -74,6 +74,7 @@ bool getClosestIntersection(vector<ModelTriangle> triangles, vec3 startPos, vec3
     return found;
 }
 
+// this is get closest intersection for Shadows
 bool inShadow(vector<ModelTriangle> triangles, vec3 startPos, vec3 shadowRay, RayTriangleIntersection &cl, ModelTriangle &self){
     float prevDist = 1000;
     bool found = false;
@@ -106,8 +107,8 @@ bool inShadow(vector<ModelTriangle> triangles, vec3 startPos, vec3 shadowRay, Ra
 }
 
 
-// THIS WORKS!!!??? not exactly
-// moller - trombone algorithm
+// moller - trombone algorithm (should be quicker)
+// theres some bug in this
 // pseudocode from https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
 bool closestIntersectionMT(vector<ModelTriangle> triangles, vec3 startPos, vec3 rayDirection, RayTriangleIntersection &closest ){
     float prevDist = 1000; //a high value?
@@ -119,7 +120,7 @@ bool closestIntersectionMT(vector<ModelTriangle> triangles, vec3 startPos, vec3 
         vec3 pvec = glm::cross(rayDirection, e02); 
         float determinant = glm::dot(e01, pvec);
         if (determinant < 0.001){
-            continue; //return false?
+            continue; //skip rest and start loop again
         }
         
         float inverse = 1/determinant;
@@ -149,7 +150,6 @@ bool closestIntersectionMT(vector<ModelTriangle> triangles, vec3 startPos, vec3 
 
 // -The basic principle is to loop through each pixel on the image plane (top-to-bottom, left-to-right)
 // -casting a ray from the camera, through the current pixel and into the scene.
-// Your task is to determine if this ray intersects with a triangle from the model.
 void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles, Camera cam){
 
     #pragma omp parallel for
@@ -177,7 +177,7 @@ void drawFilledTriangleRay(DrawingWindow window, vector<ModelTriangle> triangles
 }
 
 // set a minimum threshold (floor) for the brightness multiplier
-// An IF statement will do the job - when the brightness of a pixel falls below a certain value (e.g. 0.2) just reset it to 0.2 !
+// when the brightness of a pixel falls below a certain value (e.g. 0.2) just reset it to 0.2 !
 float ambientLighting(float brightness){
    float thresh = 0.2;
     if (brightness < thresh){
@@ -208,7 +208,7 @@ float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection inters
     surfaceNormal = glm::normalize(surfaceNormal);
     float check = glm::dot(-surfaceNormal, dirLight); //not negative? yes negative
 
-    /*
+    /* //code for hard shadows
     vec3 shadowRay = lightPos - intersection.intersectionPoint;
     // shadowRay = glm::normalize(shadowRay);
     RayTriangleIntersection cl;
@@ -239,13 +239,12 @@ float lighting(vector<ModelTriangle> &triangles,  RayTriangleIntersection inters
     float specular = std::max(glm::dot(reflected, viewRay), 0.f);
 
     // total light
-    float totalLight = (ka * ambient) + (kd * diffuse) + (ks * powf(specular, N)); // + (kd * diffuse) 
+    float totalLight = (ka * ambient) + (kd * diffuse) + (ks * powf(specular, N));
 
     return totalLight;
 }
 
-
-// for logo: no specular, no ambient, light pos: vec3 lightPos = vec3(0, 1, 3); ?
+// this is for mirror
 uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3 rayDirection){
     RayTriangleIntersection closest;
 
@@ -289,23 +288,23 @@ uint32_t findPixelColour(vector<ModelTriangle> &triangles, vec3 startpoint, vec3
             // }
         }
         
-            Colour finalColour =  closest.intersectedTriangle.colour;
+        Colour finalColour =  closest.intersectedTriangle.colour;
 
-            // diffuse lighting
-            float check = glm::dot(-surfaceNormal, dirLight);
-            float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
-            // ambient lighting
-            float ambient = ambientLighting(diffuse);
-            // specular  lighting
-            float N = 200.f; // larger N -> smaller spot //maybe this should be in file?
-            // float N = closest.intersectedTriangle.mat.highlight;
-            vec3 ref = (2.0f * check * surfaceNormal) - dirLight;
-            ref = glm::normalize(ref);
-            float specular = std::max(glm::dot(ref, rayDirection), 0.f);
-            // total light
-            float totalLight = (ka * ambient) + (ks * powf(specular, N)); //ambient
+        // diffuse lighting
+        float check = glm::dot(-surfaceNormal, dirLight);
+        float diffuse = (lightColor.z * std::max(check, 0.f)) / (4 * pi * glm::dot(dirLight, dirLight));
+        // ambient lighting
+        float ambient = ambientLighting(diffuse);
+        // specular  lighting
+        float N = 200.f; // larger N -> smaller spot
+        // float N = closest.intersectedTriangle.mat.highlight;
+        vec3 ref = (2.0f * check * surfaceNormal) - dirLight;
+        ref = glm::normalize(ref);
+        float specular = std::max(glm::dot(ref, rayDirection), 0.f);
+        // total light
+        float totalLight = (ka * ambient) + (ks * powf(specular, N)); //ambient
 
-            return convertColour(finalColour, totalLight);
+        return convertColour(finalColour, totalLight);
         
     }
     else{
@@ -327,7 +326,6 @@ void raytracingLighting(DrawingWindow window, vector<ModelTriangle> triangles, C
             window.setPixelColour(x, y, col);
         }
     }
-    cout<<"light ";
 }
 
 

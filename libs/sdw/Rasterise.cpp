@@ -110,11 +110,11 @@ void modelToCanvasTri(DrawingWindow window, ModelTriangle mt, CanvasTriangle &ct
 vector<CanvasTriangle> clipping(DrawingWindow window, CanvasTriangle ct){
     vector<vec3> norm;
     norm.push_back(vec3(1,0,0)); // this does left
-    //norm.push_back(vec3(-1,0,0)); 
+    norm.push_back(vec3(-1,0,0)); 
     norm.push_back(vec3(0,1,0)); // this does top
-    //norm.push_back(vec3(0,-1,0)); 
+    norm.push_back(vec3(0,-1,0)); 
     norm.push_back(vec3(0,0,1));
-    //norm.push_back(vec3(0,0,-1)); 
+    norm.push_back(vec3(0,0,-1)); 
 
 
     vector<CanvasTriangle> final;

@@ -12,8 +12,13 @@ using namespace std::chrono;
 DrawingWindow window = DrawingWindow(WIDTH, HEIGHT, false);
 Camera mycam = Camera(HEIGHT, WIDTH);
 PPM ppm = readPPM(window, "assets/texture.ppm"); // texture: bricks texture1: tiger print
+<<<<<<< HEAD
 int frame_count = 0;
 int render_type = 9; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
+=======
+int frame_count = 120;
+int render_type = 11; //1-3: wireframe, 4-8: rasterizer, 9-14: raytracer
+>>>>>>> c4d2fe0b91f3d013721b6c7e23226a513640fe67
 string render = "rays";
 int step = 0;
 
@@ -97,6 +102,10 @@ void update(){
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
             }
             else if (frame_count < 65){
+<<<<<<< HEAD
+=======
+                // if ((render == "rays") && (frame_count == 64)) render_type++; // dont need this?!
+>>>>>>> c4d2fe0b91f3d013721b6c7e23226a513640fe67
                 mycam.camForward();
                 mycam.camLeft();
                 frame_count++;
@@ -131,7 +140,7 @@ void update(){
             }
             else if (frame_count < 115){
                 if ((render == "rasterise") && (frame_count == 109)) render_type++; // to gouraud
-                if ((render == "rays") && (frame_count == 109)) render_type++;
+                if ((render == "rays") && (frame_count == 109)) render_type++; // to sphere w light
                 mycam.camForward();
                 frame_count++;
                 savePPM(window, "renders/"+ render +"/"+to_string(frame_count)+".ppm");
@@ -143,7 +152,7 @@ void update(){
             }
             else if (frame_count < 130){ 
                 if ((render == "rasterise") && (frame_count == 121)) render_type++; // to phong
-                if ((render == "rays") && (frame_count == 121)) render_type++;
+                if ((render == "rays") && (frame_count == 121)) render_type++; //to sphere w mirror
                 mycam.camBackward();
                 mycam.camLeft();
                 frame_count++;
@@ -289,19 +298,19 @@ void draw(){
             drawFilledTriangleRay(window, cornellbox, mycam);
             break;
         case 10: // raytracer -- box w light
-            raytracingCornell(window, cornellbox, mycam);
+            raytracingCornell(window, cornellbox, mycam, false);
             break;
         case 11: // raytracer -- sphere fill
             drawFilledTriangleRay(window, cornellbox_alt_grey, mycam);            
             break;
         case 12: // raytracer -- sphere light
-            raytracingCornell(window, cornellbox_alt_grey, mycam);
+            raytracingCornell(window, cornellbox_alt_grey, mycam, false);
             break;
         case 13: // raytracer -- sphere mirror
             raytracingLighting(window, cornellbox_alt_grey, mycam);
             break;
         case 14: // raytracer -- logo colour and light
-            raytracingCornell(window, logo_colour, mycam);
+            raytracingCornell(window, logo_colour, mycam, true);
             break;
         default: //wireframe is default
             break;
